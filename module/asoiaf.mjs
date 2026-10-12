@@ -5,12 +5,15 @@ import { ASOIAF } from "./config.mjs";
 import { CharacterData } from "./data/character.mjs";
 import { HouseData } from "./data/house.mjs";
 import { UnitActorData } from "./data/unit.mjs";
+import { SiegeData } from "./data/siege.mjs";
 import * as ItemModels from "./data/items.mjs";
 import { AsoiafActor, AsoiafCombatant } from "./documents/actor.mjs";
 import { CharacterSheet } from "./sheets/character-sheet.mjs";
 import { HouseSheet } from "./sheets/house-sheet.mjs";
 import { AsoiafItemSheet } from "./sheets/item-sheet.mjs";
 import { UnitSheet } from "./sheets/unit-sheet.mjs";
+import { SiegeSheet } from "./sheets/siege-sheet.mjs";
+import { burnTick } from "./siege.mjs";
 import { registerStatusEffects, resetRound } from "./warfare.mjs";
 import { bindChatButtons, rollTest } from "./dice.mjs";
 
@@ -53,7 +56,7 @@ Hooks.once("init", () => {
   CONFIG.Item.documentClass = AsoiafItem;
   CONFIG.Combatant.documentClass = AsoiafCombatant;
 
-  CONFIG.Actor.dataModels = { character: CharacterData, npc: CharacterData, house: HouseData, unit: UnitActorData };
+  CONFIG.Actor.dataModels = { character: CharacterData, npc: CharacterData, house: HouseData, unit: UnitActorData, siege: SiegeData };
   registerStatusEffects();
   CONFIG.Item.dataModels = {
     weapon: ItemModels.WeaponData,
@@ -70,7 +73,8 @@ Hooks.once("init", () => {
   CONFIG.Actor.trackableAttributes = {
     character: { bar: ["health", "composure"], value: ["destiny.value"] },
     npc: { bar: ["health", "composure"], value: [] },
-    unit: { bar: ["health"], value: ["disorganizations"] }
+    unit: { bar: ["health"], value: ["disorganizations"] },
+    siege: { bar: ["health"], value: [] }
   };
 
   registerSheets();
@@ -103,6 +107,7 @@ function registerSheets() {
   DSC.registerSheet(Actor, "asoiaf", CharacterSheet, { types: ["character", "npc"], makeDefault: true, label: "ASOIAF.Sheet.character" });
   DSC.registerSheet(Actor, "asoiaf", HouseSheet, { types: ["house"], makeDefault: true, label: "ASOIAF.Sheet.house" });
   DSC.registerSheet(Actor, "asoiaf", UnitSheet, { types: ["unit"], makeDefault: true, label: "ASOIAF.Sheet.unit" });
+  DSC.registerSheet(Actor, "asoiaf", SiegeSheet, { types: ["siege"], makeDefault: true, label: "ASOIAF.Sheet.siege" });
   DSC.registerSheet(Item, "asoiaf", AsoiafItemSheet, { types: Object.keys(CONFIG.Item.dataModels), makeDefault: true, label: "ASOIAF.Sheet.item" });
   console.log("ASOIAF | Fiches enregistrées");
 }
@@ -110,7 +115,7 @@ function registerSheets() {
 /** Diagnostic : signale clairement si une fiche n'est pas active. */
 Hooks.once("ready", () => {
   console.log(`ASOIAF | Prêt (Foundry ${game.version})`);
-  const missing = ["character", "npc", "house", "unit"].filter(type =>
+  const missing = ["character", "npc", "house", "unit", "siege"].filter(type =>
     !Object.keys(CONFIG.Actor.sheetClasses?.[type] ?? {}).some(id => id.startsWith("asoiaf.")));
   if (missing.length) {
     ui.notifications.error(`Trône de Fer : fiches non enregistrées pour ${missing.join(", ")}. Ouvrez la console (F12) et cherchez « ASOIAF ».`, { permanent: true });
@@ -126,9 +131,12 @@ function registerHandlebarsHelpers() {
 
 // Boutons des cartes de discussion (v13 : HTMLElement ; v12 : jQuery).
 // Nouveau round de combat : les unités présentes repartent à zéro ordre donné (MJ uniquement).
-Hooks.on("updateCombat", (combat, changes) => {
+// Chaque nouveau round : les incendies brûlent, puis le compteur d'ordres repart à zéro.
+Hooks.on("updateCombat", async (combat, changes) => {
   if (!game.user.isGM || !("round" in changes)) return;
-  resetRound(combat.combatants.map(c => c.actor).filter(a => a?.type === "unit"));
+  const actors = combat.combatants.map(c => c.actor).filter(a => ["unit", "siege"].includes(a?.type));
+  await burnTick(actors);
+  await resetRound(actors.filter(a => a.type === "unit"));
 });
 
 Hooks.on("renderChatMessageHTML", (message, html) => bindChatButtons(message, html));

@@ -1,6 +1,7 @@
 import { AsoiafActorSheet } from "./base-sheet.mjs";
 import { ASOIAF } from "../config.mjs";
 import * as Warfare from "../warfare.mjs";
+import * as Siege from "../siege.mjs";
 
 export class UnitSheet extends AsoiafActorSheet {
   static DEFAULT_OPTIONS = {
@@ -14,7 +15,13 @@ export class UnitSheet extends AsoiafActorSheet {
       endBattle: UnitSheet.#onEndBattle,
       rollAbility: UnitSheet.#onRollAbility,
       setStatus: UnitSheet.#onSetStatus,
-      unlink: UnitSheet.#onUnlink
+      unlink: UnitSheet.#onUnlink,
+      toggleGear: UnitSheet.#onToggleGear,
+      batter: UnitSheet.#onSiegeAction(Siege.batter),
+      climb: UnitSheet.#onSiegeAction(Siege.climb),
+      wildfire: UnitSheet.#onSiegeAction(Siege.throwWildfire),
+      boiling: UnitSheet.#onSiegeAction(Siege.boiling),
+      leaveShelter: UnitSheet.#onLeaveShelter
     }
   };
 
@@ -56,6 +63,11 @@ export class UnitSheet extends AsoiafActorSheet {
     context.fightLabel = `${loc(`ASOIAF.Ability.${s.fightDamage.ability}`)} ${s.fightDamage.mod >= 0 ? "+" : ""}${s.fightDamage.mod}`;
     context.shootLabel = s.shootDamage
       ? `${loc(`ASOIAF.Ability.${s.shootDamage.ability}`)} ${s.shootDamage.mod >= 0 ? "+" : ""}${s.shootDamage.mod}` : null;
+    context.gear = Object.entries(ASOIAF.unitGear).map(([key, g]) => ({
+      key, label: loc(`ASOIAF.Gear.${key}`), hint: loc(`ASOIAF.GearHint.${key}`),
+      cost: Siege.costLabel(g.cost), active: s.gear[key]
+    }));
+    context.shelter = s.shelterActor ? { uuid: s.shelterActor.uuid, name: s.shelterActor.name, img: s.shelterActor.img } : null;
     return context;
   }
 
@@ -102,6 +114,25 @@ export class UnitSheet extends AsoiafActorSheet {
 
   static #onSetStatus(event, target) {
     return Warfare.setStatus(this.actor, target.dataset.status);
+  }
+
+  static #onToggleGear(event, target) {
+    return Siege.toggleGear(this.actor, target.dataset.key);
+  }
+
+  static #onSiegeAction(fn) {
+    return function () {
+      return fn(this.actor);
+    };
+  }
+
+  static async #onLeaveShelter() {
+    const shelter = this.actor.system.shelterActor;
+    if (shelter) {
+      const field = shelter.system.carried === this.actor.uuid ? "carried" : "crew";
+      return Siege.releaseUnit(shelter, field);
+    }
+    return this.actor.update({ "system.shelter": "" });
   }
 
   static #onUnlink(event, target) {

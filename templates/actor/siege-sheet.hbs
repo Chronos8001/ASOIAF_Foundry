@@ -1,0 +1,94 @@
+<div class="asoiaf-sheet siege-sheet status-{{system.status}}">
+  <header class="sheet-header">
+    <img class="portrait" src="{{actor.img}}" alt="{{actor.name}}" data-action="editImage" data-field="img">
+    <div class="header-main">
+      <input class="actor-name" type="text" name="name" value="{{actor.name}}">
+      <div class="header-grid">
+        <label>{{localize "ASOIAF.Siege.kind"}}
+          <select name="system.kind">{{selectOptions kindOptions selected=system.kind localize=true}}</select></label>
+        <label>{{localize "TYPES.Actor.house"}}
+          {{#if house}}<a data-action="openUuid" data-uuid="{{house.uuid}}">{{house.name}}</a>{{else}}<span class="hint">{{localize "ASOIAF.Unit.dropHouse"}}</span>{{/if}}</label>
+        <label>{{localize "ASOIAF.Common.cost"}}<span class="value-text">{{cost}}</span></label>
+        <label>{{localize "ASOIAF.Unit.status"}}<span class="status-badge status-{{system.status}}">{{localize (concat "ASOIAF.Unit.status_" system.status)}}</span></label>
+      </div>
+      <div class="derived-strip">
+        <div class="derived"><span>VA</span><strong>{{system.armor.rating}}</strong></div>
+        <div class="derived"><span>{{localize "ASOIAF.Weapon.damage"}}</span><strong>{{#if system.canFire}}{{system.damage}}{{else}}—{{/if}}</strong></div>
+        <div class="derived"><span>{{localize "ASOIAF.Siege.range"}}</span><strong>{{#if system.range}}{{system.range}} m{{else}}—{{/if}}</strong></div>
+        <div class="derived"><span>{{localize "ASOIAF.Derived.movement"}}</span><strong>{{#if system.movement}}{{system.movement}} m{{else}}{{localize "ASOIAF.Siege.stationary"}}{{/if}}</strong></div>
+        <div class="derived"><span>{{localize "ASOIAF.Siege.smashShort"}}</span><strong>{{#if system.smash}}{{system.smash}}D{{else}}—{{/if}}</strong></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="tracks">
+    <div class="track">
+      <div class="track-head">
+        <span>{{localize "ASOIAF.Derived.health"}}</span>
+        <span class="pair"><input type="number" name="system.health.value" value="{{system.health.value}}"> / {{system.health.max}}</span>
+      </div>
+      <div class="bar health"><div style="width:{{healthPct}}%"></div></div>
+    </div>
+    <div class="track">
+      <div class="track-head">
+        <span><i class="fa-solid fa-fire"></i> {{localize "ASOIAF.Siege.burning"}}</span>
+        <span class="pair"><input type="number" name="system.burning.damage" value="{{system.burning.damage}}" data-tooltip="ASOIAF.Siege.burnDamage">
+          × <input type="number" name="system.burning.rounds" value="{{system.burning.rounds}}" data-tooltip="ASOIAF.Siege.burnRounds"></span>
+      </div>
+    </div>
+  </section>
+
+  <nav class="sheet-tabs">
+    {{#each tabs}}<a class="{{cssClass}}" data-action="asTab" data-tab="{{id}}">{{localize label}}</a>{{/each}}
+  </nav>
+
+  <section class="sheet-body">
+    <div class="tab-panel {{#if (asEq activeTab 'battle')}}active{{/if}}" data-tab="battle">
+      <p class="hint">{{kindHint}}</p>
+
+      {{#if system.canFire}}
+        <fieldset>
+          <legend>{{localize "ASOIAF.Siege.ammo"}}</legend>
+          <div class="ammo-list">
+            {{#each ammo}}
+              <label class="checkbox"><input type="radio" name="ammoChoice" data-ammo value="{{key}}" {{checked active}}>
+                {{label}} ({{damage}}{{#if ignore}}, {{localize "ASOIAF.Siege.ignoresArmor"}}{{/if}}){{#if cost}} <small>— {{cost}}</small>{{/if}}</label>
+            {{/each}}
+          </div>
+        </fieldset>
+      {{/if}}
+
+      {{#if editable}}
+        <div class="buttons-row">
+          {{#if system.canFire}}<button type="button" class="primary" data-action="fire"><i class="fa-solid fa-meteor"></i> {{localize "ASOIAF.Siege.fire"}}</button>{{/if}}
+          {{#if system.smash}}<button type="button" data-action="smash"><i class="fa-solid fa-dungeon"></i> {{localize "ASOIAF.Siege.smash"}}</button>{{/if}}
+          {{#if (asEq system.status "destroyed")}}<button type="button" data-action="repair"><i class="fa-solid fa-hammer"></i> {{localize "ASOIAF.Siege.repair"}}</button>{{/if}}
+        </div>
+        {{#if reloading}}<p class="warning"><i class="fa-solid fa-hourglass-half"></i> {{localize "ASOIAF.Siege.reloading"}}</p>{{/if}}
+      {{/if}}
+
+      {{#if hasCrew}}
+        <fieldset class="drop-target">
+          <legend>{{#if crewIsShelter}}{{localize "ASOIAF.Siege.crewShelter"}}{{else}}{{localize "ASOIAF.Siege.crew"}}{{/if}}</legend>
+          {{#if crew}}
+            <div class="linked"><img src="{{crew.img}}" alt=""><a data-action="openUuid" data-uuid="{{crew.uuid}}">{{crew.name}}</a>
+              {{#if editable}}<a class="controls" data-action="release" data-field="crew"><i class="fa-solid fa-link-slash"></i></a>{{/if}}</div>
+          {{else}}<p class="hint">{{localize "ASOIAF.Siege.dropCrew"}}</p>{{/if}}
+        </fieldset>
+      {{/if}}
+      {{#if carries}}
+        <fieldset class="drop-target">
+          <legend>{{localize "ASOIAF.Siege.carried"}}</legend>
+          {{#if carried}}
+            <div class="linked"><img src="{{carried.img}}" alt=""><a data-action="openUuid" data-uuid="{{carried.uuid}}">{{carried.name}}</a>
+              {{#if editable}}<a class="controls" data-action="release" data-field="carried"><i class="fa-solid fa-person-walking-arrow-right"></i></a>{{/if}}</div>
+          {{else}}<p class="hint">{{localize "ASOIAF.Siege.dropCarried"}}</p>{{/if}}
+        </fieldset>
+      {{/if}}
+    </div>
+
+    <div class="tab-panel {{#if (asEq activeTab 'notes')}}active{{/if}}" data-tab="notes">
+      <label class="block">{{localize "ASOIAF.Bio.notes"}}<textarea name="system.notes" rows="14">{{system.notes}}</textarea></label>
+    </div>
+  </section>
+</div>

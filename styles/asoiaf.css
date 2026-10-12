@@ -430,3 +430,10 @@
 .asoiaf .unit-ability { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 2px 4px; border-bottom: 1px dotted var(--as-line); }
 .asoiaf .unit-ability.key { font-weight: bold; background: rgba(176, 141, 60, 0.15); }
 .asoiaf .unit-ability input { width: 3em; }
+
+/* Engins de siège et équipement spécial */
+.asoiaf .gear-list { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+.asoiaf .gear-list button.gear.active { background: var(--as-red); color: #fff; }
+.asoiaf .ammo-list { display: flex; flex-direction: column; gap: 3px; }
+.asoiaf .siege-sheet.status-destroyed .portrait { filter: grayscale(1); }
+.asoiaf .item-list li.destroyed { opacity: 0.5; text-decoration: line-through; }

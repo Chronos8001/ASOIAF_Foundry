@@ -23,8 +23,9 @@
   {{#if damage}}
     <div class="damage">
       {{#if damage.total}}
-        <span>{{localize "ASOIAF.Weapon.damage"}} : {{damage.base}} × {{damage.degrees}}{{#if damage.after}} {{asSigned damage.after}}{{/if}} = <strong>{{damage.total}}</strong>{{#if damage.piercing}} ({{localize "ASOIAF.Weapon.piercing"}} {{damage.piercing}}){{/if}}</span>
-        <button type="button" data-action="apply-damage" data-damage="{{damage.total}}" data-piercing="{{damage.piercing}}">
+        <span>{{localize "ASOIAF.Weapon.damage"}} : {{damage.base}} × {{damage.degrees}}{{#if damage.after}} {{asSigned damage.after}}{{/if}} = <strong>{{damage.total}}</strong>{{#if damage.piercing}} ({{#if (asGt damage.piercing 20)}}{{localize "ASOIAF.Siege.ignoresArmor"}}{{else}}{{localize "ASOIAF.Weapon.piercing"}} {{damage.piercing}}{{/if}}){{/if}}{{#if damage.burn}} · <i class="fa-solid fa-fire"></i> {{damage.burn.damage}} / round ({{damage.burn.rounds}}){{/if}}</span>
+        <button type="button" data-action="apply-damage" data-damage="{{damage.total}}" data-piercing="{{damage.piercing}}"
+          {{#if damage.burn}}data-burn-damage="{{damage.burn.damage}}" data-burn-rounds="{{damage.burn.rounds}}"{{/if}}>
           <i class="fa-solid fa-heart-crack"></i> {{localize "ASOIAF.Chat.applyDamage"}}
         </button>
       {{else}}

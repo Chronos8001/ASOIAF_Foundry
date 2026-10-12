@@ -356,5 +356,43 @@ ASOIAF.unitSurvivors = {
 };
 ASOIAF.trainingOrder = ["green", "trained", "veteran", "elite"];
 
+/**
+ * Engins de siège (chapitre 10). Portées et déplacements en mètres (le livre compte en yards).
+ * damage : dégâts par munition ; ignore : munitions qui ignorent la VA ; burn : munitions incendiaires.
+ * smash : Athlétisme effectif contre murailles et portes.
+ */
+ASOIAF.siegeEngines = {
+  catapultSmall: { cost: { wealth: 1 }, health: 10, ar: 5, move: 0, range: 300, smash: 5, damage: { stone: 3, pitch: 3, wildfire: 7 } },
+  catapultMedium: { cost: { wealth: 2 }, health: 20, ar: 5, move: 0, range: 400, smash: 7, damage: { stone: 5, pitch: 5, wildfire: 7 } },
+  catapultLarge: { cost: { wealth: 4 }, health: 40, ar: 5, move: 0, range: 500, smash: 9, damage: { stone: 7, pitch: 7, wildfire: 7 } },
+  mangonel: { cost: { wealth: 3 }, health: 20, ar: 3, move: 10, range: 200, smash: 10, damage: { stone: 6, pitch: 6 }, vsUnitPenalty: 1 },
+  scorpion: { cost: { wealth: 1 }, health: 10, ar: 1, move: 10, range: 500, damage: { bolt: 3 }, vsCharacter: { penalty: 1, damage: 10 } },
+  spitfire: { cost: { wealth: 2 }, health: 20, ar: 2, move: 10, range: 200, damage: { oil: 3, wildfire: 7 } },
+  trebuchet: { cost: { wealth: 4 }, health: 40, ar: 4, move: 0, range: 500, smash: 12, damage: { stone: 7 } },
+  siegeTower: { cost: { wealth: 2 }, health: 20, ar: 8, move: 10, range: 0, carries: true, shelterDefense: 5 },
+  coveredRam: { cost: { lands: 2 }, health: 20, ar: 8, move: 10, range: 0, smash: 8, crew: true, shelterDefense: 5 }
+};
+/** Munitions qui ignorent la VA, et munitions incendiaires (feu grégeois : 2d6 rounds). */
+ASOIAF.siegeAmmo = {
+  stone: { ignore: false }, bolt: { ignore: true }, pitch: { ignore: true, cost: { wealth: 0.5 } }, oil: { ignore: true },
+  wildfire: { ignore: true, burn: "2d6", cost: { wealth: 5 } }
+};
+
+/** Équipements spéciaux des unités : coût et effets. */
+ASOIAF.unitGear = {
+  ram: { cost: { lands: 1 }, noAttack: true },
+  mantlet: { cost: { wealth: 1 }, move: -10, shootDefense: 5 },
+  ladders: { cost: { wealth: 0.5 }, noAttack: true },
+  turtle: { cost: { wealth: 1 }, setMove: 10, defense: 10, noAttack: true },
+  wildfire: { cost: { wealth: 5 }, discipline: 3 }
+};
+
+/** Huile et eau bouillantes (½ Richesse par utilisation) : dégâts qui ignorent la VA. */
+ASOIAF.boiling = { water: 5, oil: 10 };
+
+/** Feu grégeois : dégâts par round, durée de l'incendie, contagion d'une unité en déroute. */
+ASOIAF.wildfire = { damage: 7, rounds: "2d6", spreadDamage: 3, spreadRounds: "1d6" };
+
+
 /** Utilitaire : trouve la valeur associée au premier palier >= value. */
 ASOIAF.lookup = (table, value) => table.find(([max]) => value <= max)[1];

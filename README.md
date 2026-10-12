@@ -102,6 +102,23 @@ Les compendiums sont construits par le workflow de publication. En local : `npm 
 - **Rounds** : le compteur d'ordres se remet à zéro quand le round du suivi de combat avance. L'initiative d'une unité est l'Art de la guerre (Stratégie) de son commandant.
 - **Fin de bataille** : table des survivants (10-6). L'entraînement monte ou baisse, et il est reporté sur l'unité de la Maison. Une unité perdue retire sa Puissance investie.
 
+### Sièges : engins et équipement spécial
+- **Engins de siège** (nouvel acteur) : catapultes (3 tailles), mangonneau, scorpion, cracheur de feu, trébuchet, tour de siège et bélier couvert.
+  - Pour en construire un : onglet Possessions de la Maison, liste « Engins de siège ». Le coût en Richesse ou en Terres est proposé à la Maison.
+  - Les servants : glissez une unité d'ingénieurs sur la fiche de l'engin. « Tirer » teste son Art de la guerre contre la Défense de la cible (Défense contre le Tir pour une unité), dégâts × degrés.
+  - Règles propres à chaque engin : un tir tous les deux rounds, -1D du mangonneau contre les unités, scorpion contre un personnage (-1D, 10 dégâts), « Battre la muraille » avec l'Athlétisme de l'engin.
+- **Munitions** : pierres, poix ou huile (ignorent la VA), feu grégeois (ignore la VA et enflamme la cible pendant 2d6 rounds). La poix et le feu grégeois se paient en Richesse.
+- **Tour de siège** : glissez l'unité qui monte dedans. Elle gagne +5 en Défense et avance de 10 m. Arrivée au mur, elle passe sans escalade. Si la tour est détruite, l'unité périt.
+- **Bélier couvert** : ses servants gagnent +5 en Défense ; il bat les portes avec Athlétisme 8.
+- **Équipement spécial des unités** (coût proposé à la Maison) :
+  - bélier : +2D pour enfoncer, pas d'attaque ;
+  - mantelets : +5 en Défense contre le Tir, -10 m ;
+  - échelles : +1D pour escalader, pas d'attaque ;
+  - tortue : +10 en Défense, 10 m, pas d'attaque ;
+  - feu grégeois : Discipline +3, une seule attaque possible, s'embrase 1 fois sur 6 si l'unité est touchée.
+- **Défenseurs** : « Huile ou eau bouillante » (½ Richesse) produit une carte de dégâts qui ignore la VA (5 ou 10).
+- **Incendies** : à chaque nouveau round du suivi de combat, les unités et les engins en feu subissent leurs dégâts automatiquement.
+
 ### Artisans (règle maison)
 Onglet **Artisans** de la fiche de Maison. Pour en créer un : bouton dédié, ou « Artisan » dans les possessions de Richesse.
 - **Au départ** : rang 5 dans la compétence de métier, budget max 10, Richesse investie (perdue au décès).

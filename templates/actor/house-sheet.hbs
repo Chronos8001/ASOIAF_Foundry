@@ -160,6 +160,21 @@
       {{> "systems/asoiaf/templates/actor/holding-list.hbs" list=holdings.power}}
       <p class="hint">{{localize "ASOIAF.House.bannerHint"}}</p>
 
+      <h4>{{localize "ASOIAF.Siege.engines"}}</h4>
+      <ul class="item-list">
+        {{#each siegeEngines}}
+          <li class="{{#if destroyed}}destroyed{{/if}}"><img src="{{img}}" alt="">
+            <div class="grow"><a data-action="openUuid" data-uuid="{{uuid}}"><strong>{{name}}</strong></a> <em>{{kind}}</em></div>
+            <span class="tag">{{health}} / {{max}}</span></li>
+        {{/each}}
+      </ul>
+      {{#if editable}}
+        <div class="catalog-row">
+          <select data-select="siege">{{#each siegeCatalog}}<option value="{{key}}">{{label}}</option>{{/each}}</select>
+          <button type="button" data-action="buildSiege"><i class="fa-solid fa-hammer"></i> {{localize "ASOIAF.Siege.build"}}</button>
+        </div>
+      {{/if}}
+
       {{!-- Richesse --}}
       <h3 class="section-title resource-wealth">{{localize "ASOIAF.Resource.wealth"}} <small>{{system.resources.wealth.invested}} / {{system.resources.wealth.value}}</small></h3>
       {{> "systems/asoiaf/templates/actor/holding-list.hbs" list=holdings.wealth}}

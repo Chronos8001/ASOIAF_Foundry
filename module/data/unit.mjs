@@ -39,7 +39,16 @@ export class UnitActorData extends foundry.abstract.TypeDataModel {
       attached: text(),
       house: text(),
       source: text(),
-      notes: text()
+      notes: text(),
+      gear: new SchemaField({
+        ram: new BooleanField({ initial: false }),
+        mantlet: new BooleanField({ initial: false }),
+        ladders: new BooleanField({ initial: false }),
+        turtle: new BooleanField({ initial: false }),
+        wildfire: new BooleanField({ initial: false })
+      }),
+      shelter: text(),
+      burning: new SchemaField({ damage: num(0, { min: 0 }), rounds: num(0, { min: 0 }) })
     };
   }
 
@@ -68,7 +77,20 @@ export class UnitActorData extends foundry.abstract.TypeDataModel {
     this.discipline = Math.max(0, training.discipline + this.disciplineMod
       + selected.reduce((t, k) => t + ASOIAF.unitTypes[k].discipline, 0)
       + 3 * this.disorganizations
-      - (this.attached ? 3 : 0));
+      - (this.attached ? 3 : 0)
+      + (this.gear.wildfire ? ASOIAF.unitGear.wildfire.discipline : 0));
+
+    // Équipements spéciaux et abri (tour de siège, bélier couvert).
+    let shelter = null;
+    try {
+      shelter = this.shelter ? fromUuidSync(this.shelter) : null;
+    } catch {
+      // Les acteurs ne sont pas encore tous chargés : l'abri sera pris en compte au prochain calcul.
+    }
+    this.shelterActor = shelter?.type === "siege" && shelter.system.status !== "destroyed" ? shelter : null;
+    const shelterDefense = this.shelterActor ? (ASOIAF.siegeEngines[this.shelterActor.system.kind]?.shelterDefense ?? 0) : 0;
+    const gearDefense = this.gear.turtle ? ASOIAF.unitGear.turtle.defense : 0;
+    this.canAttack = !Object.entries(ASOIAF.unitGear).some(([k, g]) => g.noAttack && this.gear[k]);
 
     // Expérience : 20 XP par rang au-dessus de 2 dans les capacités clés.
     this.keyAbilities = [...new Set(selected.flatMap(k => ASOIAF.unitTypes[k].abilities))];
@@ -76,16 +98,22 @@ export class UnitActorData extends foundry.abstract.TypeDataModel {
     this.xpSpent = this.keyAbilities.reduce((t, k) => t + Math.max(0, a[k].value - 2) * 20, 0);
 
     // Défense contre les unités, et contre les personnages (+20).
-    this.defense = a.agility.value + a.athletics.value + a.awareness.value + this.armor.penalty + this.defenseMod;
-    this.currentDefense = this.defendResult > 0 ? this.defendResult : this.defense;
+    this.defense = a.agility.value + a.athletics.value + a.awareness.value + this.armor.penalty + this.defenseMod
+      + shelterDefense + gearDefense;
+    this.currentDefense = this.defendResult > 0 ? this.defendResult + shelterDefense + gearDefense : this.defense;
+    this.shootDefense = this.currentDefense + (this.gear.mantlet ? ASOIAF.unitGear.mantlet.shootDefense : 0);
     this.combatDefense = this.currentDefense + 20;
     this.health.max = a.endurance.value * 3;
 
     // Déplacement : 40 m (infanterie), 80 m (cavalerie), 60 m (navires, sans course), -10 par point d'encombrement.
     const naval = selected.includes("warships");
     const baseMove = naval ? 60 : selected.includes("cavalry") ? 80 : 40;
-    this.movement = Math.max(10, baseMove - 10 * this.armor.bulk);
-    this.sprint = naval ? this.movement : this.movement * 4;
+    let move = Math.max(10, baseMove - 10 * this.armor.bulk);
+    if (this.gear.mantlet) move = Math.max(10, move + ASOIAF.unitGear.mantlet.move);
+    // Tortue, tour de siège et bélier couvert avancent à 10 m par round.
+    if (this.gear.turtle || this.shelterActor) move = 10;
+    this.movement = move;
+    this.sprint = naval || this.gear.turtle || this.shelterActor ? move : move * 4;
     this.penaltyDice = this.disorganizations;
   }
 

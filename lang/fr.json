@@ -4,7 +4,8 @@
       "character": "Personnage",
       "npc": "PNJ",
       "house": "Maison",
-      "unit": "Unité"
+      "unit": "Unité",
+      "siege": "Engin de siège"
     },
     "Item": {
       "weapon": "Arme",
@@ -23,7 +24,8 @@
       "character": "Fiche de personnage (Trône de Fer)",
       "house": "Fiche de Maison (Trône de Fer)",
       "item": "Fiche d'objet (Trône de Fer)",
-      "unit": "Fiche d'unité (Trône de Fer)"
+      "unit": "Fiche d'unité (Trône de Fer)",
+      "siege": "Fiche d'engin de siège (Trône de Fer)"
     },
     "Tab": {
       "abilities": "Capacités",
@@ -262,7 +264,12 @@
       "pennies": "Sous de cuivre"
     },
     "Gear": {
-      "title": "Équipement"
+      "title": "Équipement",
+      "ram": "Bélier",
+      "mantlet": "Mantelets",
+      "ladders": "Échelles et grappins",
+      "turtle": "Tortue",
+      "wildfire": "Feu grégeois"
     },
     "Bio": {
       "concept": "Concept",
@@ -869,6 +876,99 @@
     "OrderHint": {
       "ready": "l'unité attend la condition fixée pour attaquer ou bouger.",
       "retreat": "l'unité s'éloigne de la bataille d'un déplacement par round (déroute sur un échec critique)."
+    },
+    "GearHint": {
+      "ram": "Bélier simple : l'unité ne peut pas attaquer mais gagne +2D en Athlétisme pour enfoncer portes et herses. Perdu si l'unité est mise en déroute.",
+      "mantlet": "Mantelets : -10 m de déplacement, +5 en Défense contre le Tir.",
+      "ladders": "Échelles : l'unité ne peut pas attaquer en les portant ; +1D en Athlétisme pour escalader.",
+      "turtle": "Tortue : déplacement réduit à 10 m, +10 en Défense, l'unité ne peut pas attaquer.",
+      "wildfire": "Feu grégeois (produit seulement à Port-Réal) : Discipline +3 ; l'unité ne peut attaquer qu'en le lançant ; touchée, 1 chance sur 6 qu'il s'embrase sur elle."
+    },
+    "SiegeKind": {
+      "catapultSmall": "Petite catapulte",
+      "catapultMedium": "Catapulte",
+      "catapultLarge": "Grande catapulte",
+      "mangonel": "Mangonneau",
+      "scorpion": "Scorpion",
+      "spitfire": "Cracheur de feu",
+      "trebuchet": "Trébuchet",
+      "siegeTower": "Tour de siège",
+      "coveredRam": "Bélier couvert"
+    },
+    "SiegeHint": {
+      "catapultSmall": "Fixe pendant la bataille. Pierres, poix (ignore la VA) ou feu grégeois. Contre les murailles : Athlétisme 5.",
+      "catapultMedium": "Fixe pendant la bataille. Pierres, poix (ignore la VA) ou feu grégeois. Contre les murailles : Athlétisme 7.",
+      "catapultLarge": "Fixe pendant la bataille. Pierres, poix (ignore la VA) ou feu grégeois. Contre les murailles : Athlétisme 9.",
+      "mangonel": "Conçu pour abattre les murailles (Athlétisme 10) ; -1D contre les unités.",
+      "scorpion": "Trois grandes arbalètes qui tirent ensemble ; dégâts qui ignorent la VA. Contre un personnage : -1D mais 10 dégâts.",
+      "spitfire": "Projette des pots d'huile bouillante (ignore la VA) ou de feu grégeois.",
+      "trebuchet": "Construit sur place, immobile. Contre les murailles : Athlétisme 12.",
+      "siegeTower": "Transporte une unité (+5 Défense), avance de 10 m par round. Arrivée au mur, l'unité n'a pas à escalader. Détruite, elle emporte l'unité.",
+      "coveredRam": "Demande une unité d'ingénieurs et une autre unité ; ses servants gagnent +5 en Défense. Contre les portes : Athlétisme 8."
+    },
+    "Ammo": {
+      "stone": "Pierres",
+      "pitch": "Poix",
+      "wildfire": "Feu grégeois",
+      "bolt": "Carreaux",
+      "oil": "Huile bouillante"
+    },
+    "Siege": {
+      "engines": "Engins de siège",
+      "build": "Construire",
+      "kind": "Type d'engin",
+      "range": "Portée",
+      "stationary": "Fixe",
+      "smashShort": "Contre murs",
+      "ammo": "Munitions",
+      "fire": "Tirer",
+      "smash": "Battre la muraille",
+      "repair": "Remettre en état",
+      "crew": "Servants (unité d'ingénieurs)",
+      "crewShelter": "Servants abrités (+5 Défense)",
+      "dropCrew": "Glissez l'unité d'ingénieurs qui sert l'engin : elle teste son Art de la guerre pour tirer.",
+      "carried": "Unité transportée (+5 Défense)",
+      "dropCarried": "Glissez l'unité qui monte dans la tour.",
+      "ignoresArmor": "ignore la VA",
+      "burning": "En feu",
+      "burnDamage": "Dégâts par round",
+      "burnRounds": "Rounds restants",
+      "rounds": "rounds",
+      "reloading": "Cet engin a tiré au round précédent : il ne peut tirer qu'un round sur deux.",
+      "destroyedWarn": "Cet engin est détruit.",
+      "cannotFire": "Cet engin ne tire pas.",
+      "cannotSmash": "Cet engin ne peut pas battre les murailles.",
+      "noCrew": "Sans servants : 2 dés seulement",
+      "destroyed": "L'engin est détruit !",
+      "carriedLost": "L'unité transportée ({name}) périt avec la tour.",
+      "boarded": "{name} monte dans la tour de siège.",
+      "crewed": "{name} sert l'engin.",
+      "crewNotEngineers": "Le livre réserve le service des engins aux unités d'ingénieurs.",
+      "costNoHouse": "Coût à régler : {cost} (aucune Maison liée).",
+      "payQuestion": "Payer {cost} avec la Maison {house} ?",
+      "pay": "Payer",
+      "free": "Ne pas payer (déjà réglé)",
+      "ignited": "{name} prend feu : {damage} dégâts par round pendant {rounds} rounds (sans VA).",
+      "burns": "{name} brûle : {damage} dégâts ({left} rounds restants).",
+      "gearTitle": "Équipement spécial",
+      "cannotAttack": "Avec cet équipement, l'unité ne peut pas attaquer.",
+      "batter": "Enfoncer la porte",
+      "climb": "Escalader",
+      "towerClimb": "Depuis la tour de siège arrivée au mur, l'unité passe sans test d'escalade.",
+      "noWildfire": "Cette unité n'a pas de feu grégeois.",
+      "wildfireHint": "Cible : une unité adjacente. Touchée : 7 dégâts par degré sans VA, puis elle brûle 2d6 rounds. Une unité en déroute qui brûle peut propager l'incendie (3 chances sur 6 : 3 dégâts par round pendant 1d6 rounds).",
+      "wildfireMiss": "Raté : le feu grégeois s'écrase sur une case adjacente.",
+      "wildfireMishap": "Échec critique : le feu grégeois s'embrase au milieu de l'unité !",
+      "eruption": "Le feu grégeois transporté par l'unité s'embrase !",
+      "boiling": "Huile ou eau bouillante",
+      "boilingHint": "Versée depuis les murs (½ Richesse par utilisation). Eau : 5 dégâts, huile : 10 dégâts, sans VA.",
+      "water": "Eau bouillante",
+      "oil": "Huile bouillante",
+      "oilHint": "Si l'unité est aussi touchée par le feu ce round, elle brûle : 1 dégât par round pendant 1d6 rounds.",
+      "inShelter": "Abritée par",
+      "leaveShelter": "Quitter l'abri",
+      "shootDefense": "Contre le Tir",
+      "shootDefenseHint": "Défense contre les attaques de Tir et les engins (mantelets +5)."
     }
   }
 }

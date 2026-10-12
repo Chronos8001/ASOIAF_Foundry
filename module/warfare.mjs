@@ -7,6 +7,7 @@
  */
 import { ASOIAF } from "./config.mjs";
 import { promptTest, readForm, rollTest } from "./dice.mjs";
+import { throwWildfire, wildfireEruption } from "./siege.mjs";
 
 const loc = key => game.i18n.localize(key);
 const fmt = (key, data) => game.i18n.format(key, data);
@@ -95,6 +96,7 @@ export async function applyUnitDamage(unit, amount, piercing = 0) {
   if (event !== "damaged") lines.push(`<strong>${loc(`ASOIAF.Unit.event_${event}`)}</strong>`);
   await chat(unit, `<p>${lines.join("<br>")}</p>`);
   await hurtAttached(unit, event);
+  if (event !== "destroyed") await wildfireEruption(unit);
 }
 
 /* -------------------------------------------- */
@@ -215,6 +217,9 @@ export async function unitAttack(unit, order = "attack", kind = null) {
   const s = unit.system;
   const def = ASOIAF.unitOrders[order] ?? {};
   const target = game.user.targets.first()?.actor ?? null;
+  // Une unité armée de feu grégeois ne peut attaquer qu'avec lui ; certains équipements empêchent d'attaquer.
+  if (s.gear.wildfire) return throwWildfire(unit);
+  if (!s.canAttack) return ui.notifications.warn(loc("ASOIAF.Siege.cannotAttack"));
   // Une unité de tir choisit entre Combat et Tir (une charge se fait toujours au corps à corps).
   let ability = kind ?? "fighting";
   if (!kind && s.shootDamage && order !== "charge") {
@@ -226,7 +231,9 @@ export async function unitAttack(unit, order = "attack", kind = null) {
   t.penaltyDice += def.penaltyDice ?? 0;
   if (target && target.type !== "unit") t.testDice += 2;
 
-  const difficulty = target ? (target.type === "unit" ? target.system.currentDefense : target.system.combatDefense) : null;
+  let difficulty = null;
+  if (target?.type === "unit") difficulty = ability === "marksmanship" ? target.system.shootDefense : target.system.currentDefense;
+  else if (target && target.type !== "siege") difficulty = target.system.combatDefense ?? null;
   return promptTest({
     ...t,
     actor: unit,

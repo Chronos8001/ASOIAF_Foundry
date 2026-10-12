@@ -1,5 +1,6 @@
 import { ASOIAF } from "./config.mjs";
 import { applyRerolls, convertCount, emptyContribution, mergeContribution } from "./effects.mjs";
+import { ignite } from "./siege.mjs";
 
 const renderTpl = (...args) => (foundry.applications.handlebars?.renderTemplate ?? renderTemplate)(...args);
 const DialogV2 = foundry.applications.api.DialogV2;
@@ -21,7 +22,7 @@ export function readForm(form) {
 export async function rollTest({
   actor, label, testDice, bonusDice = 0, penaltyDice = 0, modifier = 0,
   convert = 0, convertHalf = false, reroll1 = 0, reroll6 = false,
-  difficulty = null, extraFormula = "", damage = null, damageAfter = 0, piercing = 0,
+  difficulty = null, extraFormula = "", damage = null, damageAfter = 0, piercing = 0, burn = null,
   extra = null, effects = [], speaker = null
 }) {
   testDice = Math.max(1, testDice);
@@ -73,7 +74,7 @@ export async function rollTest({
 
   let damageData = null;
   if (damage !== null && outcome?.success) {
-    damageData = { base: damage, degrees: outcome.degrees, after: damageAfter, total: damage * outcome.degrees + damageAfter, piercing };
+    damageData = { base: damage, degrees: outcome.degrees, after: damageAfter, total: damage * outcome.degrees + damageAfter, piercing, burn };
   } else if (damage !== null && (difficulty === null || difficulty === "")) {
     damageData = { base: damage, degrees: null, after: damageAfter, total: null, piercing };
   }
@@ -175,7 +176,11 @@ export function bindChatButtons(message, html) {
       const piercing = Number(btn.dataset.piercing) || 0;
       const actors = getTargetActors();
       if (!actors.length) return ui.notifications.warn(game.i18n.localize("ASOIAF.Chat.noTarget"));
-      for (const actor of actors) await actor.applyDamage(amount, piercing);
+      for (const actor of actors) {
+        await actor.applyDamage(amount, piercing);
+        // Munitions incendiaires : la cible brûle pendant plusieurs rounds.
+        if (btn.dataset.burnDamage) await ignite(actor, Number(btn.dataset.burnDamage), btn.dataset.burnRounds);
+      }
     });
   });
 

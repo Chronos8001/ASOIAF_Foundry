@@ -2,6 +2,7 @@ import { promptTest } from "../dice.mjs";
 import { weaponContext } from "../data/character.mjs";
 import { convertCount, ignoresTraining, weaponEffect } from "../effects.mjs";
 import { applyUnitDamage } from "../warfare.mjs";
+import { applySiegeDamage } from "../siege.mjs";
 
 const loc = key => game.i18n.localize(key);
 
@@ -13,8 +14,8 @@ export class AsoiafActor extends Actor {
     const prototypeToken = { actorLink: true, disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY };
     if (this.type === "character") prototypeToken.sight = { enabled: true };
     if (this.type === "house" && !data.img) this.updateSource({ img: "icons/svg/castle.svg" });
-    if (this.type === "unit") {
-      if (!data.img) this.updateSource({ img: "icons/svg/combat.svg" });
+    if (this.type === "unit" || this.type === "siege") {
+      if (!data.img) this.updateSource({ img: this.type === "unit" ? "icons/svg/combat.svg" : "icons/svg/target.svg" });
       prototypeToken.displayBars = CONST.TOKEN_DISPLAY_MODES.ALWAYS;
       prototypeToken.displayName = CONST.TOKEN_DISPLAY_MODES.HOVER;
       prototypeToken.bar1 = { attribute: "health" };
@@ -83,6 +84,7 @@ export class AsoiafActor extends Actor {
    */
   async applyDamage(amount, piercing = 0) {
     if (this.type === "unit") return applyUnitDamage(this, amount, piercing);
+    if (this.type === "siege") return applySiegeDamage(this, amount, piercing);
     const ar = Math.max(0, (this.system.armor?.rating ?? 0) - piercing);
     const taken = Math.max(0, amount - ar);
     const before = this.system.health.value;

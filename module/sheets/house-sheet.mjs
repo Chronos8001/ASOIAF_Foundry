@@ -3,6 +3,7 @@ import { ASOIAF } from "../config.mjs";
 import * as House from "../house.mjs";
 import * as Artisans from "../artisans.mjs";
 import { deployUnit } from "../warfare.mjs";
+import { buildSiege, costLabel } from "../siege.mjs";
 
 const HOUSE_ITEM_TYPES = ["holding", "domain", "unit", "artisan"];
 
@@ -32,7 +33,8 @@ export class HouseSheet extends AsoiafActorSheet {
       artisanXp: HouseSheet.#artisan(Artisans.spendXp),
       artisanDeath: HouseSheet.#artisan(Artisans.death),
       groupProject: HouseSheet.#call(Artisans.groupProject),
-      deployUnit: HouseSheet.#artisan(deployUnit)
+      deployUnit: HouseSheet.#artisan(deployUnit),
+      buildSiege: HouseSheet.#onBuildSiege
     }
   };
 
@@ -98,6 +100,12 @@ export class HouseSheet extends AsoiafActorSheet {
       keyAbilities: u.system.keyAbilities.map(a => loc(`ASOIAF.Ability.${a}`)).join(", "),
       deployed: !!u.getFlag("asoiaf", "actor") && !!fromUuidSync(u.getFlag("asoiaf", "actor"))
     }));
+    context.siegeCatalog = Object.entries(CONFIG.ASOIAF.siegeEngines).map(([k, d]) => ({
+      key: k, label: `${loc(`ASOIAF.SiegeKind.${k}`)} (${costLabel(d.cost)})`
+    }));
+    context.siegeEngines = game.actors.filter(a => a.type === "siege" && a.system.house === this.actor.uuid)
+      .map(a => ({ uuid: a.uuid, name: a.name, img: a.img, destroyed: a.system.status === "destroyed",
+        kind: loc(`ASOIAF.SiegeKind.${a.system.kind}`), health: a.system.health.value, max: a.system.health.max }));
     context.catalog = Object.fromEntries(Object.entries(ASOIAF.holdingCatalog).map(([r, list]) =>
       [r, list.map((e, i) => ({ index: i, label: `${e.name} (${e.cost})` }))]));
 
@@ -237,6 +245,11 @@ export class HouseSheet extends AsoiafActorSheet {
       rejectClose: false
     });
     if (ok) return House.nextMonth(this.actor);
+  }
+
+  static #onBuildSiege() {
+    const kind = this.element.querySelector("select[data-select=siege]")?.value;
+    if (kind) return buildSiege(this.actor, kind);
   }
 
   static #onAddHolding(event, target) {

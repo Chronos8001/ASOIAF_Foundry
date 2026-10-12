@@ -16,6 +16,7 @@
       <div class="derived-strip">
         <div class="derived" data-tooltip="ASOIAF.Unit.defenseHint"><span>{{localize "ASOIAF.Unit.defense"}}</span>
           <strong>{{system.currentDefense}}</strong>{{#if system.defendResult}}<small> ({{localize "ASOIAF.Order.defend"}})</small>{{/if}}</div>
+        <div class="derived" data-tooltip="ASOIAF.Siege.shootDefenseHint"><span>{{localize "ASOIAF.Siege.shootDefense"}}</span><strong>{{system.shootDefense}}</strong></div>
         <div class="derived" data-tooltip="ASOIAF.Unit.vsCharactersHint"><span>{{localize "ASOIAF.Unit.vsCharacters"}}</span><strong>{{system.combatDefense}}</strong></div>
         <div class="derived"><span>VA</span><strong>{{system.armor.rating}}</strong></div>
         <div class="derived" data-tooltip="ASOIAF.Unit.disciplineHint"><span>{{localize "ASOIAF.Unit.discipline"}}</span><strong>{{system.discipline}}</strong></div>
@@ -83,6 +84,36 @@
           </ul>
         </fieldset>
       </div>
+
+      <fieldset>
+        <legend>{{localize "ASOIAF.Siege.gearTitle"}}</legend>
+        <div class="gear-list">
+          {{#each gear}}
+            <button type="button" class="gear {{#if active}}active{{/if}}" data-action="toggleGear" data-key="{{key}}" data-tooltip="{{hint}}">
+              {{label}} <small>({{cost}})</small></button>
+          {{/each}}
+        </div>
+        {{#unless system.canAttack}}<p class="warning">{{localize "ASOIAF.Siege.cannotAttack"}}</p>{{/unless}}
+        {{#if editable}}
+          <div class="buttons-row">
+            {{#if system.gear.ram}}<button type="button" data-action="batter"><i class="fa-solid fa-dungeon"></i> {{localize "ASOIAF.Siege.batter"}}</button>{{/if}}
+            <button type="button" data-action="climb"><i class="fa-solid fa-stairs"></i> {{localize "ASOIAF.Siege.climb"}}</button>
+            {{#if system.gear.wildfire}}<button type="button" class="primary" data-action="wildfire"><i class="fa-solid fa-fire"></i> {{localize "ASOIAF.Gear.wildfire"}}</button>{{/if}}
+            <button type="button" data-action="boiling" data-tooltip="ASOIAF.Siege.boilingHint"><i class="fa-solid fa-fire-burner"></i> {{localize "ASOIAF.Siege.boiling"}}</button>
+          </div>
+        {{/if}}
+        {{#if shelter}}
+          <p><i class="fa-solid fa-shield-halved"></i> {{localize "ASOIAF.Siege.inShelter"}} :
+            <a data-action="openUuid" data-uuid="{{shelter.uuid}}">{{shelter.name}}</a>
+            {{#if editable}}<a class="controls" data-action="leaveShelter" data-tooltip="ASOIAF.Siege.leaveShelter"><i class="fa-solid fa-person-walking-arrow-right"></i></a>{{/if}}</p>
+        {{/if}}
+        <div class="slots-row">
+          <span class="slots-label"><i class="fa-solid fa-fire"></i> {{localize "ASOIAF.Siege.burning"}}</span>
+          <input class="mini" type="number" min="0" name="system.burning.damage" value="{{system.burning.damage}}" data-tooltip="ASOIAF.Siege.burnDamage">
+          × <input class="mini" type="number" min="0" name="system.burning.rounds" value="{{system.burning.rounds}}" data-tooltip="ASOIAF.Siege.burnRounds">
+          <small>{{localize "ASOIAF.Siege.rounds"}}</small>
+        </div>
+      </fieldset>
 
       <div class="two-cols">
         <fieldset class="drop-target" data-drop="commander">
