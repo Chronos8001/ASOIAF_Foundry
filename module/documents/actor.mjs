@@ -57,20 +57,70 @@ export class AsoiafActor extends Actor {
   /*  Santé                                       */
   /* -------------------------------------------- */
 
-  /** Applique des dégâts réduits par la VA (moins la perforation). */
+  /**
+   * Applique des dégâts réduits par la VA (moins la perforation), puis poste une
+   * carte permettant d'encaisser des blessures pour annuler tout ou partie du coup.
+   */
   async applyDamage(amount, piercing = 0) {
     const ar = Math.max(0, (this.system.armor?.rating ?? 0) - piercing);
     const taken = Math.max(0, amount - ar);
-    const value = Math.max(0, this.system.health.value - taken);
+    const before = this.system.health.value;
+    const value = Math.max(0, before - taken);
     await this.update({ "system.health.value": value });
+
     const key = value <= 0 ? "ASOIAF.Chat.defeated" : "ASOIAF.Chat.damageTaken";
-    ChatMessage.create({
+    const endurance = this.system.abilities.endurance.value;
+    const buttons = taken > 0 ? `
+      <div class="absorb-buttons">
+        <button type="button" data-action="absorb" data-kind="injury">
+          <i class="fa-solid fa-droplet"></i> ${game.i18n.format("ASOIAF.Chat.absorbInjury", { endurance })}
+        </button>
+        <button type="button" data-action="absorb" data-kind="wound">
+          <i class="fa-solid fa-skull"></i> ${loc("ASOIAF.Chat.absorbWound")}
+        </button>
+      </div>` : "";
+    return ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      content: `<p>${game.i18n.format(key, { name: this.name, taken, ar, value, max: this.system.health.max })}</p>`
+      content: `<div class="asoiaf-chat damage-card">
+        <p>${game.i18n.format(key, { name: this.name, taken, ar, value, max: this.system.health.max })}</p>${buttons}</div>`,
+      flags: { asoiaf: { damage: { actorUuid: this.uuid, taken, before } } }
     });
   }
 
-  /** Blessure légère : annule des dégâts égaux à l'Endurance, -1 aux résultats. */
+  /**
+   * Encaisse une blessure pour annuler les dégâts d'un coup précis (carte de dégâts).
+   * Blessure légère : annule des dégâts égaux à l'Endurance. Blessure grave : annule le reste du coup.
+   */
+  async absorbHit(message, kind) {
+    const hit = message.getFlag("asoiaf", "damage");
+    if (!hit) return;
+    const s = this.system;
+    const endurance = s.abilities.endurance.value;
+    const absorbed = this.getFlag("asoiaf", `absorbed.${message.id}`) ?? 0;
+    const remaining = hit.taken - absorbed;
+    if (remaining <= 0) return ui.notifications.info(loc("ASOIAF.Warn.nothingToAbsorb"));
+    if (kind === "injury" && s.injuries >= endurance) return ui.notifications.warn(loc("ASOIAF.Warn.maxInjuries"));
+
+    const amount = kind === "injury" ? Math.min(endurance, remaining) : remaining;
+    // Seuls les dégâts réellement retirés à la Santé (pas ceux au-delà de 0) sont rendus.
+    const lostBefore = Math.min(hit.before, remaining);
+    const lostAfter = Math.min(hit.before, remaining - amount);
+    const health = Math.min(s.health.max, s.health.value + lostBefore - lostAfter);
+
+    const update = { "system.health.value": health, [`flags.asoiaf.absorbed.${message.id}`]: absorbed + amount };
+    if (kind === "injury") update["system.injuries"] = s.injuries + 1;
+    else update["system.wounds"] = s.wounds + 1;
+    await this.update(update);
+
+    const label = kind === "injury" ? "ASOIAF.Chat.injuryTaken" : "ASOIAF.Chat.woundTaken";
+    await ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: this }),
+      content: `<p>${game.i18n.format(label, { name: this.name, amount, value: health, max: s.health.max })}</p>`
+    });
+    if (kind === "wound") await this.#checkDeath();
+  }
+
+  /** Blessure légère (depuis la fiche) : annule des dégâts égaux à l'Endurance, -1 aux résultats. */
   async takeInjury() {
     const s = this.system;
     if (s.injuries >= s.abilities.endurance.value) return ui.notifications.warn(loc("ASOIAF.Warn.maxInjuries"));
@@ -80,17 +130,18 @@ export class AsoiafActor extends Actor {
     });
   }
 
-  /** Blessure grave : -1D ; si le nombre de blessures graves atteint l'Endurance, le personnage meurt. */
+  /** Blessure grave (depuis la fiche) : -1D ; autant que l'Endurance = mort. */
   async takeWound() {
-    const s = this.system;
-    const wounds = s.wounds + 1;
-    await this.update({ "system.wounds": wounds });
-    if (wounds >= s.abilities.endurance.value) {
-      ChatMessage.create({
-        speaker: ChatMessage.getSpeaker({ actor: this }),
-        content: `<p><strong>${game.i18n.format("ASOIAF.Chat.dead", { name: this.name })}</strong></p>`
-      });
-    }
+    await this.update({ "system.wounds": this.system.wounds + 1 });
+    return this.#checkDeath();
+  }
+
+  async #checkDeath() {
+    if (this.system.wounds < this.system.abilities.endurance.value) return;
+    return ChatMessage.create({
+      speaker: ChatMessage.getSpeaker({ actor: this }),
+      content: `<p><strong>${game.i18n.format("ASOIAF.Chat.dead", { name: this.name })}</strong></p>`
+    });
   }
 
   /** Fin de combat : les dégâts disparaissent. Fin d'intrigue : la frustration aussi. */

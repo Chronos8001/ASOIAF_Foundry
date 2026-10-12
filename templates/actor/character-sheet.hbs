@@ -102,14 +102,16 @@
           <legend>{{localize "ASOIAF.Combat.condition"}}</legend>
           <div class="slots-row">
             <span class="slots-label" data-tooltip="ASOIAF.Combat.injuryHint">{{localize "ASOIAF.Combat.injuries"}} <small>(-1)</small></span>
-            <span class="slots">{{#each injurySlots}}<i class="slot {{#if filled}}filled{{/if}}"></i>{{/each}}</span>
+            <span class="slots">{{#each injurySlots}}<a class="slot {{#if filled}}filled{{/if}}" data-action="setCount" data-field="system.injuries" data-index="{{@index}}" data-tooltip="ASOIAF.Combat.slotHint"></a>{{/each}}</span>
             <input type="number" min="0" name="system.injuries" value="{{system.injuries}}">
+            <button type="button" data-action="step" data-field="system.injuries" data-delta="-1" data-tooltip="ASOIAF.Combat.heal"><i class="fa-solid fa-minus"></i></button>
             <button type="button" data-action="injury" data-tooltip="ASOIAF.Combat.injuryHint"><i class="fa-solid fa-droplet"></i></button>
           </div>
           <div class="slots-row">
             <span class="slots-label" data-tooltip="ASOIAF.Combat.woundHint">{{localize "ASOIAF.Combat.wounds"}} <small>(-1D)</small></span>
-            <span class="slots">{{#each woundSlots}}<i class="slot wound {{#if filled}}filled{{/if}}"></i>{{/each}}</span>
+            <span class="slots">{{#each woundSlots}}<a class="slot wound {{#if filled}}filled{{/if}}" data-action="setCount" data-field="system.wounds" data-index="{{@index}}" data-tooltip="ASOIAF.Combat.slotHint"></a>{{/each}}</span>
             <input type="number" min="0" name="system.wounds" value="{{system.wounds}}">
+            <button type="button" data-action="step" data-field="system.wounds" data-delta="-1" data-tooltip="ASOIAF.Combat.heal"><i class="fa-solid fa-minus"></i></button>
             <button type="button" data-action="wound" data-tooltip="ASOIAF.Combat.woundHint"><i class="fa-solid fa-skull"></i></button>
           </div>
           <div class="buttons-row">
@@ -211,8 +213,9 @@
           <legend>{{localize "ASOIAF.Intrigue.frustration"}}</legend>
           <div class="slots-row">
             <span class="slots-label" data-tooltip="ASOIAF.Intrigue.frustrationHint">{{localize "ASOIAF.Intrigue.frustration"}} <small>(-1D)</small></span>
-            <span class="slots">{{#each frustrationSlots}}<i class="slot {{#if filled}}filled{{/if}}"></i>{{/each}}</span>
+            <span class="slots">{{#each frustrationSlots}}<a class="slot {{#if filled}}filled{{/if}}" data-action="setCount" data-field="system.frustration" data-index="{{@index}}" data-tooltip="ASOIAF.Combat.slotHint"></a>{{/each}}</span>
             <input type="number" min="0" name="system.frustration" value="{{system.frustration}}">
+            <button type="button" data-action="step" data-field="system.frustration" data-delta="-1" data-tooltip="ASOIAF.Combat.heal"><i class="fa-solid fa-minus"></i></button>
           </div>
           <p class="hint">{{localize "ASOIAF.Intrigue.frustrationHint"}}</p>
           <div class="buttons-row">

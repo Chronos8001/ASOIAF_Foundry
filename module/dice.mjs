@@ -125,6 +125,18 @@ export function bindChatButtons(message, html) {
       for (const actor of actors) await actor.applyDamage(amount, piercing);
     });
   });
+
+  // Encaisser une blessure depuis une carte de dégâts : réservé au propriétaire du personnage.
+  html.querySelectorAll("[data-action='absorb']").forEach(btn => {
+    btn.addEventListener("click", async event => {
+      event.preventDefault();
+      const hit = message.getFlag("asoiaf", "damage");
+      const actor = hit ? fromUuidSync(hit.actorUuid) : null;
+      if (!actor) return;
+      if (!actor.isOwner) return ui.notifications.warn(game.i18n.localize("ASOIAF.Warn.notOwner"));
+      await actor.absorbHit(message, btn.dataset.kind);
+    });
+  });
 }
 
 function getTargetActors() {

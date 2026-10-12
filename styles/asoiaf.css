@@ -370,3 +370,9 @@
 
 /* Dialogues de jet : on garde le thème de Foundry mais on rend les champs lisibles. */
 .asoiaf-dialog input, .asoiaf-dialog select { color-scheme: inherit; }
+
+/* Pastilles cliquables et boutons d'encaissement */
+.asoiaf a.slot { cursor: pointer; }
+.asoiaf a.slot:hover { box-shadow: 0 0 4px var(--as-gold); }
+.asoiaf .slots-row button { padding: 0 6px; }
+.asoiaf-chat .absorb-buttons { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }

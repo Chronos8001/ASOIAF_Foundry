@@ -13,6 +13,7 @@ export class CharacterSheet extends AsoiafActorSheet {
       injury: CharacterSheet.#onInjury,
       wound: CharacterSheet.#onWound,
       recover: CharacterSheet.#onRecover,
+      setCount: CharacterSheet.#onSetCount,
       unlinkHouse: CharacterSheet.#onUnlinkHouse,
       addFromCatalog: CharacterSheet.#onAddFromCatalog
     }
@@ -108,6 +109,13 @@ export class CharacterSheet extends AsoiafActorSheet {
 
   static #onRecover(event, target) {
     return this.actor.recover(target.dataset.kind);
+  }
+
+  /** Clic sur une pastille : remplie -> on retire jusqu'à elle ; vide -> on remplit jusqu'à elle. */
+  static #onSetCount(event, target) {
+    const index = Number(target.dataset.index);
+    const value = target.classList.contains("filled") ? index : index + 1;
+    return this.actor.update({ [target.dataset.field]: value });
   }
 
   static #onUnlinkHouse() {
