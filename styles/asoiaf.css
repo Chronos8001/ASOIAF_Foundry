@@ -314,3 +314,59 @@
   .asoiaf .header-grid { grid-template-columns: 1fr 1fr; }
   .asoiaf .two-cols, .asoiaf .bio-grid { grid-template-columns: 1fr; }
 }
+
+/* =========================================================
+   Champs de saisie : Foundry applique un thème sombre aux fenêtres
+   ApplicationV2 (fond foncé). On impose le style parchemin, avec une
+   spécificité suffisante pour passer devant les règles du thème.
+   ========================================================= */
+.application.asoiaf input:not([type="checkbox"]):not([type="radio"]),
+.application.asoiaf select,
+.application.asoiaf textarea {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: var(--as-ink) !important;
+  border: 1px solid var(--as-line) !important;
+  box-shadow: none;
+  color-scheme: light;
+}
+.application.asoiaf input:focus,
+.application.asoiaf select:focus,
+.application.asoiaf textarea:focus {
+  border-color: var(--as-gold) !important;
+  box-shadow: 0 0 4px rgba(176, 141, 60, 0.6) !important;
+  outline: none;
+}
+.application.asoiaf input::placeholder,
+.application.asoiaf textarea::placeholder { color: var(--as-ink-soft) !important; opacity: 0.7; }
+.application.asoiaf select option { background: var(--as-parchment); color: var(--as-ink); }
+.application.asoiaf input:disabled,
+.application.asoiaf select:disabled,
+.application.asoiaf textarea:disabled { opacity: 0.75; }
+
+/* Champs « titre » sans cadre : nom, devise. */
+.application.asoiaf input.actor-name {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--as-line) !important;
+  color: var(--as-red) !important;
+}
+.application.asoiaf input.motto {
+  background: transparent !important;
+  border: none !important;
+  color: var(--as-ink-soft) !important;
+}
+.application.asoiaf .ability input.rank {
+  background: #fff !important;
+  color: var(--as-red) !important;
+  border: 2px solid var(--as-red) !important;
+}
+
+/* Le thème sombre éclaircit aussi le texte et les libellés. */
+.application.asoiaf .window-content,
+.application.asoiaf label,
+.application.asoiaf legend { color: var(--as-ink); }
+.application.asoiaf legend,
+.application.asoiaf .section-title { color: var(--as-red); }
+
+/* Dialogues de jet : on garde le thème de Foundry mais on rend les champs lisibles. */
+.asoiaf-dialog input, .asoiaf-dialog select { color-scheme: inherit; }
