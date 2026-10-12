@@ -3,7 +3,7 @@
 Système **non officiel** pour *A Song of Ice and Fire Roleplaying* (SIFRP, édition *Game of Thrones*, Green Ronin), en français.
 Compatible Foundry VTT **v12 et v13**, et The Forge.
 
-> Ce dépôt ne contient aucun texte du livre : seulement les valeurs chiffrées nécessaires aux calculs (tables d'armes, d'armures, de ressources…). Le PDF reste ignoré par git (`.gitignore`) et ne doit jamais être publié.
+> Ce dépôt ne contient aucun texte du livre : seulement les valeurs chiffrées nécessaires aux calculs (tables d'armes, d'armures, de ressources…).
 
 ## Installation
 
@@ -14,12 +14,6 @@ Compatible Foundry VTT **v12 et v13**, et The Forge.
 
 ### En local
 Copier le contenu du dépôt dans `Data/systems/asoiaf/`. Le nom du dossier doit être exactement `asoiaf`.
-
-### Publier une version
-```bash
-git tag v0.1.0 && git push origin v0.1.0
-gh release create v0.1.0 --title "v0.1.0" --notes "Première version"
-```
 
 ## Contenu
 
@@ -76,5 +70,4 @@ gh release create v0.1.0 --title "v0.1.0" --notes "Première version"
 - **Blason** : image de l'écu, devise et description héraldique.
 
 ## Points de règles à noter
-- La table 6-8 donne +6 de Discipline aux levées paysannes, mais l'exemple du livre indique Redoutable (12) pour des levées bleues. Le système suit la table. Le champ « Ajustement de Discipline » de l'unité permet de corriger.
 - Les détails d'une Fortune (quelles ressources montent ou baissent) restent au choix du Narrateur. La carte de discussion rappelle l'amplitude prévue par les règles.
