@@ -2,7 +2,7 @@
   "id": "asoiaf",
   "title": "Le Trône de Fer JdR (A Song of Ice and Fire RPG)",
   "description": "Système non officiel pour le jeu de rôle A Song of Ice and Fire (SIFRP, édition Game of Thrones) : fiches de personnage interactives, tests avec dés bonus et dés de pénalité, combat, intrigue, et fiche de Maison complète (ressources, possessions, domaines, unités, fortunes, historique, blason).",
-  "version": "0.4.0",
+  "version": "0.3.1",
   "authors": [
     {
       "name": "Chronos8001"
