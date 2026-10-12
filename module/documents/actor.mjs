@@ -1,4 +1,6 @@
 import { promptTest } from "../dice.mjs";
+import { weaponContext } from "../data/character.mjs";
+import { convertCount, ignoresTraining, weaponEffect } from "../effects.mjs";
 
 const loc = key => game.i18n.localize(key);
 
@@ -28,17 +30,23 @@ export class AsoiafActor extends Actor {
   async rollWeapon(item) {
     const w = item.system;
     const ability = w.ability;
-    const test = this.system.getTestData(ability, w.specialty);
+    const ctx = weaponContext(item);
+    const mods = this.system.modifiers ?? [];
+    const test = this.system.getTestData(ability, w.specialty, { weapon: item });
+
     // Entraînement requis : on perd des dés bonus, l'excédent devient des dés de pénalité.
-    let bonusDice = test.bonusDice - w.training;
+    const training = ignoresTraining(mods, ctx) ? 0 : w.training;
+    let bonusDice = test.bonusDice - training;
     let penaltyDice = test.penaltyDice;
     if (bonusDice < 0) {
       penaltyDice += -bonusDice;
       bonusDice = 0;
     }
-    let damage = w.baseDamage(this);
+
+    let damage = w.baseDamage(this) + test.damageBonus;
     if (/puissante|powerful/i.test(w.qualities)) damage += this.system.abilities.athletics.specialties.strength;
-    const piercing = w.piercing || Number(w.qualities.match(/(?:perforante|piercing)\s*(\d+)/i)?.[1] ?? 0);
+    const basePiercing = w.piercing || Number(w.qualities.match(/(?:perforante|piercing)\s*(\d+)/i)?.[1] ?? 0);
+    const piercing = basePiercing + weaponEffect(mods, "piercing", this.system.abilities, ctx);
 
     return promptTest({
       actor: this,
@@ -47,6 +55,7 @@ export class AsoiafActor extends Actor {
       bonusDice,
       penaltyDice,
       damage,
+      damageAfter: test.damageAfter,
       piercing,
       defenseKey: "combatDefense",
       extra: w.qualities
@@ -153,11 +162,14 @@ export class AsoiafActor extends Actor {
   /** Formule d'initiative : test d'Agilité (Rapidité). */
   getInitiativeFormula() {
     if (!this.system.getTestData) return "0";
-    const t = this.system.getTestData("agility", "quickness");
-    const bonus = Math.min(t.bonusDice, t.testDice);
-    const keep = Math.max(1, t.testDice - t.penaltyDice);
+    const t = this.system.getTestData("agility", "quickness", { initiative: true });
+    const converted = convertCount(t.convert, t.convertHalf, t.bonusDice);
+    const testDice = t.testDice + converted;
+    const bonus = Math.min(t.bonusDice - converted, testDice);
+    const keep = Math.max(1, testDice - t.penaltyDice);
+    const reroll = t.reroll1 > 0 ? "r1" : "";
     const mod = t.modifier ? ` ${t.modifier < 0 ? "-" : "+"} ${Math.abs(t.modifier)}` : "";
-    return `${t.testDice + bonus}d6kh${keep}${mod}`;
+    return `${testDice + bonus}d6${reroll}kh${keep}${mod}`;
   }
 }
 

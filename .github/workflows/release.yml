@@ -21,8 +21,17 @@ jobs:
           jq --arg v "$VERSION" --arg d "$DOWNLOAD" '.version = $v | .download = $d' system.json > system.tmp
           mv system.tmp system.json
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Compendiums
+        run: |
+          npm install --no-audit --no-fund
+          npm run build:packs
+
       - name: Archive
-        run: zip -r asoiaf.zip system.json module templates styles lang README.md
+        run: zip -r asoiaf.zip system.json module templates styles lang packs README.md
 
       - name: Release
         uses: softprops/action-gh-release@v2

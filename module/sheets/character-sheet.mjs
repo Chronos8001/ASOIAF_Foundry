@@ -1,5 +1,19 @@
 import { AsoiafActorSheet } from "./base-sheet.mjs";
 import { ASOIAF } from "../config.mjs";
+import { describe, needsChoice } from "../effects.mjs";
+
+/** Libellé lisible d'une cible d'effet. */
+function targetLabel(target) {
+  const loc = k => game.i18n.localize(k);
+  if (target === "all") return loc("ASOIAF.Modifier.allTests");
+  if (target === "initiative") return loc("ASOIAF.Modifier.initiative");
+  if (target.startsWith("weapon:")) return target.slice(7);
+  if (CONFIG.ASOIAF.abilities[target.split(".")[0]]) {
+    const [a, sp] = target.split(".");
+    return sp ? loc(`ASOIAF.Specialty.${sp}`) : loc(`ASOIAF.Ability.${a}`);
+  }
+  return loc(`ASOIAF.Modifier.derived_${target}`);
+}
 
 const HOUSE_ITEM_TYPES = ["holding", "domain", "unit", "artisan"];
 
@@ -55,8 +69,14 @@ export class CharacterSheet extends AsoiafActorSheet {
     }));
     context.armors = this._items("armor");
     context.equipment = this._items("equipment");
-    context.benefits = this._items("benefit");
-    context.drawbacks = this._items("drawback");
+    const quality = q => ({
+      id: q.id, img: q.img, name: q.name, system: q.system,
+      pending: needsChoice(q),
+      effects: (q.system.modifiers ?? []).filter(m => m.target && !m.target.startsWith("?"))
+        .map(m => `${m.situational ? "◇ " : ""}${describe(m, s.abilities)} ${targetLabel(m.target)}`).join(" · ")
+    });
+    context.benefits = this._items("benefit").map(quality);
+    context.drawbacks = this._items("drawback").map(quality);
 
     const house = s.houseActor;
     context.house = house ? { uuid: house.uuid, name: house.name, img: house.img, maxStatus: house.system.maxStatus } : null;

@@ -1,0 +1,12 @@
+{
+  "name": "asoiaf-foundry",
+  "private": true,
+  "type": "module",
+  "description": "Outils de construction du système Le Trône de Fer JdR pour Foundry VTT",
+  "scripts": {
+    "build:packs": "node tools/build-packs.mjs"
+  },
+  "devDependencies": {
+    "@foundryvtt/foundryvtt-cli": "^1.0.3"
+  }
+}

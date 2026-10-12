@@ -49,9 +49,11 @@
         <label>{{localize "ASOIAF.Benefit.destinyCost"}}<input type="number" min="0" name="system.destinyCost" value="{{system.destinyCost}}"></label>
       </div>
       <label class="block">{{localize "ASOIAF.Benefit.requirements"}}<input type="text" name="system.requirements" value="{{system.requirements}}"></label>
+      <label class="checkbox"><input type="checkbox" name="system.repeatable" {{checked system.repeatable}}> {{localize "ASOIAF.Benefit.repeatable"}}</label>
     {{/if}}
 
     {{#if isType.drawback}}
+      <label class="block">{{localize "ASOIAF.Benefit.requirements"}}<input type="text" name="system.requirements" value="{{system.requirements}}"></label>
       <div class="form-grid">
         <label>{{localize "ASOIAF.Drawback.flawAbility"}}
           <select name="system.flawAbility"><option value="">—</option>{{selectOptions abilityOptions selected=system.flawAbility localize=true}}</select>
@@ -131,6 +133,38 @@
       <p class="hint">{{localize "ASOIAF.Artisan.loanHint"}}</p>
       <label class="block">{{localize "ASOIAF.Artisan.productions"}}<input type="text" name="system.productions" value="{{system.productions}}"></label>
       <label class="block">{{localize "ASOIAF.Artisan.project"}}<input type="text" name="system.project" value="{{system.project}}"></label>
+    {{/if}}
+
+    {{#if hasModifiers}}
+      <h4>{{localize "ASOIAF.Modifier.title"}}
+        {{#if editable}}<a class="add" data-action="modAdd" data-tooltip="ASOIAF.Modifier.add"><i class="fa-solid fa-plus"></i></a>{{/if}}</h4>
+      <p class="hint">{{localize "ASOIAF.Modifier.hint"}}</p>
+      <datalist id="asoiaf-targets-{{item.id}}">
+        {{#each targetSuggestions}}<option value="{{value}}">{{label}}</option>{{/each}}
+      </datalist>
+      <table class="items-table modifiers">
+        <thead><tr>
+          <th>{{localize "ASOIAF.Modifier.type"}}</th><th>{{localize "ASOIAF.Modifier.target"}}</th>
+          <th>{{localize "ASOIAF.Modifier.value"}}</th><th data-tooltip="ASOIAF.Modifier.situationalHint">{{localize "ASOIAF.Modifier.situational"}}</th>
+          <th>{{localize "ASOIAF.Modifier.label"}}</th><th></th>
+        </tr></thead>
+        <tbody>
+          {{#each modifierRows}}
+            <tr class="{{#if pending}}pending{{/if}}">
+              <td><select data-mod-index="{{index}}" data-key="type">{{selectOptions @root.modifierTypes selected=type localize=true}}</select></td>
+              <td><input type="text" list="asoiaf-targets-{{@root.item.id}}" data-mod-index="{{index}}" data-key="target" value="{{target}}"
+                {{#if pending}}data-tooltip="ASOIAF.Modifier.pending"{{/if}}></td>
+              <td><input type="text" class="short" data-mod-index="{{index}}" data-key="value" value="{{value}}"></td>
+              <td class="center"><input type="checkbox" data-mod-index="{{index}}" data-key="situational" {{checked situational}}></td>
+              <td><input type="text" data-mod-index="{{index}}" data-key="label" value="{{label}}"></td>
+              <td class="controls">{{#if @root.editable}}<a data-action="modDelete" data-index="{{index}}"><i class="fa-solid fa-trash"></i></a>{{/if}}</td>
+            </tr>
+          {{else}}
+            <tr><td colspan="6" class="hint">{{localize "ASOIAF.Modifier.none"}}</td></tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <details class="modifier-help"><summary>{{localize "ASOIAF.Modifier.helpTitle"}}</summary><p>{{localize "ASOIAF.Modifier.help"}}</p></details>
     {{/if}}
 
     <label class="block">{{localize "ASOIAF.Common.description"}}<textarea name="system.description" rows="6">{{system.description}}</textarea></label>

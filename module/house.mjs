@@ -1,6 +1,7 @@
 import { ASOIAF } from "./config.mjs";
 import { readForm, rollTest } from "./dice.mjs";
 import { monthlyLoans } from "./artisans.mjs";
+import { sumType } from "./effects.mjs";
 
 const loc = key => game.i18n.localize(key);
 const resLabel = r => loc(`ASOIAF.Resource.${r}`);
@@ -185,8 +186,22 @@ export async function rollFortune(house) {
   const spend = Math.max(0, Number(data.influenceSpend) || 0);
   const influenceDice = Math.floor(spend / 5);
   const formulas = [data.formula, influenceDice ? `${influenceDice}d6` : ""].filter(f => f && f.trim());
-  const modifier = s.lawModifier + s.populationModifier + s.holdingModifier + (Number(data.modifier) || 0);
+  let modifier = s.lawModifier + s.populationModifier + s.holdingModifier + (Number(data.modifier) || 0);
   const steward2 = members.find(m => String(m.index) === String(data.steward));
+
+  // Qualités et blessures de l'intendant : c'est un test de Statut (Intendance).
+  const effects = [];
+  let t = { penaltyDice: 0, convert: 0, convertHalf: false, reroll1: 0, reroll6: false };
+  const stewardSystem = steward2?.actor?.system;
+  if (stewardSystem?.getTestData) {
+    t = stewardSystem.getTestData("status", "stewardship");
+    modifier += t.modifier;
+    const bonus = sumType(stewardSystem.modifiers ?? [], "houseFortune", stewardSystem.abilities);
+    if (bonus) {
+      modifier += bonus;
+      effects.push(`${loc("ASOIAF.House.stewardQualities")} ${bonus >= 0 ? "+" : ""}${bonus}`);
+    }
+  }
 
   const result = await rollTest({
     actor: steward2?.actor ?? null,
@@ -194,7 +209,13 @@ export async function rollFortune(house) {
     label: `${loc("ASOIAF.House.rollFortune")} — ${house.name}`,
     testDice: Number(data.status) + Number(data.banners || 0),
     bonusDice: Number(data.stewardship),
+    penaltyDice: t.penaltyDice,
+    convert: t.convert,
+    convertHalf: t.convertHalf,
+    reroll1: t.reroll1,
+    reroll6: t.reroll6,
     modifier,
+    effects,
     extraFormula: formulas.join(" + ")
   });
 

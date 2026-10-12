@@ -22,5 +22,27 @@
       {{#each difficulties}}<option value="{{value}}">{{label}}</option>{{/each}}
     </datalist>
   </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Roll.convert"}}</label>
+    <input type="number" name="convert" value="{{convert}}" min="0">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Roll.reroll1"}}</label>
+    <input type="number" name="reroll1" value="{{reroll1}}" min="0">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Roll.reroll6"}}</label>
+    <input type="checkbox" name="reroll6" {{checked reroll6}}>
+  </div>
+  {{#if convertHalf}}<p class="hint">{{localize "ASOIAF.Roll.convertHalf"}}</p>{{/if}}
+  {{#if situational.length}}
+    <fieldset class="situational">
+      <legend>{{localize "ASOIAF.Roll.situational"}}</legend>
+      {{#each situational}}
+        <label class="checkbox"><input type="checkbox" name="sit_{{index}}">
+          <span><strong>{{label}}</strong> <em>{{summary}}</em>{{#if (asEq label source)}}{{else}} <small>— {{source}}</small>{{/if}}</span></label>
+      {{/each}}
+    </fieldset>
+  {{/if}}
   <p class="hint">{{localize "ASOIAF.Roll.hint"}}</p>
 </div>

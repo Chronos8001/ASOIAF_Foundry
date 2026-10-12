@@ -247,6 +247,8 @@
           <li data-item-id="{{id}}">
             <img src="{{img}}" alt="">
             <div class="grow"><strong>{{name}}</strong> {{#if system.category}}<em>({{system.category}})</em>{{/if}}
+              {{#if pending}}<span class="tag pending" data-tooltip="ASOIAF.Modifier.pendingSheet"><i class="fa-solid fa-triangle-exclamation"></i> {{localize "ASOIAF.Modifier.toConfigure"}}</span>{{/if}}
+              {{#if effects}}<div class="effects-line">{{effects}}</div>{{/if}}
               {{#if system.description}}<div class="desc">{{system.description}}</div>{{/if}}</div>
             <span class="tag">{{system.destinyCost}} {{localize "ASOIAF.Destiny.short"}}</span>
             <span class="controls"><a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a></span>
@@ -262,6 +264,8 @@
             <img src="{{img}}" alt="">
             <div class="grow"><strong>{{name}}</strong>
               {{#if system.flawAbility}}<span class="tag flaw">-{{system.flawDice}}D {{localize (concat "ASOIAF.Ability." system.flawAbility)}}</span>{{/if}}
+              {{#if pending}}<span class="tag pending" data-tooltip="ASOIAF.Modifier.pendingSheet"><i class="fa-solid fa-triangle-exclamation"></i> {{localize "ASOIAF.Modifier.toConfigure"}}</span>{{/if}}
+              {{#if effects}}<div class="effects-line">{{effects}}</div>{{/if}}
               {{#if system.description}}<div class="desc">{{system.description}}</div>{{/if}}</div>
             <span class="controls"><a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a></span>
           </li>

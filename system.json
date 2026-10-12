@@ -2,7 +2,7 @@
   "id": "asoiaf",
   "title": "Le Trône de Fer JdR (A Song of Ice and Fire RPG)",
   "description": "Système non officiel pour le jeu de rôle A Song of Ice and Fire (SIFRP, édition Game of Thrones) : fiches de personnage interactives, tests avec dés bonus et dés de pénalité, combat, intrigue, et fiche de Maison complète (ressources, possessions, domaines, unités, fortunes, historique, blason).",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "authors": [
     {
       "name": "Chronos8001"
@@ -57,5 +57,40 @@
   "initiative": "2d6",
   "url": "https://github.com/Chronos8001/ASOIAF_Foundry",
   "manifest": "https://github.com/Chronos8001/ASOIAF_Foundry/releases/latest/download/system.json",
-  "download": "https://github.com/Chronos8001/ASOIAF_Foundry/releases/latest/download/asoiaf.zip"
+  "download": "https://github.com/Chronos8001/ASOIAF_Foundry/releases/latest/download/asoiaf.zip",
+  "packs": [
+    {
+      "name": "benefits",
+      "label": "Avantages",
+      "path": "packs/benefits",
+      "type": "Item",
+      "system": "asoiaf",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "drawbacks",
+      "label": "Handicaps et défauts",
+      "path": "packs/drawbacks",
+      "type": "Item",
+      "system": "asoiaf",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    }
+  ],
+  "packFolders": [
+    {
+      "name": "Le Trône de Fer",
+      "sorting": "m",
+      "color": "#7a1c1c",
+      "packs": [
+        "benefits",
+        "drawbacks"
+      ]
+    }
+  ]
 }

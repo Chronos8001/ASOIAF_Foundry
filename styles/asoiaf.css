@@ -396,3 +396,16 @@
 .asoiaf .budget-row .bar { flex: 1; margin: 0; }
 .asoiaf .bar.budget > div { background: linear-gradient(90deg, var(--as-gold), #d8b55a); }
 .asoiaf .artisan-card .buttons-row button { font-size: 0.85em; }
+
+/* Qualités : effets automatiques */
+.asoiaf .tag.pending { background: #f3d9a8; border-color: var(--as-gold); }
+.asoiaf .effects-line { font-size: 0.8em; color: var(--as-green); }
+.asoiaf .items-table.modifiers input, .asoiaf .items-table.modifiers select { width: 100%; height: 1.7em; font-size: 0.85em; }
+.asoiaf .items-table.modifiers input.short { width: 7em; }
+.asoiaf .items-table.modifiers input[type="checkbox"] { width: auto; }
+.asoiaf .items-table.modifiers tr.pending td { background: rgba(243, 217, 168, 0.6); }
+.asoiaf .modifier-help { font-size: 0.82em; color: var(--as-ink-soft); margin: 4px 0 8px; }
+.asoiaf-dialog fieldset.situational { margin-top: 6px; }
+.asoiaf-dialog fieldset.situational label.checkbox { display: flex; gap: 6px; align-items: flex-start; margin: 3px 0; }
+.asoiaf-chat .die.rerolled { box-shadow: 0 0 0 2px #b08d3c inset; }
+.asoiaf-chat .applied-effects { margin: 4px 0 0; padding-left: 16px; font-size: 0.8em; color: #3d6b3a; }

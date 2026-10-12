@@ -190,7 +190,14 @@
       "vs": "contre",
       "marginalFailure": "Échec de justesse",
       "criticalFailure": "Échec critique",
-      "hint": "Les dés bonus ne s'additionnent pas : on garde les meilleurs. Les dés de pénalité retirent ensuite les plus faibles. Blessures légères, armure (Agilité) et frustration sont déjà comptées."
+      "hint": "Les dés bonus ne s'additionnent pas : on garde les meilleurs. Les dés de pénalité retirent ensuite les plus faibles. Blessures légères, armure (Agilité) et frustration sont déjà comptées.",
+      "convert": "Dés bonus convertis en dés de test",
+      "reroll1": "Relancer des 1 (nombre)",
+      "reroll6": "Relancer les 6 (handicap)",
+      "convertHalf": "La moitié des dés bonus (minimum 1) est convertie en dés de test.",
+      "situational": "Effets situationnels des qualités",
+      "rerolledFrom": "Relancé, résultat initial :",
+      "rerolledShort": "relancé(s)"
     },
     "Derived": {
       "combatDefense": "Défense de combat",
@@ -280,7 +287,8 @@
     "Benefit": {
       "category": "Catégorie",
       "destinyCost": "Coût en Destinée",
-      "requirements": "Prérequis"
+      "requirements": "Prérequis",
+      "repeatable": "Peut être pris plusieurs fois"
     },
     "Drawback": {
       "flawAbility": "Défaut sur la capacité",
@@ -636,7 +644,8 @@
       "motto": "Devise",
       "blazon": "Description héraldique",
       "blazonPlaceholder": "ex. De sable au chevron de sinople, chargé d'un cor d'or.",
-      "armsHint": "Champ, partition, charge, couleurs : les tables 6-9 à 6-17 du livre aident à composer le blason. Cliquez sur l'écu pour choisir une image."
+      "armsHint": "Champ, partition, charge, couleurs : les tables 6-9 à 6-17 du livre aident à composer le blason. Cliquez sur l'écu pour choisir une image.",
+      "stewardQualities": "Qualités de l'intendant"
     },
     "Artisan": {
       "title": "Artisan",
@@ -714,6 +723,48 @@
       "warnCannotPay": "Paiement impossible : ressources ou dragons insuffisants.",
       "warnXp": "Expérience insuffisante.",
       "warnProduction": "Indiquez la nouvelle production."
+    },
+    "Modifier": {
+      "title": "Effets automatiques",
+      "add": "Ajouter un effet",
+      "none": "Aucun effet automatique : la qualité est descriptive.",
+      "hint": "Les effets s'appliquent seuls aux jets et à la fiche. Cochez « Situationnel » pour qu'un effet soit proposé comme case à cocher dans la fenêtre de jet.",
+      "type": "Type",
+      "target": "Cible",
+      "value": "Valeur",
+      "situational": "Situationnel",
+      "label": "Libellé",
+      "situationalHint": "L'effet n'est pas permanent : il apparaît comme case à cocher lors des jets concernés.",
+      "pending": "Cible à choisir : remplacez le « ? » par une capacité, une spécialité ou weapon:NomDeLArme.",
+      "pendingSheet": "Ouvrez la qualité et choisissez la cible de son effet (capacité, spécialité ou arme).",
+      "toConfigure": "à configurer",
+      "allTests": "Tous les tests",
+      "initiative": "Initiative",
+      "weaponTarget": "Arme précise (weapon:Nom de l'arme)",
+      "helpTitle": "Aide sur les valeurs",
+      "help": "Valeur : un nombre (ex. 2 ou -1), ou une référence au personnage : @cunning (rang de Ruse), @fighting.shortBlades (dés bonus de Lames courtes), @half:persuasion (moitié de la Persuasion), @half1:persuasion (moitié, minimum 1), @spec (dés bonus de la spécialité utilisée, minimum 1). Pour « Convertir » et « Relancer des 1 », « all » signifie tous les dés et « half » la moitié. Cible : all (tous les tests), une capacité (fighting), une spécialité (fighting.longBlades), initiative, weapon:Poing (arme précise), ou une valeur dérivée (health, composure, combatDefense, intrigueDefense, movement, sprintMult, armorRating, bulk).",
+      "type_testDice": "Dés de test (+D)",
+      "type_bonusDice": "Dés bonus (+B)",
+      "type_penaltyDice": "Dés de pénalité (-D)",
+      "type_modifier": "Bonus au résultat",
+      "type_convert": "Convertir B en D",
+      "type_reroll1": "Relancer des 1",
+      "type_reroll6": "Relancer les 6",
+      "type_damage": "Dégâts de base",
+      "type_damageAfter": "Dégâts finaux (après degrés)",
+      "type_piercing": "Perforante",
+      "type_defensive": "Bonus défensif d'arme",
+      "type_ignoreTraining": "Ignorer l'entraînement",
+      "type_derived": "Valeur dérivée",
+      "type_houseFortune": "Bonus aux jets de Fortune (intendant)",
+      "derived_health": "Santé",
+      "derived_composure": "Sang-froid",
+      "derived_combatDefense": "Défense de combat",
+      "derived_intrigueDefense": "Défense d'intrigue",
+      "derived_movement": "Déplacement",
+      "derived_sprintMult": "Multiplicateur de course",
+      "derived_armorRating": "VA de l'armure",
+      "derived_bulk": "Encombrement de l'armure"
     }
   }
 }

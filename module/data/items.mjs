@@ -1,6 +1,6 @@
 import { ASOIAF } from "../config.mjs";
 
-const { BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
+const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 
 const num = (initial = 0, options = {}) => new NumberField({ required: true, integer: true, initial, ...options });
 const text = () => new StringField({ required: true, blank: true, initial: "" });
@@ -58,9 +58,26 @@ export class ArmorData extends PhysicalItemData {
 
 export class EquipmentData extends PhysicalItemData {}
 
+/** Modificateurs mécaniques d'une qualité (voir module/effects.mjs). */
+const modifiersField = () => new ArrayField(new SchemaField({
+  type: new StringField({ required: true, initial: "modifier" }),
+  target: new StringField({ required: true, blank: true, initial: "" }),
+  value: new StringField({ required: true, blank: true, initial: "1" }),
+  situational: new BooleanField({ initial: false }),
+  condition: new StringField({ required: true, blank: true, initial: "" }),
+  label: new StringField({ required: true, blank: true, initial: "" })
+}));
+
 export class BenefitData extends BaseItemData {
   static defineSchema() {
-    return { ...super.defineSchema(), category: text(), requirements: text(), destinyCost: num(1, { min: 0 }) };
+    return {
+      ...super.defineSchema(),
+      category: text(),
+      requirements: text(),
+      destinyCost: num(1, { min: 0 }),
+      repeatable: new BooleanField({ initial: false }),
+      modifiers: modifiersField()
+    };
   }
 }
 
@@ -70,7 +87,10 @@ export class DrawbackData extends BaseItemData {
       ...super.defineSchema(),
       isFlaw: new BooleanField({ initial: false }),
       flawAbility: new StringField({ required: true, blank: true, initial: "" }),
-      flawDice: num(1, { min: 0 })
+      flawDice: num(1, { min: 0 }),
+      category: text(),
+      requirements: text(),
+      modifiers: modifiersField()
     };
   }
 }

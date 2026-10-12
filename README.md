@@ -69,6 +69,22 @@ Copier le contenu du dépôt dans `Data/systems/asoiaf/`. Le nom du dossier doit
   - dépense de la Gloire du groupe.
 - **Blason** : image de l'écu, devise et description héraldique.
 
+### Qualités (compendiums « Avantages » et « Handicaps et défauts »)
+- **Contenu** : 118 avantages rangés par catégorie (Capacité, Destin, Héritage, Martial, Social), 35 handicaps et 19 défauts. Chaque qualité a un résumé reformulé (le livre reste la référence), ses prérequis et son nom anglais pour retrouver la page.
+- **Utilisation** : glisser une qualité du compendium sur la fiche. Ses effets s'appliquent seuls :
+  - dés de test, dés bonus et dés de pénalité ;
+  - bonus au résultat ;
+  - conversion de dés bonus en dés de test ;
+  - relances des 1 ou des 6 ;
+  - dégâts, perforation et bonus défensif des armes ;
+  - Santé, Sang-froid, Défenses, VA, déplacement ;
+  - jet de Fortune de l'intendant.
+- **Effets situationnels** (« contre un animal », « en joute »…) : ils apparaissent comme cases à cocher dans la fenêtre de jet.
+- **Qualités à choix** (Talentueux, Expertise, Charismatique, Maîtrise d'arme, Défaut au choix…) : elles portent un badge « à configurer ». Ouvrez-les et choisissez la cible de l'effet.
+- **Éditeur d'effets** : chaque qualité peut être modifiée, et on peut en créer de nouvelles. L'aide est intégrée à la fiche d'objet.
+
+Les compendiums sont construits par le workflow de publication. En local : `npm install` puis `npm run build:packs`.
+
 ### Artisans (règle maison)
 Onglet **Artisans** de la fiche de Maison. Pour en créer un : bouton dédié, ou « Artisan » dans les possessions de Richesse.
 - **Au départ** : rang 5 dans la compétence de métier, budget max 10, Richesse investie (perdue au décès).
