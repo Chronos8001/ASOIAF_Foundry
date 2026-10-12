@@ -170,6 +170,65 @@
       {{/if}}
     </div>
 
+    {{!-- Artisans (règle maison) --}}
+    <div class="tab-panel {{#if (asEq activeTab 'artisans')}}active{{/if}}" data-tab="artisans">
+      <p class="hint">{{localize "ASOIAF.Artisan.rulesHint"}}</p>
+      {{#if editable}}
+        <div class="buttons-row">
+          <button type="button" data-action="itemCreate" data-type="artisan"><i class="fa-solid fa-plus"></i> {{localize "ASOIAF.Artisan.add"}}</button>
+          <button type="button" data-action="groupProject" {{#unless (asGt workingCount 1)}}disabled{{/unless}}
+            data-tooltip="ASOIAF.Artisan.groupHint"><i class="fa-solid fa-people-group"></i> {{localize "ASOIAF.Artisan.groupProject"}}</button>
+        </div>
+      {{/if}}
+
+      <div class="artisans">
+        {{#each artisans}}
+          <div class="artisan-card state-{{state}}" data-item-id="{{id}}">
+            <div class="artisan-head">
+              <img src="{{item.img}}" alt="">
+              <div class="grow">
+                <strong>{{item.name}}</strong> <em>{{item.system.trade}}</em>
+                {{#if loanLabel}}<span class="tag">{{loanLabel}}</span>{{/if}}
+                <div class="artisan-meta">
+                  {{ability}} <strong>{{item.system.rank}}</strong>{{#if item.system.bonusDice}} +{{item.system.bonusDice}}B{{/if}}
+                  {{#if item.system.modifier}} {{asSigned item.system.modifier}}{{/if}}
+                  {{#if item.system.penalty}}<span class="tag flaw">-{{item.system.penalty}}D</span>{{/if}}
+                  · XP {{item.system.xp}}{{#if nextRank}} <i class="fa-solid fa-arrow-up" data-tooltip="ASOIAF.Artisan.canProgress"></i>{{/if}}
+                </div>
+              </div>
+              <span class="state-badge">{{stateLabel}}</span>
+              <span class="controls">
+                <a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a>
+                <a data-action="artisanDeath" data-tooltip="ASOIAF.Artisan.death"><i class="fa-solid fa-cross"></i></a>
+              </span>
+            </div>
+            <div class="budget-row">
+              <span>{{localize "ASOIAF.Artisan.budget"}}</span>
+              <div class="bar budget"><div style="width:{{budgetPct}}%"></div></div>
+              <strong>{{item.system.budget}} / {{@root.artisanRules.maxBudget}}</strong>
+            </div>
+            {{#if item.system.project}}<div class="artisan-meta">{{localize "ASOIAF.Artisan.project"}} : {{item.system.project}}</div>{{/if}}
+            {{#if item.system.productions}}<div class="artisan-meta">{{localize "ASOIAF.Artisan.productions"}} : {{item.system.productions}}</div>{{/if}}
+            {{#if @root.editable}}
+              <div class="buttons-row">
+                <button type="button" data-action="artisanStart" {{#unless canStart}}disabled{{/unless}}
+                  data-tooltip="ASOIAF.Artisan.startHint"><i class="fa-solid fa-hammer"></i> {{localize "ASOIAF.Artisan.start"}}</button>
+                <button type="button" data-action="artisanRoll" {{#unless canRoll}}disabled{{/unless}}
+                  data-tooltip="ASOIAF.Artisan.rollHint"><i class="fa-solid fa-dice"></i> {{localize "ASOIAF.Artisan.roll"}}</button>
+                <button type="button" data-action="artisanInterrupt" {{#unless canRoll}}disabled{{/unless}}
+                  data-tooltip="ASOIAF.Artisan.interruptHint"><i class="fa-solid fa-fire"></i></button>
+                <button type="button" data-action="artisanSpend" {{#unless item.system.budget}}disabled{{/unless}}><i class="fa-solid fa-coins"></i> {{localize "ASOIAF.Artisan.spend"}}</button>
+                <button type="button" data-action="artisanBuy" data-tooltip="ASOIAF.Artisan.buyHint"><i class="fa-solid fa-plus"></i> {{localize "ASOIAF.Artisan.buy"}}</button>
+                <button type="button" data-action="artisanXp"><i class="fa-solid fa-graduation-cap"></i> {{localize "ASOIAF.Artisan.progress"}}</button>
+              </div>
+            {{/if}}
+          </div>
+        {{else}}
+          <p class="drop-zone">{{localize "ASOIAF.Artisan.none"}}</p>
+        {{/each}}
+      </div>
+    </div>
+
     {{!-- Maisonnée --}}
     <div class="tab-panel {{#if (asEq activeTab 'household')}}active{{/if}}" data-tab="household">
       <p class="hint">{{localize "ASOIAF.House.membersHint"}}</p>

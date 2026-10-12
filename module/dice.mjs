@@ -47,9 +47,9 @@ export async function rollTest({
     const margin = total - Number(difficulty);
     if (margin >= 0) {
       const degrees = Math.min(4, 1 + Math.floor(margin / 5));
-      outcome = { success: true, degrees, label: game.i18n.localize(`ASOIAF.Degree.${ASOIAF.degrees[degrees]}`) };
+      outcome = { success: true, degrees, margin, critical: false, label: game.i18n.localize(`ASOIAF.Degree.${ASOIAF.degrees[degrees]}`) };
     } else {
-      outcome = { success: false, degrees: 0, label: game.i18n.localize(margin >= -4 ? "ASOIAF.Roll.marginalFailure" : "ASOIAF.Roll.criticalFailure") };
+      outcome = { success: false, degrees: 0, margin, critical: margin <= -5, label: game.i18n.localize(margin >= -4 ? "ASOIAF.Roll.marginalFailure" : "ASOIAF.Roll.criticalFailure") };
     }
   }
 

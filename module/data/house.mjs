@@ -66,7 +66,8 @@ export class HouseData extends foundry.abstract.TypeDataModel {
     this.holdingModifier = 0;
     const formulas = [];
     for (const item of items) {
-      if (item.type !== "holding" || !item.system.complete) continue;
+      const active = item.type === "artisan" || (item.type === "holding" && item.system.complete);
+      if (!active) continue;
       const f = item.system.fortune?.trim();
       if (!f) continue;
       if (/^[+-]?\d+$/.test(f)) this.holdingModifier += Number(f);

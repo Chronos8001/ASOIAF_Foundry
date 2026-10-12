@@ -19,7 +19,8 @@ const DEFAULT_ICONS = {
   drawback: "icons/svg/skull.svg",
   holding: "icons/svg/tower.svg",
   domain: "icons/svg/mountain.svg",
-  unit: "icons/svg/combat.svg"
+  unit: "icons/svg/combat.svg",
+  artisan: "icons/svg/anchor.svg"
 };
 
 class AsoiafItem extends Item {
@@ -27,6 +28,16 @@ class AsoiafItem extends Item {
     const allowed = await super._preCreate(data, options, user);
     if (allowed === false) return false;
     if (!data.img || data.img === Item.DEFAULT_ICON) this.updateSource({ img: DEFAULT_ICONS[this.type] ?? Item.DEFAULT_ICON });
+  }
+
+  /** Un artisan prêté ou déplacé arrive sur son nouveau territoire avec un budget de 0. */
+  async _preUpdate(changes, options, user) {
+    const allowed = await super._preUpdate(changes, options, user);
+    if (allowed === false) return false;
+    const loan = foundry.utils.getProperty(changes, "system.loan");
+    if (this.type === "artisan" && loan !== undefined && loan !== this.system.loan) {
+      foundry.utils.setProperty(changes, "system.budget", 0);
+    }
   }
 }
 
@@ -48,7 +59,8 @@ Hooks.once("init", () => {
     drawback: ItemModels.DrawbackData,
     holding: ItemModels.HoldingData,
     domain: ItemModels.DomainData,
-    unit: ItemModels.UnitData
+    unit: ItemModels.UnitData,
+    artisan: ItemModels.ArtisanData
   };
 
   CONFIG.Actor.trackableAttributes = {

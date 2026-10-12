@@ -220,7 +220,7 @@ ASOIAF.holdingCatalog = {
     { name: "Autre enfant", cost: 5, heirStatus: 3 }
   ],
   wealth: [
-    { name: "Artisan", cost: 10, time: "2d6", fortune: "1", requirement: "Fort ou plus grand" },
+    { name: "Artisan", cost: 10, time: "2d6", fortune: "", requirement: "Fort ou plus grand", type: "artisan" },
     { name: "Bois sacré", cost: 5, time: "24+2d6", fortune: "2d6-6", requirement: "Royaume : le Nord" },
     { name: "Port", cost: 10, time: "3d6", fortune: "5", requirement: "Côte" },
     { name: "Septuaire", cost: 15, time: "12+2d6", fortune: "3", requirement: "Fort ou petite ville" },
@@ -275,6 +275,23 @@ ASOIAF.houseRoles = [
   "lord", "lady", "heir", "child", "castellan", "steward", "maester", "septon",
   "masterAtArms", "masterOfHorse", "masterOfTheHunt", "kennelmaster", "knight", "ward", "retainer"
 ];
+
+/**
+ * Artisans (règle maison) : jet de métier mensuel à Difficulté 9 ;
+ * réussite = degrés + 5 points de budget (max 10) ; 1 XP par degré.
+ */
+ASOIAF.artisan = {
+  difficulty: 9,
+  maxBudget: 10,
+  successBonus: 5,
+  leadXpBonus: 2,
+  rankXp: 30,
+  productionXp: 50,
+  resourceCost: 2,
+  dragonCost: 500,
+  borrowedWealth: -2,
+  lentWealth: 1
+};
 
 /** Utilitaire : trouve la valeur associée au premier palier >= value. */
 ASOIAF.lookup = (table, value) => table.find(([max]) => value <= max)[1];

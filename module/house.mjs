@@ -1,5 +1,6 @@
 import { ASOIAF } from "./config.mjs";
 import { readForm, rollTest } from "./dice.mjs";
+import { monthlyLoans } from "./artisans.mjs";
 
 const loc = key => game.i18n.localize(key);
 const resLabel = r => loc(`ASOIAF.Resource.${r}`);
@@ -233,7 +234,9 @@ export async function nextMonth(house) {
   if (updates.length) await house.updateEmbeddedDocuments("Item", updates);
 
   const without = s.fortuneRolled ? 0 : s.monthsWithoutFortune + 1;
+  const loans = monthlyLoans(house);
   await house.update({
+    "system.resources.wealth.value": Math.max(0, s.resources.wealth.value + loans.wealth),
     "system.month": s.month + 1,
     "system.fortuneRolled": false,
     "system.actionTaken": false,
@@ -242,6 +245,7 @@ export async function nextMonth(house) {
 
   let body = `<p>${game.i18n.format("ASOIAF.House.monthStart", { month: s.month + 1 })}</p>`;
   if (finished.length) body += `<p>${loc("ASOIAF.House.projectsDone")} : <strong>${finished.join(", ")}</strong></p>`;
+  if (loans.lines.length) body += `<p>${loc("ASOIAF.Artisan.loans")} :<br>${loans.lines.join("<br>")}</p>`;
   if (without >= 2) body += `<p class="warning">${loc("ASOIAF.House.fortuneRequired")}</p>`;
   await chat(house, loc("ASOIAF.House.nextMonth"), body);
 }
@@ -300,6 +304,9 @@ export async function donateGlory(house, resource) {
 export async function addHolding(house, resource, index, { underConstruction = false } = {}) {
   const entry = ASOIAF.holdingCatalog[resource]?.[index];
   if (!entry) return;
+  if (entry.type === "artisan") {
+    return house.createEmbeddedDocuments("Item", [{ name: entry.name, type: "artisan", system: { investment: entry.cost } }]);
+  }
   let monthsRemaining = 0;
   if (underConstruction && entry.time) monthsRemaining = (await new Roll(entry.time).evaluate()).total;
   const system = {

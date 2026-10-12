@@ -156,3 +156,35 @@ export class UnitData extends BaseItemData {
     this.populationCost = this.types.levies ? 2 : 0;
   }
 }
+
+/**
+ * Artisan de la Maison (règle maison) : budget, jets mensuels de métier, expérience.
+ */
+export class ArtisanData extends BaseItemData {
+  static defineSchema() {
+    return {
+      ...super.defineSchema(),
+      trade: text(),
+      ability: new StringField({ required: true, initial: "knowledge", choices: Object.keys(ASOIAF.abilities) }),
+      rank: num(5, { min: 1, max: 10 }),
+      bonusDice: num(0, { min: 0 }),
+      modifier: num(0),
+      budget: num(0, { min: 0, max: ASOIAF.artisan.maxBudget }),
+      xp: num(0, { min: 0 }),
+      penalty: num(0, { min: 0 }),
+      startedMonth: num(0, { min: 0 }),
+      leadExtraMonth: num(0, { min: 0 }),
+      rolledMonth: num(0, { min: 0 }),
+      productions: text(),
+      project: text(),
+      investment: num(10, { min: 0 }),
+      fortune: text(),
+      loan: new StringField({ required: true, initial: "home", choices: ["home", "lent", "borrowed"] }),
+      loanFree: new BooleanField({ initial: false })
+    };
+  }
+
+  get resource() {
+    return "wealth";
+  }
+}

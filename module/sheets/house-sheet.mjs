@@ -1,8 +1,9 @@
 import { AsoiafActorSheet } from "./base-sheet.mjs";
 import { ASOIAF } from "../config.mjs";
 import * as House from "../house.mjs";
+import * as Artisans from "../artisans.mjs";
 
-const HOUSE_ITEM_TYPES = ["holding", "domain", "unit"];
+const HOUSE_ITEM_TYPES = ["holding", "domain", "unit", "artisan"];
 
 export class HouseSheet extends AsoiafActorSheet {
   static DEFAULT_OPTIONS = {
@@ -21,7 +22,15 @@ export class HouseSheet extends AsoiafActorSheet {
       nextMonth: HouseSheet.#onNextMonth,
       manageResources: HouseSheet.#call(House.manageResources),
       donateGlory: HouseSheet.#withResource(House.donateGlory, "glory"),
-      addHolding: HouseSheet.#onAddHolding
+      addHolding: HouseSheet.#onAddHolding,
+      artisanStart: HouseSheet.#artisan(Artisans.startWork),
+      artisanRoll: HouseSheet.#artisan(Artisans.rollWork),
+      artisanInterrupt: HouseSheet.#artisan(Artisans.interrupt),
+      artisanSpend: HouseSheet.#artisan(Artisans.spendBudget),
+      artisanBuy: HouseSheet.#artisan(Artisans.buyBudget),
+      artisanXp: HouseSheet.#artisan(Artisans.spendXp),
+      artisanDeath: HouseSheet.#artisan(Artisans.death),
+      groupProject: HouseSheet.#call(Artisans.groupProject)
     }
   };
 
@@ -29,7 +38,7 @@ export class HouseSheet extends AsoiafActorSheet {
     sheet: { template: "systems/asoiaf/templates/actor/house-sheet.hbs", scrollable: [".sheet-body"] }
   };
 
-  static SHEET_TABS = ["resources", "holdings", "household", "history", "fortunes", "arms"];
+  static SHEET_TABS = ["resources", "holdings", "artisans", "household", "history", "fortunes", "arms"];
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
@@ -88,6 +97,27 @@ export class HouseSheet extends AsoiafActorSheet {
     }));
     context.catalog = Object.fromEntries(Object.entries(ASOIAF.holdingCatalog).map(([r, list]) =>
       [r, list.map((e, i) => ({ index: i, label: `${e.name} (${e.cost})` }))]));
+
+    const month = s.month;
+    const maxBudget = CONFIG.ASOIAF.artisan.maxBudget;
+    context.artisans = this._items("artisan").map(a => {
+      const sys = a.system;
+      const working = sys.startedMonth === month && sys.rolledMonth !== month;
+      const done = sys.rolledMonth === month;
+      return {
+        item: a, id: a.id,
+        ability: loc(`ASOIAF.Ability.${sys.ability}`),
+        budgetPct: Math.round(100 * sys.budget / maxBudget),
+        state: done ? "done" : working ? "working" : "idle",
+        stateLabel: loc(`ASOIAF.Artisan.state_${done ? "done" : working ? "working" : "idle"}`),
+        canStart: !working && !done && sys.startedMonth !== month && sys.budget > 0,
+        canRoll: working,
+        nextRank: sys.xp >= CONFIG.ASOIAF.artisan.rankXp || sys.xp >= CONFIG.ASOIAF.artisan.productionXp,
+        loanLabel: sys.loan === "home" ? "" : loc(`ASOIAF.Artisan.loan_${sys.loan}`)
+      };
+    });
+    context.artisanRules = CONFIG.ASOIAF.artisan;
+    context.workingCount = context.artisans.filter(a => a.state === "working").length;
 
     context.members = House.getMembers(this.actor).map(m => ({
       ...m,
@@ -149,6 +179,14 @@ export class HouseSheet extends AsoiafActorSheet {
   }
 
   /* -------------------------------------------- */
+
+  /** Action portant sur un artisan (ligne data-item-id). */
+  static #artisan(fn) {
+    return function (event, target) {
+      const item = this.actor.items.get(target.closest("[data-item-id]")?.dataset.itemId);
+      if (item) return fn(this.actor, item);
+    };
+  }
 
   static #call(fn) {
     return function () {

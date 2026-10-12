@@ -376,3 +376,23 @@
 .asoiaf a.slot:hover { box-shadow: 0 0 4px var(--as-gold); }
 .asoiaf .slots-row button { padding: 0 6px; }
 .asoiaf-chat .absorb-buttons { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+
+/* Artisans */
+.asoiaf .artisans { display: flex; flex-direction: column; gap: 8px; }
+.asoiaf .artisan-card {
+  border: 1px solid var(--as-line); border-left: 5px solid #8a8a8a; border-radius: 4px;
+  background: rgba(255, 255, 255, 0.4); padding: 6px 8px;
+}
+.asoiaf .artisan-card.state-working { border-left-color: var(--as-gold); }
+.asoiaf .artisan-card.state-done { border-left-color: var(--as-green); }
+.asoiaf .artisan-head { display: flex; align-items: center; gap: 8px; }
+.asoiaf .artisan-head img { width: 36px; height: 36px; border: 1px solid var(--as-line); border-radius: 3px; background: #fff; }
+.asoiaf .artisan-meta { font-size: 0.85em; color: var(--as-ink-soft); }
+.asoiaf .state-badge {
+  font-size: 0.75em; text-transform: uppercase; padding: 1px 6px; border-radius: 8px;
+  background: var(--as-parchment-dark); border: 1px solid var(--as-line);
+}
+.asoiaf .budget-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 0.9em; }
+.asoiaf .budget-row .bar { flex: 1; margin: 0; }
+.asoiaf .bar.budget > div { background: linear-gradient(90deg, var(--as-gold), #d8b55a); }
+.asoiaf .artisan-card .buttons-row button { font-size: 0.85em; }

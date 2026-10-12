@@ -1,7 +1,7 @@
 import { AsoiafActorSheet } from "./base-sheet.mjs";
 import { ASOIAF } from "../config.mjs";
 
-const HOUSE_ITEM_TYPES = ["holding", "domain", "unit"];
+const HOUSE_ITEM_TYPES = ["holding", "domain", "unit", "artisan"];
 
 export class CharacterSheet extends AsoiafActorSheet {
   static DEFAULT_OPTIONS = {

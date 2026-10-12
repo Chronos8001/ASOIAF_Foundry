@@ -46,6 +46,8 @@ export class AsoiafItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         key: k, cost: t.cost, discipline: t.discipline >= 0 ? `+${t.discipline}` : t.discipline,
         label: game.i18n.localize(`ASOIAF.UnitType.${k}`), checked: item.system.types?.[k]
       })),
+      loanOptions: Object.fromEntries(["home", "lent", "borrowed"].map(k => [k, `ASOIAF.Artisan.loan_${k}`])),
+      artisanMax: ASOIAF.artisan.maxBudget,
       statusOptions: options(["ready", "disorganized", "routed", "destroyed"], "ASOIAF.UnitStatus"),
       linkedName: item.system.linked ? fromUuidSync(item.system.linked)?.name : null
     });

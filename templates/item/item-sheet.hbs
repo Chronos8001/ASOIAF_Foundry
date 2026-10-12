@@ -113,6 +113,26 @@
       <label class="block">{{localize "ASOIAF.Unit.abilities"}}<input type="text" name="system.abilities" value="{{system.abilities}}" placeholder="{{localize 'ASOIAF.Unit.abilitiesPlaceholder'}}"></label>
     {{/if}}
 
+    {{#if isType.artisan}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Artisan.trade"}}<input type="text" name="system.trade" value="{{system.trade}}" placeholder="{{localize 'ASOIAF.Artisan.tradePlaceholder'}}"></label>
+        <label>{{localize "ASOIAF.Artisan.ability"}}<select name="system.ability">{{selectOptions abilityOptions selected=system.ability localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Artisan.rank"}}<input type="number" min="1" max="10" name="system.rank" value="{{system.rank}}"></label>
+        <label>{{localize "ASOIAF.Roll.bonusDice"}}<input type="number" min="0" name="system.bonusDice" value="{{system.bonusDice}}"></label>
+        <label data-tooltip="ASOIAF.Artisan.modifierHint">{{localize "ASOIAF.Artisan.modifier"}}<input type="number" name="system.modifier" value="{{system.modifier}}"></label>
+        <label>{{localize "ASOIAF.Artisan.penalty"}}<input type="number" min="0" name="system.penalty" value="{{system.penalty}}"></label>
+        <label>{{localize "ASOIAF.Artisan.budget"}} (max {{artisanMax}})<input type="number" min="0" max="{{artisanMax}}" name="system.budget" value="{{system.budget}}"></label>
+        <label>{{localize "ASOIAF.Artisan.xp"}}<input type="number" min="0" name="system.xp" value="{{system.xp}}"></label>
+        <label data-tooltip="ASOIAF.Artisan.investmentHint">{{localize "ASOIAF.Artisan.investment"}}<input type="number" min="0" name="system.investment" value="{{system.investment}}"></label>
+        <label data-tooltip="ASOIAF.Holding.fortuneHint">{{localize "ASOIAF.Holding.fortune"}}<input type="text" name="system.fortune" value="{{system.fortune}}"></label>
+        <label>{{localize "ASOIAF.Artisan.loan"}}<select name="system.loan">{{selectOptions loanOptions selected=system.loan localize=true}}</select></label>
+        <label class="checkbox"><input type="checkbox" name="system.loanFree" {{checked system.loanFree}}> {{localize "ASOIAF.Artisan.loanFree"}}</label>
+      </div>
+      <p class="hint">{{localize "ASOIAF.Artisan.loanHint"}}</p>
+      <label class="block">{{localize "ASOIAF.Artisan.productions"}}<input type="text" name="system.productions" value="{{system.productions}}"></label>
+      <label class="block">{{localize "ASOIAF.Artisan.project"}}<input type="text" name="system.project" value="{{system.project}}"></label>
+    {{/if}}
+
     <label class="block">{{localize "ASOIAF.Common.description"}}<textarea name="system.description" rows="6">{{system.description}}</textarea></label>
   </section>
 </div>

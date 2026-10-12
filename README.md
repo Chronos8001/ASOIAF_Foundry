@@ -69,5 +69,25 @@ Copier le contenu du dépôt dans `Data/systems/asoiaf/`. Le nom du dossier doit
   - dépense de la Gloire du groupe.
 - **Blason** : image de l'écu, devise et description héraldique.
 
+### Artisans (règle maison)
+Onglet **Artisans** de la fiche de Maison. Pour en créer un : bouton dédié, ou « Artisan » dans les possessions de Richesse.
+- **Au départ** : rang 5 dans la compétence de métier, budget max 10, Richesse investie (perdue au décès).
+- **Début de mois** : « Se mettre au travail » dépense 1 point de budget (un seul par mois).
+- **Fin de mois** : jet de métier contre Difficulté 9.
+  - Réussite : +degrés +5 au budget, et +1 XP par degré.
+  - Échec : le point est perdu.
+  - Échec critique : en plus, −1D au prochain jet.
+  - Un bouton signale un travail interrompu (attaque) : le mois et le point sont perdus.
+- **Projet commun** (au moins deux artisans au travail) :
+  - le chef de projet peut dépenser un 2e point ;
+  - +1B par artisan au-delà du chef ;
+  - seuls les bonus du chef s'appliquent ;
+  - tous gagnent l'XP, le chef +2 XP si le projet réussit.
+- **Budget** :
+  - pour l'obtenir : 2 points de ressource, ou 500 dragons d'or prélevés sur un membre de la maisonnée ;
+  - pour le dépenser : on indique le bénéfice obtenu, et la dépense est consignée dans le chat.
+- **Progression** : 30 XP pour +1D, 50 XP pour une nouvelle production ou spécialité.
+- **Prêt ou accueil** : le budget repasse à 0. Chaque mois, la maison qui accueille perd 2 de Richesse et celle qui prête gagne 1, sauf prêt gracieux. Le prélèvement se fait au passage au mois suivant.
+
 ## Points de règles à noter
 - Les détails d'une Fortune (quelles ressources montent ou baissent) restent au choix du Narrateur. La carte de discussion rappelle l'amplitude prévue par les règles.
