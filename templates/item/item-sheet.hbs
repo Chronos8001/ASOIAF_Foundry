@@ -1,0 +1,118 @@
+<div class="asoiaf-sheet item-sheet">
+  <header class="sheet-header item-header">
+    <img class="portrait small" src="{{item.img}}" alt="" data-action="editImage">
+    <div class="header-main">
+      <input class="actor-name" type="text" name="name" value="{{item.name}}">
+      <span class="type-label">{{typeLabel}}</span>
+    </div>
+  </header>
+
+  <section class="item-body">
+    {{#if isType.weapon}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Weapon.specialty"}}<select name="system.specialty">{{selectOptions specialtyOptions selected=system.specialty localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Weapon.training"}} (B)<input type="number" min="0" name="system.training" value="{{system.training}}"></label>
+        <label>{{localize "ASOIAF.Weapon.damageAbility"}}<select name="system.damageAbility">{{selectOptions damageAbilityOptions selected=system.damageAbility localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Weapon.damageMod"}}<input type="number" name="system.damageMod" value="{{system.damageMod}}"></label>
+        <label>{{localize "ASOIAF.Weapon.defensive"}}<input type="number" min="0" name="system.defensive" value="{{system.defensive}}"></label>
+        <label>{{localize "ASOIAF.Weapon.piercing"}}<input type="number" min="0" name="system.piercing" value="{{system.piercing}}"></label>
+        <label>{{localize "ASOIAF.Weapon.grade"}}<select name="system.grade">{{selectOptions gradeOptions selected=system.grade localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Combat.bulk"}}<input type="number" min="0" name="system.bulk" value="{{system.bulk}}"></label>
+        <label>{{localize "ASOIAF.Common.cost"}}<input type="text" name="system.cost" value="{{system.cost}}"></label>
+        <label class="checkbox"><input type="checkbox" name="system.equipped" {{checked system.equipped}}> {{localize "ASOIAF.Common.equipped"}}</label>
+      </div>
+      <label class="block">{{localize "ASOIAF.Weapon.qualities"}}<input type="text" name="system.qualities" value="{{system.qualities}}"></label>
+    {{/if}}
+
+    {{#if isType.armor}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Armor.rating"}}<input type="number" min="0" name="system.rating" value="{{system.rating}}"></label>
+        <label>{{localize "ASOIAF.Armor.penalty"}}<input type="number" max="0" name="system.penalty" value="{{system.penalty}}"></label>
+        <label>{{localize "ASOIAF.Combat.bulk"}}<input type="number" min="0" name="system.bulk" value="{{system.bulk}}"></label>
+        <label>{{localize "ASOIAF.Common.cost"}}<input type="text" name="system.cost" value="{{system.cost}}"></label>
+        <label class="checkbox"><input type="checkbox" name="system.equipped" {{checked system.equipped}}> {{localize "ASOIAF.Common.equipped"}}</label>
+      </div>
+    {{/if}}
+
+    {{#if isType.equipment}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Common.quantity"}}<input type="number" min="0" name="system.quantity" value="{{system.quantity}}"></label>
+        <label>{{localize "ASOIAF.Combat.bulk"}}<input type="number" min="0" name="system.bulk" value="{{system.bulk}}"></label>
+        <label>{{localize "ASOIAF.Common.cost"}}<input type="text" name="system.cost" value="{{system.cost}}"></label>
+        <label class="checkbox"><input type="checkbox" name="system.equipped" {{checked system.equipped}}> {{localize "ASOIAF.Common.carried"}}</label>
+      </div>
+    {{/if}}
+
+    {{#if isType.benefit}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Benefit.category"}}<input type="text" name="system.category" value="{{system.category}}"></label>
+        <label>{{localize "ASOIAF.Benefit.destinyCost"}}<input type="number" min="0" name="system.destinyCost" value="{{system.destinyCost}}"></label>
+      </div>
+      <label class="block">{{localize "ASOIAF.Benefit.requirements"}}<input type="text" name="system.requirements" value="{{system.requirements}}"></label>
+    {{/if}}
+
+    {{#if isType.drawback}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Drawback.flawAbility"}}
+          <select name="system.flawAbility"><option value="">—</option>{{selectOptions abilityOptions selected=system.flawAbility localize=true}}</select>
+        </label>
+        <label>{{localize "ASOIAF.Drawback.flawDice"}}<input type="number" min="0" name="system.flawDice" value="{{system.flawDice}}"></label>
+      </div>
+      <p class="hint">{{localize "ASOIAF.Drawback.hint"}}</p>
+    {{/if}}
+
+    {{#if isType.holding}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Holding.resource"}}<select name="system.resource">{{selectOptions resourceOptions selected=system.resource localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Holding.investment"}}<input type="number" min="0" name="system.investment" value="{{system.investment}}"></label>
+        <label>{{localize "ASOIAF.Holding.time"}}<input type="text" name="system.time" value="{{system.time}}"></label>
+        <label>{{localize "ASOIAF.Holding.monthsRemaining"}}<input type="number" min="0" name="system.monthsRemaining" value="{{system.monthsRemaining}}"></label>
+        <label data-tooltip="ASOIAF.Holding.fortuneHint">{{localize "ASOIAF.Holding.fortune"}}<input type="text" name="system.fortune" value="{{system.fortune}}"></label>
+        <label>{{localize "ASOIAF.Holding.defenseBonus"}}<input type="number" min="0" name="system.defenseBonus" value="{{system.defenseBonus}}"></label>
+      </div>
+      <label class="block">{{localize "ASOIAF.Holding.requirement"}}<input type="text" name="system.requirement" value="{{system.requirement}}"></label>
+      {{#if system.linked}}
+        <p><i class="fa-solid fa-flag"></i> {{localize "ASOIAF.Holding.linked"}} : <a data-action="openUuid" data-uuid="{{system.linked}}">{{linkedName}}</a></p>
+      {{/if}}
+    {{/if}}
+
+    {{#if isType.domain}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Domain.terrain"}}<select name="system.terrain">{{selectOptions terrainOptions selected=system.terrain}}</select></label>
+        <label>{{localize "ASOIAF.Common.cost"}}<strong class="big">{{system.investment}}</strong></label>
+      </div>
+      <h4>{{localize "ASOIAF.Domain.features"}}</h4>
+      <div class="features-grid">
+        {{#each features}}
+          <label><span>{{label}} <small>(+{{cost}})</small></span>
+            <input class="mini" type="number" min="0" name="system.features.{{key}}" value="{{value}}"></label>
+        {{/each}}
+      </div>
+    {{/if}}
+
+    {{#if isType.unit}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Unit.training"}}<select name="system.training">{{selectOptions trainingOptions selected=system.training}}</select></label>
+        <label>{{localize "ASOIAF.Unit.status"}}<select name="system.status">{{selectOptions statusOptions selected=system.status localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Unit.disciplineMod"}}<input type="number" name="system.disciplineMod" value="{{system.disciplineMod}}"></label>
+      </div>
+      <div class="unit-summary">
+        <span>{{localize "ASOIAF.Common.cost"}} : <strong>{{system.investment}}</strong></span>
+        <span>{{localize "ASOIAF.Unit.discipline"}} : <strong>{{system.discipline}}</strong></span>
+        <span>{{localize "ASOIAF.Unit.experience"}} : <strong>{{system.experience}}</strong></span>
+        {{#if system.wealthCost}}<span>{{localize "ASOIAF.Resource.wealth"}} : <strong>-{{system.wealthCost}}</strong></span>{{/if}}
+        {{#if system.populationCost}}<span>{{localize "ASOIAF.Resource.population"}} : <strong>-{{system.populationCost}}</strong></span>{{/if}}
+      </div>
+      <h4>{{localize "ASOIAF.Unit.types"}}</h4>
+      <div class="features-grid">
+        {{#each unitTypes}}
+          <label class="checkbox"><input type="checkbox" name="system.types.{{key}}" {{checked checked}}>
+            {{label}} <small>({{cost}} / {{discipline}})</small></label>
+        {{/each}}
+      </div>
+      <label class="block">{{localize "ASOIAF.Unit.abilities"}}<input type="text" name="system.abilities" value="{{system.abilities}}" placeholder="{{localize 'ASOIAF.Unit.abilitiesPlaceholder'}}"></label>
+    {{/if}}
+
+    <label class="block">{{localize "ASOIAF.Common.description"}}<textarea name="system.description" rows="6">{{system.description}}</textarea></label>
+  </section>
+</div>

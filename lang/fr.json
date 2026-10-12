@@ -1,0 +1,315 @@
+{
+  "TYPES": {
+    "Actor": { "character": "Personnage", "npc": "PNJ", "house": "Maison" },
+    "Item": {
+      "weapon": "Arme", "armor": "Armure", "equipment": "Équipement", "benefit": "Avantage",
+      "drawback": "Handicap", "holding": "Possession", "domain": "Domaine", "unit": "Unité"
+    }
+  },
+  "ASOIAF": {
+    "Sheet": { "character": "Fiche de personnage (Trône de Fer)", "house": "Fiche de Maison (Trône de Fer)", "item": "Fiche d'objet (Trône de Fer)" },
+    "Tab": {
+      "abilities": "Capacités", "combat": "Combat", "intrigue": "Intrigue", "destiny": "Destinée",
+      "gear": "Équipement", "bio": "Biographie",
+      "resources": "Ressources", "holdings": "Possessions", "household": "Maisonnée",
+      "history": "Histoire", "fortunes": "Fortunes", "arms": "Blason"
+    },
+    "Common": {
+      "name": "Nom", "add": "Ajouter", "addFromBook": "Ajouter (livre)", "custom": "Personnalisé",
+      "delete": "Supprimer", "confirmDelete": "Supprimer {name} ?", "cost": "Coût",
+      "description": "Description", "equipped": "Équipé", "carried": "Porté", "none": "Aucune",
+      "quantity": "Qté", "total": "Total"
+    },
+    "Ability": {
+      "agility": "Agilité", "animalHandling": "Dressage", "athletics": "Athlétisme", "awareness": "Vigilance",
+      "cunning": "Ruse", "deception": "Duperie", "endurance": "Endurance", "fighting": "Combat",
+      "healing": "Soins", "knowledge": "Connaissance", "language": "Langue", "marksmanship": "Tir",
+      "persuasion": "Persuasion", "status": "Statut", "stealth": "Discrétion", "survival": "Survie",
+      "thievery": "Larcin", "warfare": "Art de la guerre", "will": "Volonté"
+    },
+    "Specialty": {
+      "acrobatics": "Acrobaties", "balance": "Équilibre", "contortions": "Contorsions", "dodge": "Esquive", "quickness": "Rapidité",
+      "charm": "Charme", "drive": "Conduite", "ride": "Équitation", "train": "Entraînement",
+      "climb": "Escalade", "jump": "Saut", "run": "Course", "strength": "Force", "swim": "Natation", "throw": "Lancer",
+      "empathy": "Empathie", "notice": "Remarquer",
+      "decipher": "Déchiffrer", "logic": "Logique", "memory": "Mémoire",
+      "act": "Comédie", "bluff": "Bluff", "cheat": "Tricherie", "disguise": "Déguisement",
+      "resilience": "Résistance", "stamina": "Vigueur",
+      "axes": "Haches", "bludgeons": "Armes contondantes", "brawling": "Bagarre", "fencing": "Escrime",
+      "longBlades": "Lames longues", "polearms": "Armes d'hast", "shields": "Boucliers", "shortBlades": "Lames courtes", "spears": "Lances",
+      "diagnose": "Diagnostic", "treatAilment": "Soigner les maladies", "treatInjury": "Soigner les blessures",
+      "education": "Éducation", "research": "Recherche", "streetwise": "Milieux interlopes",
+      "bows": "Arcs", "crossbows": "Arbalètes", "siege": "Engins de siège", "thrown": "Armes de jet",
+      "bargain": "Marchandage", "convince": "Convaincre", "incite": "Inciter", "intimidate": "Intimider", "seduce": "Séduire", "taunt": "Provoquer",
+      "breeding": "Éducation noble", "reputation": "Réputation", "stewardship": "Intendance", "tournaments": "Tournois",
+      "blendIn": "Se fondre", "sneak": "Furtivité",
+      "forage": "Cueillette", "hunt": "Chasse", "orientation": "Orientation", "track": "Pistage",
+      "pickLock": "Crochetage", "sleightOfHand": "Escamotage", "steal": "Vol",
+      "command": "Commandement", "strategy": "Stratégie", "tactics": "Tactique",
+      "courage": "Courage", "coordinate": "Coordination", "dedication": "Dévouement"
+    },
+    "Difficulty": {
+      "automatic": "Automatique", "easy": "Facile", "routine": "Routinier", "challenging": "Exigeant",
+      "formidable": "Redoutable", "hard": "Difficile", "veryHard": "Très difficile", "heroic": "Héroïque"
+    },
+    "Degree": { "marginal": "Réussite de justesse", "great": "Belle réussite", "incredible": "Réussite incroyable", "astonishing": "Réussite stupéfiante" },
+    "Age": {
+      "youth": "Enfant", "adolescent": "Adolescent", "youngAdult": "Jeune adulte", "adult": "Adulte",
+      "middleAge": "Âge mûr", "old": "Âgé", "veryOld": "Très âgé", "venerable": "Vénérable"
+    },
+    "Grade": { "poor": "Médiocre", "common": "Commune", "superior": "Supérieure", "extraordinary": "Extraordinaire" },
+    "Roll": {
+      "roll": "Lancer", "testDice": "Dés de test", "testDiceShort": "dés", "bonusDice": "Dés bonus (B)",
+      "penaltyDice": "Dés de pénalité (D)", "modifier": "Modificateur", "difficulty": "Difficulté",
+      "degrees": "degré(s)", "vs": "contre", "marginalFailure": "Échec de justesse", "criticalFailure": "Échec critique",
+      "hint": "Les dés bonus ne s'additionnent pas : on garde les meilleurs. Les dés de pénalité retirent ensuite les plus faibles. Blessures légères, armure (Agilité) et frustration sont déjà comptées."
+    },
+    "Derived": {
+      "combatDefense": "Défense de combat", "intrigueDefense": "Défense d'intrigue", "armorRating": "VA",
+      "movement": "Déplacement", "health": "Santé", "composure": "Sang-froid"
+    },
+    "Character": {
+      "house": "Maison", "dropHouse": "Glissez une Maison ici", "unlinkHouse": "Délier la Maison",
+      "position": "Rôle / position", "age": "Âge", "xp": "Expérience", "xpTotal": "Expérience gagnée",
+      "xpSpent": "Expérience dépensée", "glory": "Gloire", "languages": "Langues parlées (ex. Langue commune 3, Haut valyrien 2)",
+      "abilitiesHint": "Cliquez sur une capacité ou une spécialité pour lancer. Rang par défaut : 2. Une spécialité ne peut dépasser le rang de sa capacité.",
+      "flawTooltip": "Dés de pénalité dus aux défauts"
+    },
+    "Combat": {
+      "condition": "État", "injuries": "Blessures légères", "wounds": "Blessures graves",
+      "injuryHint": "Encaisser une blessure légère : annule des dégâts égaux à l'Endurance, -1 à tous les résultats. Maximum : rang d'Endurance.",
+      "woundHint": "Encaisser une blessure grave : annule tous les dégâts d'une attaque, -1D à tous les tests. Autant que l'Endurance = mort.",
+      "endCombat": "Fin du combat (récupérer la Santé)", "defense": "Défense", "armorPenalty": "Pénalité d'armure",
+      "defensiveBonus": "Bonus défensif (bouclier, parade)", "bulk": "Encombrement", "weapons": "Armes", "armor": "Armures"
+    },
+    "Intrigue": {
+      "title": "Intrigue", "frustration": "Frustration", "end": "Fin de l'intrigue",
+      "frustrationHint": "Chaque point de frustration annule une Influence égale à la Volonté et impose -1D en Duperie et Persuasion. Au-delà de la Volonté : défaite."
+    },
+    "Destiny": {
+      "points": "Points de Destinée", "burned": "Brûlés", "invested": "Investis dans les avantages",
+      "benefits": "Avantages", "drawbacks": "Handicaps et défauts", "short": "PD"
+    },
+    "Coin": { "dragons": "Dragons d'or", "stags": "Cerfs d'argent", "pennies": "Sous de cuivre" },
+    "Gear": { "title": "Équipement" },
+    "Bio": {
+      "concept": "Concept", "goal": "But", "motivation": "Motivation", "virtue": "Vertu", "vice": "Vice",
+      "background": "Historique", "appearance": "Apparence", "notes": "Notes"
+    },
+    "Weapon": {
+      "specialty": "Spécialité", "training": "Entraînement", "damage": "Dégâts", "damageAbility": "Capacité de dégâts",
+      "damageMod": "Modificateur de dégâts", "qualities": "Qualités", "defensive": "Bonus défensif",
+      "piercing": "Perforante", "grade": "Qualité de fabrication"
+    },
+    "Armor": { "rating": "VA", "penalty": "Pénalité" },
+    "Benefit": { "category": "Catégorie", "destinyCost": "Coût en Destinée", "requirements": "Prérequis" },
+    "Drawback": {
+      "flawAbility": "Défaut sur la capacité", "flawDice": "Dés de pénalité",
+      "hint": "Un défaut impose -1D sur une capacité ; il est ajouté automatiquement aux tests."
+    },
+    "Chat": {
+      "applyDamage": "Appliquer aux cibles", "noTarget": "Ciblez ou sélectionnez un jeton.",
+      "damageTaken": "{name} subit {taken} dégâts (VA {ar}). Santé : {value}/{max}.",
+      "defeated": "{name} subit {taken} dégâts (VA {ar}) et est vaincu ! Encaissez une blessure légère ou grave pour l'éviter.",
+      "dead": "{name} succombe à ses blessures."
+    },
+    "Warn": {
+      "maxInjuries": "Nombre maximal de blessures légères atteint (rang d'Endurance).",
+      "wrongItemType": "Ce type d'objet n'a pas sa place sur cette fiche.",
+      "chooseRealm": "Choisissez d'abord un royaume.",
+      "fortuneAlready": "La fortune de ce mois a déjà été résolue.",
+      "badExchange": "Cet échange n'est pas permis (voir Table 6-19).",
+      "noGlory": "Plus de Gloire à dépenser."
+    },
+    "Resource": {
+      "defense": "Défense", "influence": "Influence", "lands": "Terres", "law": "Loi",
+      "population": "Population", "power": "Puissance", "wealth": "Richesse"
+    },
+    "Band": {
+      "defense": {
+        "0": "Terres désolées, aucune fortification ni route.",
+        "1": "Presque tout est sauvage ; une ou deux routes, une place forte mineure au mieux.",
+        "2": "Quelques cultures, un donjon ou une petite place forte, quelques routes, rivières ou ports.",
+        "3": "Défendable : au moins une ville fortifiée ou un château, des routes et sans doute des rivières.",
+        "4": "Bonnes défenses : un château presque à coup sûr et d'autres points forts, ou un terrain naturellement protecteur.",
+        "5": "Excellentes défenses, ouvrages humains et terrain défendable combinés.",
+        "6": "Défenses extraordinaires : attaquer ces terres coûte très cher.",
+        "7": "Parmi les plus grandes défenses du monde, comme le Val d'Arryn."
+      },
+      "influence": {
+        "0": "Le nom de la maison a été effacé des registres.",
+        "1": "Statut max. 2 : chevalier fieffé mineur.",
+        "2": "Statut max. 3 : chevalier fieffé important.",
+        "3": "Statut max. 4 : petite maison mineure (Mormont, Westerling).",
+        "4": "Statut max. 4 : maison mineure (Clegane, Karstark).",
+        "5": "Statut max. 5 : maison mineure puissante (Florent, Frey).",
+        "6": "Statut max. 6 : maison majeure (Tully, Martell).",
+        "7": "Statut max. 7 : grande maison (Arryn, Stark, Lannister)."
+      },
+      "lands": {
+        "0": "Sans terre.",
+        "1": "Une parcelle, pas plus grande qu'un bourg.",
+        "2": "Une petite étendue : une petite île ou une grande ville et ses environs.",
+        "3": "Une étendue modeste ou une île moyenne (Frey).",
+        "4": "Plusieurs reliefs, des îles ou archipels (Greyjoy).",
+        "5": "Une vaste région aux terrains variés (Martell et Dorne).",
+        "6": "Une part considérable de Westeros (Stark et le Nord).",
+        "7": "La plupart des Sept Couronnes."
+      },
+      "law": {
+        "0": "Terres sans loi, hors de toute autorité.",
+        "1": "Bandits et pillards sévissent sur vos terres.",
+        "2": "Le brigandage pose problème aux marges de vos terres.",
+        "3": "Niveau habituel de Westeros : le crime est courant mais contenu.",
+        "4": "Votre contrôle est fort, le crime peu fréquent.",
+        "5": "Le crime est rare.",
+        "6": "Presque aucun crime.",
+        "7": "Aucun crime sur vos terres."
+      },
+      "population": {
+        "0": "Désert : personne ne vit sous votre autorité.",
+        "1": "Très peu peuplé, de minuscules hameaux épars.",
+        "2": "Population faible, aucune communauté au-delà d'un petit bourg.",
+        "3": "Population typique : fermes, hameaux, un ou deux petits bourgs.",
+        "4": "Population modeste : au moins une ville et plusieurs hameaux.",
+        "5": "Forte population, une grande ville ou plusieurs bourgs.",
+        "6": "Population immense.",
+        "7": "Tout ou presque tout Westeros."
+      },
+      "power": {
+        "0": "Aucune troupe, personne de loyal.",
+        "1": "Garde personnelle : une ou deux épées liges et quelques manants armés.",
+        "2": "Petite force, surtout composée de petites gens.",
+        "3": "Force modeste avec quelques troupes entraînées.",
+        "4": "Force entraînée, de la cavalerie et peut-être des navires ; un banneret possible.",
+        "5": "Grande armée variée et compétente, probablement une petite flotte.",
+        "6": "Plusieurs bannerets et une armée considérable.",
+        "7": "La force de la plupart des Sept Couronnes."
+      },
+      "wealth": {
+        "0": "Dénuement : la famille est sans le sou.",
+        "1": "Pauvreté : la famille peine à joindre les deux bouts.",
+        "2": "Modeste : peu de surplus, aucun luxe.",
+        "3": "Ordinaire : de quoi vivre.",
+        "4": "Prospère : de quoi tenir son rang.",
+        "5": "Aisée : la famille vit dans le confort.",
+        "6": "Riche : la famille ne manque de rien.",
+        "7": "Décadente : des festins de soixante-dix-sept plats."
+      }
+    },
+    "Realm": {
+      "kingsLanding": "Port-Réal", "dragonstone": "Peyredragon", "north": "Le Nord", "ironIslands": "Les Îles de Fer",
+      "riverlands": "Le Conflans", "mountainsOfTheMoon": "Les Montagnes de la Lune (le Val)", "westerlands": "L'Ouest",
+      "reach": "Le Bief", "stormlands": "Les Terres de l'Orage", "dorne": "Dorne"
+    },
+    "Liege": {
+      "kingsLanding": "Robert Baratheon, roi des Sept Couronnes", "dragonstone": "Stannis Baratheon, sire de Peyredragon",
+      "north": "Eddard Stark, sire de Winterfell", "ironIslands": "Balon Greyjoy, lord Faucheur de Pyk",
+      "riverlands": "Hoster Tully, sire de Vivesaigues", "mountainsOfTheMoon": "Jon Arryn, sire des Eyrié",
+      "westerlands": "Tywin Lannister, sire de Castral Roc", "reach": "Mace Tyrell, sire de Hautjardin",
+      "stormlands": "Renly Baratheon, sire d'Accalmie", "dorne": "Doran Martell, prince de Lancehélion"
+    },
+    "Founding": {
+      "ancient": "Antique (Âge des Héros, 1d6+3 évén.)", "veryOld": "Très ancienne (invasion andale, 1d6+2)",
+      "old": "Ancienne (invasion rhoynar, 1d6+1)", "established": "Établie (Conquête d'Aegon, 1d6)",
+      "recent": "Récente (rébellion Feunoyr, 1d6-1)", "new": "Nouvelle (guerre de l'Usurpateur, 1d6-2)"
+    },
+    "Event": {
+      "doom": "Funeste destin", "defeat": "Défaite", "catastrophe": "Catastrophe", "madness": "Folie",
+      "invasion": "Invasion / révolte", "scandal": "Scandale", "treachery": "Traîtrise", "decline": "Déclin",
+      "infrastructure": "Infrastructures", "ascent": "Ascension", "favor": "Faveur", "victory": "Victoire",
+      "villain": "Scélérat", "glory": "Gloire", "conquest": "Conquête", "windfall": "Aubaine"
+    },
+    "Fortune": {
+      "disaster": "Désastre", "curse": "Malédiction", "decline": "Déclin",
+      "growth": "Croissance", "blessing": "Bénédiction", "boon": "Aubaine"
+    },
+    "FortuneEffect": {
+      "boon": "Bienfait considérable : une ressource gagne 1d6, ou deux ressources gagnent 1d3 chacune. Faveur, alliance, mariage profitable…",
+      "blessing": "Embellie : une ressource gagne 1d3, ou deux ressources gagnent 1 chacune. Alliance utile, invitation à un tournoi…",
+      "growth": "Croissance : une ressource gagne 1. Don de terre, essor de la population, reprise économique…",
+      "decline": "Déclin : une ressource perd 1. Perte de terre, défenses affaiblies, maladie…",
+      "curse": "Revers significatif : une ressource perd 1d3, ou deux ressources perdent 1. Brigands, intempéries, désertion…",
+      "disaster": "Catastrophe : une ressource perd 1d6, ou deux ressources perdent 1d3. Peste, disgrâce, anarchie…"
+    },
+    "Role": {
+      "lord": "Seigneur", "lady": "Dame", "heir": "Héritier", "child": "Enfant", "castellan": "Châtelain",
+      "steward": "Intendant", "maester": "Mestre", "septon": "Septon / septa", "masterAtArms": "Maître d'armes",
+      "masterOfHorse": "Maître des chevaux", "masterOfTheHunt": "Grand veneur", "kennelmaster": "Maître-chien",
+      "knight": "Chevalier lige", "ward": "Pupille", "retainer": "Serviteur"
+    },
+    "Terrain": { "hills": "Collines", "mountains": "Montagnes", "plains": "Plaines", "wetlands": "Marais" },
+    "Feature": {
+      "coast": "Côte", "hamlet": "Hameau", "smallTown": "Petit bourg", "largeTown": "Gros bourg",
+      "smallCity": "Petite ville", "largeCity": "Grande ville", "grassland": "Prairie", "island": "Île",
+      "road": "Route", "ruin": "Ruine", "stream": "Ruisseau", "river": "Rivière", "pond": "Étang",
+      "lake": "Lac", "lightWoods": "Bois clairsemé", "denseWoods": "Forêt dense"
+    },
+    "Training": { "green": "Bleus", "trained": "Entraînés", "veteran": "Vétérans", "elite": "Élite" },
+    "UnitType": {
+      "archers": "Archers", "cavalry": "Cavalerie", "criminals": "Criminels", "crusaders": "Croisés",
+      "engineers": "Ingénieurs", "garrison": "Garnison", "guerillas": "Guérilleros", "infantry": "Infanterie",
+      "mercenaries": "Mercenaires", "levies": "Levées paysannes", "personalGuard": "Garde personnelle",
+      "raiders": "Pillards", "sailors": "Marins", "scouts": "Éclaireurs", "special": "Spéciale",
+      "support": "Soutien", "warships": "Navires de guerre"
+    },
+    "UnitStatus": { "ready": "Prête", "disorganized": "Désorganisée", "routed": "En déroute", "destroyed": "Détruite" },
+    "Holding": {
+      "resource": "Ressource", "investment": "Investissement", "time": "Temps de construction (mois)",
+      "monthsRemaining": "Mois restants", "fortune": "Bonus de Fortune", "defenseBonus": "Bonus de Défense des unités",
+      "requirement": "Prérequis", "linked": "Maison liée", "complete": "Terminée",
+      "fortuneHint": "Nombre (ex. 3) ou formule (ex. 2d6-6) ajouté aux jets de Fortune une fois la possession terminée."
+    },
+    "Domain": { "terrain": "Terrain", "features": "Caractéristiques" },
+    "Unit": {
+      "training": "Entraînement", "types": "Types", "discipline": "Discipline", "disciplineMod": "Ajustement de Discipline",
+      "experience": "Expérience à répartir", "status": "État", "abilities": "Capacités clés",
+      "abilitiesPlaceholder": "ex. Vigilance 3, Endurance 3, Combat 3"
+    },
+    "House": {
+      "housePrefix": "Maison", "mottoPlaceholder": "« Nos devises… »", "armsImage": "Cliquez pour choisir l'image du blason",
+      "realm": "Royaume", "liege": "Suzerain", "seat": "Siège", "month": "Mois",
+      "maxStatus": "Statut max.", "fortuneMod": "Modif. de Fortune", "defenseBonus": "Bonus défensif",
+      "banners": "Bannerets", "glory": "Gloire du groupe",
+      "invested": "Investi", "available": "Libre",
+      "investedHint": "Points alloués aux possessions. Les investir ne réduit pas la ressource.",
+      "actions": "Action de Maison du mois", "actionHint": "Une action par mois : gérer les ressources, lancer un projet, guerroyer ou organiser un tournoi.",
+      "actionDone": "Action du mois effectuée.", "actionTaken": "Action effectuée ce mois-ci",
+      "manageResources": "Gérer les ressources", "donateGlory": "Dépenser 1 Gloire (+1)",
+      "from": "Depuis", "to": "Vers", "rate": "Taux", "rushed": "Précipité", "amountSpent": "Points dépensés",
+      "rushedHint": "Un échange précipité permet une seconde conversion ce mois-ci, à un taux moins favorable.",
+      "underConstruction": "Partie en cours : lancer le temps de construction des nouvelles possessions",
+      "influenceHint": "Les héritiers ont un Statut de (max -1), (max -2) ou (max -3), minimum 3. L'Influence non investie peut être dépensée : 5 points = +1d6 à un jet de Fortune, 2 points = +1B à un test d'intrigue.",
+      "heirStatus": "Statut de départ : {status}",
+      "addDomain": "Ajouter un domaine", "addUnit": "Ajouter une unité",
+      "noDomain": "Aucun domaine. Chaque domaine fait environ une lieue.", "noUnit": "Aucune unité (100 hommes, 20 cavaliers ou 5 navires).",
+      "bannerHint": "Glissez une autre fiche de Maison ici pour en faire un banneret (20, puis 10, puis 5 points de Puissance). Chaque banneret donne +1 dé de test aux jets de Fortune.",
+      "membersHint": "Glissez des personnages sur cette fiche pour les ajouter à la maisonnée. L'intendant lance les jets de Fortune.",
+      "dropMembers": "Glissez des personnages ici.", "notes": "Notes",
+      "creation": "Création de la Maison",
+      "step1": "1. Royaume", "step2": "2. Ressources", "step3": "3. Première fondation",
+      "step4": "4. Événements historiques", "step5": "5. Possessions (onglet Possessions)",
+      "step6": "6. Devise, blason et maisonnée",
+      "isBanner": "Maison banneret (5d6)", "rollRealm": "Royaume tiré au sort", "rollResources": "Tirer les ressources",
+      "playerBonus": "Bonus de joueur", "playerBonusHint": "Chaque joueur ajoute ensuite 1d6 à la ressource de son choix (deux fois maximum par ressource).",
+      "overwriteResources": "Les ressources actuelles seront remplacées. Continuer ?",
+      "rollFounding": "Tirer la fondation", "eventsCount": "{count} événement(s) historique(s) à tirer.", "events": "événements",
+      "rollEvent": "Tirer un événement (3d6)", "applyEvent": "Appliquer", "historicalEvent": "Événement historique",
+      "firstEventHint": "Le premier événement explique comment la famille a été anoblie.",
+      "chooseResources": "Choisissez exactement {count} ressources différentes.",
+      "history": "Chronique de la Maison", "eventNotes": "Que s'est-il passé ?",
+      "fortune": "Fortune", "rollFortune": "Jet de Fortune", "skipFortune": "Pas de jet : +1 ressource",
+      "fortuneRolled": "Fortune résolue ce mois-ci", "fortuneTable": "Table des Fortunes (6-18)",
+      "fortuneRequired": "La Maison doit faire un jet de Fortune au moins un mois sur trois.",
+      "holdingsBonus": "Possessions", "extraDice": "Dés supplémentaires (possessions)",
+      "influenceSpend": "Influence dépensée (5 = +1d6)",
+      "fortuneDialogHint": "Test de Statut de l'intendant (Intendance s'applique). Chaque banneret donne un dé de test supplémentaire.",
+      "steward": "Intendant", "chronicle": "Journal des Fortunes", "monthShort": "Mois", "fortuneNotes": "Détails décidés par le Narrateur",
+      "nextMonth": "Mois suivant", "nextMonthConfirm": "Passer au mois suivant ? Les chantiers avancent d'un mois.",
+      "monthStart": "Début du mois {month}.", "projectsDone": "Projets terminés",
+      "motto": "Devise", "blazon": "Description héraldique",
+      "blazonPlaceholder": "ex. De sable au chevron de sinople, chargé d'un cor d'or.",
+      "armsHint": "Champ, partition, charge, couleurs : les tables 6-9 à 6-17 du livre aident à composer le blason. Cliquez sur l'écu pour choisir une image."
+    }
+  }
+}

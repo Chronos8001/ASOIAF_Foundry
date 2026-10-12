@@ -1,0 +1,38 @@
+<div class="asoiaf-dialog">
+  <div class="form-group">
+    <label>{{localize "ASOIAF.House.steward"}}</label>
+    <select name="steward">
+      <option value="">—</option>
+      {{#each members}}<option value="{{index}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+    </select>
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Ability.status"}}</label>
+    <input type="number" name="status" value="{{status}}" min="1">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Specialty.stewardship"}} (B)</label>
+    <input type="number" name="stewardship" value="{{stewardship}}" min="0">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.House.banners"}} (+{{localize "ASOIAF.Roll.testDiceShort"}})</label>
+    <input type="number" name="banners" value="{{banners}}" min="0">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.House.fortuneMod"}}</label>
+    <span>{{asSigned law}} / {{asSigned population}} / {{asSigned holdings}}</span>
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.House.extraDice"}}</label>
+    <input type="text" name="formula" value="{{formula}}">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.House.influenceSpend"}} <small>({{influence}})</small></label>
+    <input type="number" name="influenceSpend" value="0" min="0" step="5">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Roll.modifier"}}</label>
+    <input type="number" name="modifier" value="0">
+  </div>
+  <p class="hint">{{localize "ASOIAF.House.fortuneDialogHint"}}</p>
+</div>

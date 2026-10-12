@@ -1,0 +1,38 @@
+{
+  "id": "asoiaf",
+  "title": "Le Trône de Fer JdR (A Song of Ice and Fire RPG)",
+  "description": "Système non officiel pour le jeu de rôle A Song of Ice and Fire (SIFRP, édition Game of Thrones) : fiches de personnage interactives, tests avec dés bonus et dés de pénalité, combat, intrigue, et fiche de Maison complète (ressources, possessions, domaines, unités, fortunes, historique, blason).",
+  "version": "0.1.0",
+  "authors": [{ "name": "Chronos8001" }],
+  "compatibility": { "minimum": "12", "verified": "13" },
+  "esmodules": ["module/asoiaf.mjs"],
+  "styles": ["styles/asoiaf.css"],
+  "languages": [
+    { "lang": "fr", "name": "Français", "path": "lang/fr.json" },
+    { "lang": "en", "name": "English", "path": "lang/fr.json" }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "character": {},
+      "npc": {},
+      "house": {}
+    },
+    "Item": {
+      "weapon": {},
+      "armor": {},
+      "equipment": {},
+      "benefit": {},
+      "drawback": {},
+      "holding": {},
+      "domain": {},
+      "unit": {}
+    }
+  },
+  "grid": { "distance": 1, "units": "m" },
+  "primaryTokenAttribute": "health",
+  "secondaryTokenAttribute": "composure",
+  "initiative": "2d6",
+  "url": "https://github.com/Chronos8001/ASOIAF_Foundry",
+  "manifest": "https://github.com/Chronos8001/ASOIAF_Foundry/releases/latest/download/system.json",
+  "download": "https://github.com/Chronos8001/ASOIAF_Foundry/releases/latest/download/asoiaf.zip"
+}

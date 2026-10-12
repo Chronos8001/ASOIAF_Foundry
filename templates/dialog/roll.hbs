@@ -1,0 +1,26 @@
+<div class="asoiaf-dialog">
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Roll.testDice"}}</label>
+    <input type="number" name="testDice" value="{{testDice}}" min="1">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Roll.bonusDice"}}</label>
+    <input type="number" name="bonusDice" value="{{bonusDice}}" min="0">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Roll.penaltyDice"}}</label>
+    <input type="number" name="penaltyDice" value="{{penaltyDice}}" min="0">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Roll.modifier"}}</label>
+    <input type="number" name="modifier" value="{{modifier}}">
+  </div>
+  <div class="form-group">
+    <label>{{localize "ASOIAF.Roll.difficulty"}}{{#if targetName}} <small>({{targetName}})</small>{{/if}}</label>
+    <input type="number" name="difficulty" value="{{difficulty}}" list="asoiaf-difficulties" placeholder="—">
+    <datalist id="asoiaf-difficulties">
+      {{#each difficulties}}<option value="{{value}}">{{label}}</option>{{/each}}
+    </datalist>
+  </div>
+  <p class="hint">{{localize "ASOIAF.Roll.hint"}}</p>
+</div>

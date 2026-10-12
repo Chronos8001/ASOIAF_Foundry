@@ -1,0 +1,29 @@
+{{#if list.length}}
+<table class="items-table holdings">
+  <thead><tr>
+    <th>{{localize "ASOIAF.Common.name"}}</th>
+    <th>{{localize "ASOIAF.Holding.investment"}}</th>
+    <th>{{localize "ASOIAF.Holding.fortune"}}</th>
+    <th>{{localize "ASOIAF.Holding.monthsRemaining"}}</th>
+    <th></th>
+  </tr></thead>
+  <tbody>
+    {{#each list}}
+      <tr data-item-id="{{id}}" class="{{#unless complete}}building{{/unless}}">
+        <td class="item-name">
+          <img src="{{item.img}}" alt="">
+          {{#if linked}}<a data-action="openUuid" data-uuid="{{linked}}">{{item.name}} <i class="fa-solid fa-flag"></i></a>{{else}}{{item.name}}{{/if}}
+          {{#if item.system.defenseBonus}}<span class="tag">{{localize "ASOIAF.Resource.defense"}} +{{item.system.defenseBonus}}</span>{{/if}}
+        </td>
+        <td class="center"><strong>{{item.system.investment}}</strong></td>
+        <td class="center">{{#if fortune}}{{fortune}}{{else}}—{{/if}}</td>
+        <td class="center">
+          {{#if complete}}<i class="fa-solid fa-check" data-tooltip="ASOIAF.Holding.complete"></i>
+          {{else}}<input class="mini" type="number" min="0" data-item-field="system.monthsRemaining" value="{{item.system.monthsRemaining}}">{{/if}}
+        </td>
+        <td class="controls"><a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a></td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{/if}}

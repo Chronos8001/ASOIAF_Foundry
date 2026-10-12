@@ -1,0 +1,313 @@
+<div class="asoiaf-sheet house-sheet">
+  {{!-- En-tête : blason, nom, devise --}}
+  <header class="sheet-header house-header">
+    <img class="arms" src="{{armsImg}}" alt="" data-action="editImage" data-field="system.arms" data-tooltip="ASOIAF.House.armsImage">
+    <div class="header-main">
+      <div class="name-row">
+        <span class="prefix">{{localize "ASOIAF.House.housePrefix"}}</span>
+        <input class="actor-name" type="text" name="name" value="{{actor.name}}">
+      </div>
+      <input class="motto" type="text" name="system.motto" value="{{system.motto}}" placeholder="{{localize 'ASOIAF.House.mottoPlaceholder'}}">
+      <div class="header-grid">
+        <label>{{localize "ASOIAF.House.realm"}}
+          <select name="system.realm">
+            <option value=""></option>
+            {{selectOptions realmOptions selected=system.realm localize=true}}
+          </select>
+        </label>
+        <label>{{localize "ASOIAF.House.liege"}}
+          <input type="text" name="system.liege" value="{{system.liege}}" placeholder="{{realmLiege}}">
+        </label>
+        <label>{{localize "ASOIAF.House.seat"}}
+          <input type="text" name="system.seat" value="{{system.seat}}">
+        </label>
+        <label>{{localize "ASOIAF.House.month"}}
+          <span class="pair"><strong class="big">{{system.month}}</strong>
+            {{#if editable}}<button type="button" data-action="nextMonth" data-tooltip="ASOIAF.House.nextMonth"><i class="fa-solid fa-forward-step"></i></button>{{/if}}
+          </span>
+        </label>
+      </div>
+      <div class="derived-strip">
+        <div class="derived"><span>{{localize "ASOIAF.House.maxStatus"}}</span><strong>{{system.maxStatus}}</strong></div>
+        <div class="derived"><span>{{localize "ASOIAF.House.fortuneMod"}}</span><strong>{{asSigned system.fortuneModifier}}{{#if system.fortuneFormula}} <small>+ {{system.fortuneFormula}}</small>{{/if}}</strong></div>
+        <div class="derived"><span>{{localize "ASOIAF.House.defenseBonus"}}</span><strong>+{{system.defenseBonus}}</strong></div>
+        <div class="derived"><span>{{localize "ASOIAF.House.banners"}}</span><strong>{{system.bannerCount}}</strong></div>
+        <div class="derived"><span>{{localize "ASOIAF.House.glory"}}</span><strong><input class="mini" type="number" name="system.glory" value="{{system.glory}}"></strong></div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sheet-tabs">
+    {{#each tabs}}
+      <a class="{{cssClass}}" data-action="asTab" data-tab="{{id}}">{{localize label}}</a>
+    {{/each}}
+  </nav>
+
+  <section class="sheet-body">
+    {{!-- Ressources --}}
+    <div class="tab-panel {{#if (asEq activeTab 'resources')}}active{{/if}}" data-tab="resources">
+      <div class="resources-grid">
+        {{#each resources}}
+          <div class="resource-card resource-{{key}} {{#if over}}over{{/if}}">
+            <div class="resource-head">
+              <span class="resource-name">{{label}}</span>
+              <input class="resource-value" type="number" min="0" name="system.resources.{{key}}.value" value="{{value}}">
+            </div>
+            <div class="bar"><div style="width:{{pct}}%"></div></div>
+            <div class="resource-meta">
+              <span data-tooltip="ASOIAF.House.investedHint">{{localize "ASOIAF.House.invested"}} {{invested}}</span>
+              <span class="{{#if over}}warning{{/if}}">{{localize "ASOIAF.House.available"}} {{available}}</span>
+              {{#if (asEq key "law")}}<span class="tag">{{localize "ASOIAF.House.fortune"}} {{asSigned ../system.lawModifier}}</span>{{/if}}
+              {{#if (asEq key "population")}}<span class="tag">{{localize "ASOIAF.House.fortune"}} {{asSigned ../system.populationModifier}}</span>{{/if}}
+            </div>
+            <p class="band">{{band}}</p>
+          </div>
+        {{/each}}
+      </div>
+
+      {{#if editable}}
+        <div class="house-actions">
+          <fieldset>
+            <legend>{{localize "ASOIAF.House.actions"}}</legend>
+            <p class="hint">{{#if system.actionTaken}}<i class="fa-solid fa-check"></i> {{localize "ASOIAF.House.actionDone"}}{{else}}{{localize "ASOIAF.House.actionHint"}}{{/if}}</p>
+            <div class="buttons-row">
+              <button type="button" data-action="manageResources"><i class="fa-solid fa-scale-balanced"></i> {{localize "ASOIAF.House.manageResources"}}</button>
+            </div>
+            <div class="catalog-row">
+              <select data-select="glory">{{selectOptions resourceOptions localize=true}}</select>
+              <button type="button" data-action="donateGlory"><i class="fa-solid fa-crown"></i> {{localize "ASOIAF.House.donateGlory"}}</button>
+            </div>
+            <label class="checkbox"><input type="checkbox" name="system.actionTaken" {{checked system.actionTaken}}> {{localize "ASOIAF.House.actionTaken"}}</label>
+          </fieldset>
+        </div>
+      {{/if}}
+    </div>
+
+    {{!-- Possessions --}}
+    <div class="tab-panel {{#if (asEq activeTab 'holdings')}}active{{/if}}" data-tab="holdings">
+      {{#if editable}}
+        <label class="checkbox construction"><input type="checkbox" data-construction> {{localize "ASOIAF.House.underConstruction"}}</label>
+      {{/if}}
+
+      {{!-- Défense --}}
+      <h3 class="section-title resource-defense">{{localize "ASOIAF.Resource.defense"}} <small>{{system.resources.defense.invested}} / {{system.resources.defense.value}}</small></h3>
+      {{> "systems/asoiaf/templates/actor/holding-list.hbs" list=holdings.defense}}
+      {{#if editable}}
+        <div class="catalog-row">
+          <select data-catalog="defense">{{#each catalog.defense}}<option value="{{index}}">{{label}}</option>{{/each}}</select>
+          <button type="button" data-action="addHolding" data-resource="defense"><i class="fa-solid fa-plus"></i> {{localize "ASOIAF.Common.add"}}</button>
+          <button type="button" data-action="itemCreate" data-type="holding" data-system='{"resource":"defense"}'><i class="fa-solid fa-plus"></i> {{localize "ASOIAF.Common.custom"}}</button>
+        </div>
+      {{/if}}
+
+      {{!-- Influence --}}
+      <h3 class="section-title resource-influence">{{localize "ASOIAF.Resource.influence"}} <small>{{system.resources.influence.invested}} / {{system.resources.influence.value}}</small></h3>
+      {{> "systems/asoiaf/templates/actor/holding-list.hbs" list=holdings.influence}}
+      {{#if editable}}
+        <div class="catalog-row">
+          <select data-catalog="influence">{{#each catalog.influence}}<option value="{{index}}">{{label}}</option>{{/each}}</select>
+          <button type="button" data-action="addHolding" data-resource="influence"><i class="fa-solid fa-plus"></i> {{localize "ASOIAF.Common.add"}}</button>
+        </div>
+        <p class="hint">{{localize "ASOIAF.House.influenceHint"}}</p>
+      {{/if}}
+
+      {{!-- Terres --}}
+      <h3 class="section-title resource-lands">{{localize "ASOIAF.Resource.lands"}} <small>{{system.resources.lands.invested}} / {{system.resources.lands.value}}</small>
+        {{#if editable}}<a class="add" data-action="itemCreate" data-type="domain" data-tooltip="ASOIAF.House.addDomain"><i class="fa-solid fa-plus"></i></a>{{/if}}</h3>
+      <table class="items-table">
+        <thead><tr><th>{{localize "ASOIAF.Common.name"}}</th><th>{{localize "ASOIAF.Domain.terrain"}}</th><th>{{localize "ASOIAF.Domain.features"}}</th><th>{{localize "ASOIAF.Common.cost"}}</th><th></th></tr></thead>
+        <tbody>
+          {{#each domains}}
+            <tr data-item-id="{{id}}">
+              <td class="item-name"><img src="{{item.img}}" alt=""> {{item.name}}</td>
+              <td>{{terrain}}</td>
+              <td class="qualities">{{features}}</td>
+              <td class="center"><strong>{{item.system.investment}}</strong></td>
+              <td class="controls"><a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a></td>
+            </tr>
+          {{else}}
+            <tr><td colspan="5" class="hint">{{localize "ASOIAF.House.noDomain"}}</td></tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      {{!-- Puissance --}}
+      <h3 class="section-title resource-power">{{localize "ASOIAF.Resource.power"}} <small>{{system.resources.power.invested}} / {{system.resources.power.value}}</small>
+        {{#if editable}}<a class="add" data-action="itemCreate" data-type="unit" data-tooltip="ASOIAF.House.addUnit"><i class="fa-solid fa-plus"></i></a>{{/if}}</h3>
+      <table class="items-table">
+        <thead><tr><th>{{localize "ASOIAF.Common.name"}}</th><th>{{localize "ASOIAF.Unit.training"}}</th><th>{{localize "ASOIAF.Unit.types"}}</th>
+          <th>{{localize "ASOIAF.Unit.discipline"}}</th><th>{{localize "ASOIAF.Common.cost"}}</th><th>{{localize "ASOIAF.Unit.status"}}</th><th></th></tr></thead>
+        <tbody>
+          {{#each units}}
+            <tr data-item-id="{{id}}" class="unit-{{item.system.status}}">
+              <td class="item-name"><img src="{{item.img}}" alt=""> {{item.name}}</td>
+              <td>{{training}}</td>
+              <td data-tooltip="{{keyAbilities}}">{{types}}</td>
+              <td class="center">{{discipline}}</td>
+              <td class="center"><strong>{{item.system.investment}}</strong></td>
+              <td><select data-item-field="system.status">
+                {{selectOptions @root.unitStatusOptions selected=item.system.status localize=true}}
+              </select></td>
+              <td class="controls"><a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a></td>
+            </tr>
+          {{else}}
+            <tr><td colspan="7" class="hint">{{localize "ASOIAF.House.noUnit"}}</td></tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{> "systems/asoiaf/templates/actor/holding-list.hbs" list=holdings.power}}
+      <p class="hint">{{localize "ASOIAF.House.bannerHint"}}</p>
+
+      {{!-- Richesse --}}
+      <h3 class="section-title resource-wealth">{{localize "ASOIAF.Resource.wealth"}} <small>{{system.resources.wealth.invested}} / {{system.resources.wealth.value}}</small></h3>
+      {{> "systems/asoiaf/templates/actor/holding-list.hbs" list=holdings.wealth}}
+      {{#if editable}}
+        <div class="catalog-row">
+          <select data-catalog="wealth">{{#each catalog.wealth}}<option value="{{index}}">{{label}}</option>{{/each}}</select>
+          <button type="button" data-action="addHolding" data-resource="wealth"><i class="fa-solid fa-plus"></i> {{localize "ASOIAF.Common.add"}}</button>
+          <button type="button" data-action="itemCreate" data-type="holding" data-system='{"resource":"wealth"}'><i class="fa-solid fa-plus"></i> {{localize "ASOIAF.Common.custom"}}</button>
+        </div>
+      {{/if}}
+    </div>
+
+    {{!-- Maisonnée --}}
+    <div class="tab-panel {{#if (asEq activeTab 'household')}}active{{/if}}" data-tab="household">
+      <p class="hint">{{localize "ASOIAF.House.membersHint"}}</p>
+      <ul class="members">
+        {{#each members}}
+          <li class="member">
+            <img src="{{img}}" alt="">
+            <div class="grow">
+              <a data-action="openUuid" data-uuid="{{uuid}}"><strong>{{name}}</strong></a>
+              <div class="member-meta {{#if overStatus}}warning{{/if}}">{{localize "ASOIAF.Ability.status"}} {{status}}</div>
+            </div>
+            <select data-array="members" data-index="{{index}}" data-key="role">
+              {{selectOptions @root.roleOptions selected=role localize=true}}
+            </select>
+            {{#if @root.editable}}<a class="controls" data-action="deleteRow" data-array="members" data-index="{{index}}"><i class="fa-solid fa-user-minus"></i></a>{{/if}}
+          </li>
+        {{else}}
+          <li class="drop-zone">{{localize "ASOIAF.House.dropMembers"}}</li>
+        {{/each}}
+      </ul>
+      <label class="block">{{localize "ASOIAF.House.notes"}}<textarea name="system.notes" rows="8">{{system.notes}}</textarea></label>
+    </div>
+
+    {{!-- Histoire & création --}}
+    <div class="tab-panel {{#if (asEq activeTab 'history')}}active{{/if}}" data-tab="history">
+      <fieldset class="creation">
+        <legend>{{localize "ASOIAF.House.creation"}}</legend>
+        <ol class="steps">
+          <li>
+            <strong>{{localize "ASOIAF.House.step1"}}</strong>
+            {{#if editable}}<button type="button" data-action="rollRealm"><i class="fa-solid fa-dice"></i> 3d6</button>{{/if}}
+            <label class="checkbox"><input type="checkbox" name="system.isBanner" {{checked system.isBanner}}> {{localize "ASOIAF.House.isBanner"}}</label>
+          </li>
+          <li>
+            <strong>{{localize "ASOIAF.House.step2"}}</strong>
+            {{#if editable}}<button type="button" data-action="rollResources"><i class="fa-solid fa-dice"></i> {{localize "ASOIAF.House.rollResources"}}</button>{{/if}}
+            <span class="catalog-row inline">
+              <select data-select="bonus">{{selectOptions resourceOptions localize=true}}</select>
+              <button type="button" data-action="playerBonus"><i class="fa-solid fa-dice-one"></i> +1d6</button>
+            </span>
+          </li>
+          <li>
+            <strong>{{localize "ASOIAF.House.step3"}}</strong>
+            <select name="system.founding">
+              <option value=""></option>
+              {{selectOptions foundingOptions selected=system.founding localize=true}}
+            </select>
+            {{#if editable}}<button type="button" data-action="rollFounding"><i class="fa-solid fa-dice"></i> {{localize "ASOIAF.House.rollFounding"}}</button>{{/if}}
+            {{#if system.historyCount}}<span class="tag">{{history.length}} / {{system.historyCount}} {{localize "ASOIAF.House.events"}}</span>{{/if}}
+          </li>
+          <li>
+            <strong>{{localize "ASOIAF.House.step4"}}</strong>
+            {{#if editable}}
+              <button type="button" data-action="rollEvent"><i class="fa-solid fa-dice"></i> {{localize "ASOIAF.House.rollEvent"}}</button>
+              <span class="catalog-row inline">
+                <select data-select="event">{{selectOptions eventOptions localize=true}}</select>
+                <button type="button" data-action="chooseEvent">{{localize "ASOIAF.House.applyEvent"}}</button>
+              </span>
+            {{/if}}
+          </li>
+          <li><strong>{{localize "ASOIAF.House.step5"}}</strong></li>
+          <li><strong>{{localize "ASOIAF.House.step6"}}</strong></li>
+        </ol>
+      </fieldset>
+
+      <h3 class="section-title">{{localize "ASOIAF.House.history"}}</h3>
+      <ol class="history">
+        {{#each history}}
+          <li>
+            <div class="history-head">
+              <strong>{{label}}</strong>
+              {{#if roll}}<span class="tag">3d6 = {{roll}}</span>{{/if}}
+              <span class="changes">{{changes}}</span>
+              {{#if @root.editable}}<a class="controls" data-action="deleteRow" data-array="history" data-index="{{index}}"><i class="fa-solid fa-trash"></i></a>{{/if}}
+            </div>
+            <textarea rows="2" data-array="history" data-index="{{index}}" data-key="notes" placeholder="{{localize 'ASOIAF.House.eventNotes'}}">{{notes}}</textarea>
+          </li>
+        {{/each}}
+      </ol>
+    </div>
+
+    {{!-- Fortunes --}}
+    <div class="tab-panel {{#if (asEq activeTab 'fortunes')}}active{{/if}}" data-tab="fortunes">
+      <div class="two-cols">
+        <fieldset>
+          <legend>{{localize "ASOIAF.House.fortune"}}</legend>
+          {{#if fortuneWarning}}<p class="warning"><i class="fa-solid fa-triangle-exclamation"></i> {{localize "ASOIAF.House.fortuneRequired"}}</p>{{/if}}
+          <ul class="breakdown">
+            <li>{{localize "ASOIAF.Resource.law"}} : {{asSigned system.lawModifier}}</li>
+            <li>{{localize "ASOIAF.Resource.population"}} : {{asSigned system.populationModifier}}</li>
+            <li>{{localize "ASOIAF.House.holdingsBonus"}} : {{asSigned system.holdingModifier}}{{#if system.fortuneFormula}} + {{system.fortuneFormula}}{{/if}}</li>
+            <li>{{localize "ASOIAF.House.banners"}} : +{{system.bannerCount}} {{localize "ASOIAF.Roll.testDiceShort"}}</li>
+            <li><strong>{{localize "ASOIAF.Common.total"}} : {{asSigned system.fortuneModifier}}</strong></li>
+          </ul>
+          {{#if editable}}
+            <div class="buttons-row">
+              <button type="button" class="primary" data-action="rollFortune" {{#if system.fortuneRolled}}disabled{{/if}}>
+                <i class="fa-solid fa-dice"></i> {{localize "ASOIAF.House.rollFortune"}}
+              </button>
+            </div>
+            <div class="catalog-row">
+              <select data-select="skip">{{selectOptions resourceOptions localize=true}}</select>
+              <button type="button" data-action="skipFortune" {{#if system.fortuneRolled}}disabled{{/if}}>{{localize "ASOIAF.House.skipFortune"}}</button>
+            </div>
+            <label class="checkbox"><input type="checkbox" name="system.fortuneRolled" {{checked system.fortuneRolled}}> {{localize "ASOIAF.House.fortuneRolled"}}</label>
+          {{/if}}
+        </fieldset>
+        <fieldset>
+          <legend>{{localize "ASOIAF.House.fortuneTable"}}</legend>
+          <div class="fortune-table">
+            {{#each fortuneTable}}<span class="fortune fortune-{{fortune}}"><b>{{range}}</b> {{label}}</span>{{/each}}
+          </div>
+        </fieldset>
+      </div>
+      <h3 class="section-title">{{localize "ASOIAF.House.chronicle"}}</h3>
+      <ul class="chronicle">
+        {{#each fortunes}}
+          <li>
+            <span class="tag">{{localize "ASOIAF.House.monthShort"}} {{month}}</span>
+            <span class="fortune fortune-{{fortune}}">{{label}}</span>
+            <span class="tag">{{result}}</span>
+            <input type="text" data-array="fortunes" data-index="{{index}}" data-key="notes" value="{{notes}}" placeholder="{{localize 'ASOIAF.House.fortuneNotes'}}">
+            {{#if @root.editable}}<a class="controls" data-action="deleteRow" data-array="fortunes" data-index="{{index}}"><i class="fa-solid fa-trash"></i></a>{{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+
+    {{!-- Blason --}}
+    <div class="tab-panel {{#if (asEq activeTab 'arms')}}active{{/if}}" data-tab="arms">
+      <div class="arms-panel">
+        <img class="arms-large" src="{{armsImg}}" alt="" data-action="editImage" data-field="system.arms">
+        <div class="grow">
+          <label class="block">{{localize "ASOIAF.House.motto"}}<input type="text" name="system.motto" value="{{system.motto}}"></label>
+          <label class="block">{{localize "ASOIAF.House.blazon"}}<textarea name="system.blazon" rows="6" placeholder="{{localize 'ASOIAF.House.blazonPlaceholder'}}">{{system.blazon}}</textarea></label>
+          <p class="hint">{{localize "ASOIAF.House.armsHint"}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

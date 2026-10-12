@@ -1,0 +1,34 @@
+<div class="asoiaf-chat roll-card">
+  <h3>{{label}}</h3>
+  <div class="dice-row">
+    {{#each dice}}<span class="die {{status}}">{{value}}</span>{{/each}}
+  </div>
+  <div class="roll-meta">
+    <span>{{testDice}} {{localize "ASOIAF.Roll.testDiceShort"}}</span>
+    {{#if bonusDice}}<span>+{{bonusDice}}B</span>{{/if}}
+    {{#if penaltyDice}}<span class="penalty">-{{penaltyDice}}D</span>{{/if}}
+    {{#if modifier}}<span>{{asSigned modifier}}</span>{{/if}}
+    {{#if extraFormula}}<span>{{extraFormula}} = {{asSigned extraTotal}}</span>{{/if}}
+  </div>
+  <div class="roll-total">{{total}}</div>
+  {{#if outcome}}
+    <div class="outcome {{#if outcome.success}}success{{else}}failure{{/if}}">
+      {{#if difficulty}}<span class="vs">{{localize "ASOIAF.Roll.vs"}} {{difficulty}}</span>{{/if}}
+      <strong>{{outcome.label}}</strong>
+      {{#if outcome.success}}<span class="degrees">{{outcome.degrees}} {{localize "ASOIAF.Roll.degrees"}}</span>{{/if}}
+    </div>
+  {{/if}}
+  {{#if damage}}
+    <div class="damage">
+      {{#if damage.total}}
+        <span>{{localize "ASOIAF.Weapon.damage"}} : {{damage.base}} × {{damage.degrees}} = <strong>{{damage.total}}</strong>{{#if damage.piercing}} ({{localize "ASOIAF.Weapon.piercing"}} {{damage.piercing}}){{/if}}</span>
+        <button type="button" data-action="apply-damage" data-damage="{{damage.total}}" data-piercing="{{damage.piercing}}">
+          <i class="fa-solid fa-heart-crack"></i> {{localize "ASOIAF.Chat.applyDamage"}}
+        </button>
+      {{else}}
+        <span>{{localize "ASOIAF.Weapon.damage"}} : {{damage.base}} × {{localize "ASOIAF.Roll.degrees"}}</span>
+      {{/if}}
+    </div>
+  {{/if}}
+  {{#if extra}}<p class="hint">{{extra}}</p>{{/if}}
+</div>

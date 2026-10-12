@@ -1,0 +1,29 @@
+name: Publier le système
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Version et URL de téléchargement dans system.json
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          DOWNLOAD="https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}/asoiaf.zip"
+          jq --arg v "$VERSION" --arg d "$DOWNLOAD" '.version = $v | .download = $d' system.json > system.tmp
+          mv system.tmp system.json
+
+      - name: Archive
+        run: zip -r asoiaf.zip system.json module templates styles lang README.md
+
+      - name: Joindre à la release
+        run: gh release upload "$GITHUB_REF_NAME" system.json asoiaf.zip --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}

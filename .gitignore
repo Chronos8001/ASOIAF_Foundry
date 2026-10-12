@@ -1,0 +1,7 @@
+# Livres et documents sous droits : ne jamais les publier
+*.pdf
+
+node_modules/
+*.zip
+.DS_Store
+Thumbs.db
