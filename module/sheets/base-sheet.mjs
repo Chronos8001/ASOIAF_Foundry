@@ -3,7 +3,7 @@ const { ActorSheetV2 } = foundry.applications.sheets;
 
 /** Récupère les données d'un glisser-déposer, quelle que soit la version de Foundry. */
 export function getDragData(event) {
-  const TE = foundry.applications.ux?.TextEditor?.implementation ?? globalThis.TextEditor;
+  const TE = foundry.applications.ux?.TextEditor?.implementation ?? TextEditor;
   try {
     return TE.getDragEventData(event);
   } catch {
@@ -104,7 +104,7 @@ export class AsoiafActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   static #onEditImage(event, target) {
     const field = target.dataset.field ?? "img";
-    const FP = foundry.applications.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
+    const FP = foundry.applications.apps?.FilePicker?.implementation ?? FilePicker;
     new FP({
       type: "image",
       current: foundry.utils.getProperty(this.actor, field),

@@ -58,8 +58,8 @@ Hooks.once("init", () => {
 
   registerSheets();
   registerHandlebarsHelpers();
-  const loadTemplates = foundry.applications.handlebars?.loadTemplates ?? globalThis.loadTemplates;
-  loadTemplates([
+  const loadTpl = foundry.applications.handlebars?.loadTemplates ?? loadTemplates;
+  loadTpl([
     "systems/asoiaf/templates/chat/roll.hbs",
     "systems/asoiaf/templates/dialog/roll.hbs",
     "systems/asoiaf/templates/dialog/fortune.hbs",
@@ -72,9 +72,9 @@ Hooks.once("init", () => {
  * pour qu'elles ne puissent pas être choisies à la place des nôtres.
  */
 function registerSheets() {
-  const DSC = foundry.applications.apps?.DocumentSheetConfig ?? globalThis.DocumentSheetConfig;
-  const CoreActorSheet = foundry.appv1?.sheets?.ActorSheet ?? globalThis.ActorSheet;
-  const CoreItemSheet = foundry.appv1?.sheets?.ItemSheet ?? globalThis.ItemSheet;
+  const DSC = foundry.applications.apps?.DocumentSheetConfig ?? DocumentSheetConfig;
+  const CoreActorSheet = foundry.appv1?.sheets?.ActorSheet ?? ActorSheet;
+  const CoreItemSheet = foundry.appv1?.sheets?.ItemSheet ?? ItemSheet;
 
   try {
     DSC.unregisterSheet(Actor, "core", CoreActorSheet);

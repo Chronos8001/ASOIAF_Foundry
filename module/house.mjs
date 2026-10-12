@@ -4,7 +4,7 @@ import { readForm, rollTest } from "./dice.mjs";
 const loc = key => game.i18n.localize(key);
 const resLabel = r => loc(`ASOIAF.Resource.${r}`);
 const DialogV2 = foundry.applications.api.DialogV2;
-const renderTemplate = (...args) => (foundry.applications.handlebars?.renderTemplate ?? globalThis.renderTemplate)(...args);
+const renderTpl = (...args) => (foundry.applications.handlebars?.renderTemplate ?? renderTemplate)(...args);
 
 async function chat(house, title, body, rolls = []) {
   return ChatMessage.create({
@@ -150,7 +150,7 @@ export async function rollFortune(house) {
   const members = getMembers(house).filter(m => m.actor?.system?.abilities);
   const steward = members.find(m => m.role === "steward") ?? members.find(m => m.role === "lord") ?? members[0];
 
-  const content = await renderTemplate("systems/asoiaf/templates/dialog/fortune.hbs", {
+  const content = await renderTpl("systems/asoiaf/templates/dialog/fortune.hbs", {
     members: members.map(m => ({ index: m.index, name: m.name, role: m.role, selected: m === steward })),
     status: steward?.actor.system.abilities.status.value ?? 2,
     stewardship: steward?.actor.system.abilities.status.specialties.stewardship ?? 0,

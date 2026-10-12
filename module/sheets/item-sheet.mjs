@@ -52,7 +52,7 @@ export class AsoiafItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   }
 
   static #onEditImage() {
-    const FP = foundry.applications.apps?.FilePicker?.implementation ?? globalThis.FilePicker;
+    const FP = foundry.applications.apps?.FilePicker?.implementation ?? FilePicker;
     new FP({ type: "image", current: this.item.img, callback: path => this.item.update({ img: path }) }).render(true);
   }
 }

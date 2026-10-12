@@ -1,11 +1,11 @@
 import { ASOIAF } from "./config.mjs";
 
-const renderTemplate = (...args) => (foundry.applications.handlebars?.renderTemplate ?? globalThis.renderTemplate)(...args);
+const renderTpl = (...args) => (foundry.applications.handlebars?.renderTemplate ?? renderTemplate)(...args);
 const DialogV2 = foundry.applications.api.DialogV2;
 
 /** Lit un formulaire de dialogue en objet simple. */
 export function readForm(form) {
-  const FDE = foundry.applications.ux?.FormDataExtended ?? globalThis.FormDataExtended;
+  const FDE = foundry.applications.ux?.FormDataExtended ?? FormDataExtended;
   return new FDE(form).object;
 }
 
@@ -60,7 +60,7 @@ export async function rollTest({
     damageData = { base: damage, degrees: null, total: null, piercing };
   }
 
-  const content = await renderTemplate("systems/asoiaf/templates/chat/roll.hbs", {
+  const content = await renderTpl("systems/asoiaf/templates/chat/roll.hbs", {
     label, dice, testDice, bonusDice, penaltyDice, modifier, extraFormula, extraTotal, total,
     difficulty, outcome, damage: damageData, extra
   });
@@ -81,7 +81,7 @@ export async function promptTest(options) {
     ? target.system[options.defenseKey]
     : (options.difficulty ?? "");
 
-  const content = await renderTemplate("systems/asoiaf/templates/dialog/roll.hbs", {
+  const content = await renderTpl("systems/asoiaf/templates/dialog/roll.hbs", {
     ...options,
     difficulty: defaultDifficulty,
     targetName: options.defenseKey ? target?.name : null,
