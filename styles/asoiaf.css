@@ -409,3 +409,24 @@
 .asoiaf-dialog fieldset.situational label.checkbox { display: flex; gap: 6px; align-items: flex-start; margin: 3px 0; }
 .asoiaf-chat .die.rerolled { box-shadow: 0 0 0 2px #b08d3c inset; }
 .asoiaf-chat .applied-effects { margin: 4px 0 0; padding-left: 16px; font-size: 0.8em; color: #3d6b3a; }
+
+/* Unités de bataille */
+.asoiaf .unit-sheet .value-text { font-size: 1.05em; color: var(--as-ink); font-weight: normal; }
+.asoiaf .status-badge {
+  display: inline-block; padding: 1px 8px; border-radius: 8px; font-weight: bold; text-align: center;
+  background: var(--as-green); color: #fff;
+}
+.asoiaf .status-badge.status-disorganized { background: var(--as-gold); }
+.asoiaf .status-badge.status-routed { background: var(--as-red-light); }
+.asoiaf .status-badge.status-destroyed { background: #333; }
+.asoiaf .unit-sheet.status-destroyed .portrait { filter: grayscale(1); }
+.asoiaf .status-buttons { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.asoiaf .status-buttons button.active { background: var(--as-red); color: #fff; }
+.asoiaf .tracks .track-head .slots { flex: 0 1 auto; }
+.asoiaf .drop-target { min-height: 70px; }
+.asoiaf .drop-target .linked { display: flex; align-items: center; gap: 8px; }
+.asoiaf .drop-target .linked img { width: 36px; height: 36px; border: 1px solid var(--as-line); border-radius: 3px; }
+.asoiaf .unit-abilities { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 12px; }
+.asoiaf .unit-ability { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 2px 4px; border-bottom: 1px dotted var(--as-line); }
+.asoiaf .unit-ability.key { font-weight: bold; background: rgba(176, 141, 60, 0.15); }
+.asoiaf .unit-ability input { width: 3em; }

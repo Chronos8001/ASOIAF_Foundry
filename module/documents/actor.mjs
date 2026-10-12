@@ -1,6 +1,7 @@
 import { promptTest } from "../dice.mjs";
 import { weaponContext } from "../data/character.mjs";
 import { convertCount, ignoresTraining, weaponEffect } from "../effects.mjs";
+import { applyUnitDamage } from "../warfare.mjs";
 
 const loc = key => game.i18n.localize(key);
 
@@ -12,6 +13,13 @@ export class AsoiafActor extends Actor {
     const prototypeToken = { actorLink: true, disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY };
     if (this.type === "character") prototypeToken.sight = { enabled: true };
     if (this.type === "house" && !data.img) this.updateSource({ img: "icons/svg/castle.svg" });
+    if (this.type === "unit") {
+      if (!data.img) this.updateSource({ img: "icons/svg/combat.svg" });
+      prototypeToken.displayBars = CONST.TOKEN_DISPLAY_MODES.ALWAYS;
+      prototypeToken.displayName = CONST.TOKEN_DISPLAY_MODES.HOVER;
+      prototypeToken.bar1 = { attribute: "health" };
+      prototypeToken.bar2 = { attribute: null };
+    }
     if (this.type !== "npc") this.updateSource({ prototypeToken });
   }
 
@@ -20,6 +28,9 @@ export class AsoiafActor extends Actor {
   /* -------------------------------------------- */
 
   async rollAbility(ability, specialty = null) {
+    if (this.type === "unit") {
+      return promptTest({ actor: this, label: `${this.name} — ${loc(`ASOIAF.Ability.${ability}`)}`, ...this.system.getTestData(ability) });
+    }
     const test = this.system.getTestData(ability, specialty);
     let label = loc(`ASOIAF.Ability.${ability}`);
     if (specialty) label += ` (${loc(`ASOIAF.Specialty.${specialty}`)})`;
@@ -71,6 +82,7 @@ export class AsoiafActor extends Actor {
    * carte permettant d'encaisser des blessures pour annuler tout ou partie du coup.
    */
   async applyDamage(amount, piercing = 0) {
+    if (this.type === "unit") return applyUnitDamage(this, amount, piercing);
     const ar = Math.max(0, (this.system.armor?.rating ?? 0) - piercing);
     const taken = Math.max(0, amount - ar);
     const before = this.system.health.value;
@@ -161,8 +173,17 @@ export class AsoiafActor extends Actor {
 
   /** Formule d'initiative : test d'Agilité (Rapidité). */
   getInitiativeFormula() {
+    // En bataille, l'initiative est un test d'Art de la guerre (Stratégie) du commandant.
+    if (this.type === "unit") {
+      return this.system.commanderActor?.getTestFormula?.("warfare", "strategy") ?? "2d6";
+    }
+    return this.getTestFormula("agility", "quickness", { initiative: true });
+  }
+
+  /** Formule de dés d'un test (utilisée pour l'initiative). */
+  getTestFormula(ability, specialty, ctx = {}) {
     if (!this.system.getTestData) return "0";
-    const t = this.system.getTestData("agility", "quickness", { initiative: true });
+    const t = this.system.getTestData(ability, specialty, ctx);
     const converted = convertCount(t.convert, t.convertHalf, t.bonusDice);
     const testDice = t.testDice + converted;
     const bonus = Math.min(t.bonusDice - converted, testDice);

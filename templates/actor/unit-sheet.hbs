@@ -1,0 +1,144 @@
+<div class="asoiaf-sheet unit-sheet status-{{system.status}}">
+  <header class="sheet-header">
+    <img class="portrait" src="{{actor.img}}" alt="{{actor.name}}" data-action="editImage" data-field="img">
+    <div class="header-main">
+      <input class="actor-name" type="text" name="name" value="{{actor.name}}">
+      <div class="header-grid">
+        <label>{{localize "ASOIAF.Unit.training"}}
+          <select name="system.training">{{selectOptions trainingOptions selected=system.training localize=true}}</select>
+        </label>
+        <label>{{localize "ASOIAF.Unit.types"}}<span class="value-text">{{typesLabel}}</span></label>
+        <label>{{localize "TYPES.Actor.house"}}
+          {{#if house}}<a data-action="openUuid" data-uuid="{{house.uuid}}">{{house.name}}</a>{{else}}<span class="hint">{{localize "ASOIAF.Unit.dropHouse"}}</span>{{/if}}
+        </label>
+        <label>{{localize "ASOIAF.Unit.status"}}<span class="status-badge status-{{system.status}}">{{statusLabel}}</span></label>
+      </div>
+      <div class="derived-strip">
+        <div class="derived" data-tooltip="ASOIAF.Unit.defenseHint"><span>{{localize "ASOIAF.Unit.defense"}}</span>
+          <strong>{{system.currentDefense}}</strong>{{#if system.defendResult}}<small> ({{localize "ASOIAF.Order.defend"}})</small>{{/if}}</div>
+        <div class="derived" data-tooltip="ASOIAF.Unit.vsCharactersHint"><span>{{localize "ASOIAF.Unit.vsCharacters"}}</span><strong>{{system.combatDefense}}</strong></div>
+        <div class="derived"><span>VA</span><strong>{{system.armor.rating}}</strong></div>
+        <div class="derived" data-tooltip="ASOIAF.Unit.disciplineHint"><span>{{localize "ASOIAF.Unit.discipline"}}</span><strong>{{system.discipline}}</strong></div>
+        <div class="derived"><span>{{localize "ASOIAF.Derived.movement"}}</span><strong>{{system.movement}} <small>/ {{system.sprint}} m</small></strong></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="tracks">
+    <div class="track">
+      <div class="track-head">
+        <span>{{localize "ASOIAF.Derived.health"}}</span>
+        <span class="pair"><input type="number" name="system.health.value" value="{{system.health.value}}"> / {{system.health.max}}</span>
+      </div>
+      <div class="bar health"><div style="width:{{healthPct}}%"></div></div>
+    </div>
+    <div class="track">
+      <div class="track-head">
+        <span data-tooltip="ASOIAF.Unit.disorgHint">{{localize "ASOIAF.Unit.disorganizations"}} <small>(-1D, +3 {{localize "ASOIAF.Unit.discipline"}})</small></span>
+        <span class="slots">{{#each disorgSlots}}<i class="slot wound {{#if filled}}filled{{/if}}"></i>{{/each}}</span>
+        <input class="mini" type="number" min="0" name="system.disorganizations" value="{{system.disorganizations}}">
+      </div>
+    </div>
+  </section>
+
+  <nav class="sheet-tabs">
+    {{#each tabs}}<a class="{{cssClass}}" data-action="asTab" data-tab="{{id}}">{{localize label}}</a>{{/each}}
+  </nav>
+
+  <section class="sheet-body">
+    {{!-- Bataille --}}
+    <div class="tab-panel {{#if (asEq activeTab 'battle')}}active{{/if}}" data-tab="battle">
+      <div class="two-cols">
+        <fieldset>
+          <legend>{{localize "ASOIAF.Unit.orders"}}</legend>
+          <p>{{localize "ASOIAF.Unit.standingOrder"}} : <strong>{{standingLabel}}</strong>
+            · {{localize "ASOIAF.Unit.ordersThisRound"}} : <strong>{{system.ordersThisRound}}</strong></p>
+          {{#if editable}}
+            <div class="buttons-row">
+              <button type="button" class="primary" data-action="issueOrder"><i class="fa-solid fa-flag"></i> {{localize "ASOIAF.Unit.issueOrder"}}</button>
+              <button type="button" data-action="standing" data-tooltip="ASOIAF.Unit.standingHint"><i class="fa-solid fa-rotate-right"></i> {{localize "ASOIAF.Unit.runStanding"}}</button>
+            </div>
+            <div class="buttons-row">
+              <button type="button" data-action="attack" data-kind="fighting"><i class="fa-solid fa-hand-fist"></i> {{localize "ASOIAF.Ability.fighting"}} ({{system.fightDamage.value}})</button>
+              {{#if system.shootDamage}}
+                <button type="button" data-action="attack" data-kind="marksmanship"><i class="fa-solid fa-crosshairs"></i> {{localize "ASOIAF.Ability.marksmanship"}} ({{system.shootDamage.value}}, {{system.shootRange}} m)</button>
+              {{/if}}
+            </div>
+            <div class="buttons-row">
+              <button type="button" data-action="endRound" data-tooltip="ASOIAF.Unit.endRoundHint"><i class="fa-solid fa-hourglass-end"></i> {{localize "ASOIAF.Unit.endRound"}}</button>
+              <button type="button" data-action="endBattle" data-tooltip="ASOIAF.Unit.endBattleHint"><i class="fa-solid fa-flag-checkered"></i> {{localize "ASOIAF.Unit.endBattle"}}</button>
+            </div>
+          {{/if}}
+          <p class="hint">{{localize "ASOIAF.Unit.targetHint"}}</p>
+        </fieldset>
+        <fieldset>
+          <legend>{{localize "ASOIAF.Unit.status"}}</legend>
+          <div class="status-buttons">
+            {{#each statuses}}<button type="button" class="status-{{key}} {{#if active}}active{{/if}}" data-action="setStatus" data-status="{{key}}">{{label}}</button>{{/each}}
+          </div>
+          <ul class="breakdown">
+            <li>{{localize "ASOIAF.Unit.damageFight"}} : <strong>{{system.fightDamage.value}}</strong> <small>({{fightLabel}})</small></li>
+            {{#if shootLabel}}<li>{{localize "ASOIAF.Unit.damageShoot"}} : <strong>{{system.shootDamage.value}}</strong> <small>({{shootLabel}}, {{system.shootRange}} m)</small></li>{{/if}}
+            <li>{{localize "ASOIAF.Unit.armor"}} : VA {{system.armor.rating}}, {{localize "ASOIAF.Armor.penalty"}} {{system.armor.penalty}}, {{localize "ASOIAF.Combat.bulk"}} {{system.armor.bulk}}{{#if system.shields}} · {{localize "ASOIAF.Unit.shields"}}{{/if}}</li>
+          </ul>
+        </fieldset>
+      </div>
+
+      <div class="two-cols">
+        <fieldset class="drop-target" data-drop="commander">
+          <legend>{{localize "ASOIAF.Unit.commander"}}</legend>
+          {{#if commander}}
+            <div class="linked"><img src="{{commander.img}}" alt=""><a data-action="openUuid" data-uuid="{{commander.uuid}}">{{commander.name}}</a>
+              {{#if editable}}<a class="controls" data-action="unlink" data-field="commander"><i class="fa-solid fa-link-slash"></i></a>{{/if}}</div>
+          {{else}}<p class="hint">{{localize "ASOIAF.Unit.dropCommander"}}</p>{{/if}}
+        </fieldset>
+        <fieldset class="drop-target" data-drop="attached">
+          <legend>{{localize "ASOIAF.Unit.attached"}}</legend>
+          {{#if attached}}
+            <div class="linked"><img src="{{attached.img}}" alt=""><a data-action="openUuid" data-uuid="{{attached.uuid}}">{{attached.name}}</a>
+              {{#if editable}}<a class="controls" data-action="unlink" data-field="attached"><i class="fa-solid fa-link-slash"></i></a>{{/if}}</div>
+            <p class="hint">{{localize "ASOIAF.Unit.attachedEffect"}}</p>
+          {{else}}<p class="hint">{{localize "ASOIAF.Unit.dropAttached"}}</p>{{/if}}
+        </fieldset>
+      </div>
+    </div>
+
+    {{!-- Composition --}}
+    <div class="tab-panel {{#if (asEq activeTab 'composition')}}active{{/if}}" data-tab="composition">
+      <h3 class="section-title">{{localize "ASOIAF.Unit.types"}}</h3>
+      <div class="features-grid">
+        {{#each types}}<label class="checkbox"><input type="checkbox" name="system.types.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+      </div>
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Unit.equipment"}}
+          <select name="system.equipment"><option value=""></option>{{selectOptions equipmentOptions selected=system.equipmentKey localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Unit.disciplineMod"}}<input type="number" name="system.disciplineMod" value="{{system.disciplineMod}}"></label>
+        <label data-tooltip="ASOIAF.Unit.defenseModHint">{{localize "ASOIAF.Unit.defenseMod"}}<input type="number" name="system.defenseMod" value="{{system.defenseMod}}"></label>
+      </div>
+      <h3 class="section-title">{{localize "ASOIAF.Unit.upgrades"}}</h3>
+      <div class="buttons-row">
+        <label class="checkbox"><input type="checkbox" name="system.upgrades.armor" {{checked system.upgrades.armor}}> {{localize "ASOIAF.Unit.upgradeArmor"}}</label>
+        <label class="checkbox"><input type="checkbox" name="system.upgrades.fighting" {{checked system.upgrades.fighting}}> {{localize "ASOIAF.Unit.upgradeFighting"}}</label>
+        <label class="checkbox"><input type="checkbox" name="system.upgrades.marksmanship" {{checked system.upgrades.marksmanship}}> {{localize "ASOIAF.Unit.upgradeMarksmanship"}}</label>
+      </div>
+      <p class="hint">{{localize "ASOIAF.Unit.upgradesHint"}}</p>
+
+      <h3 class="section-title">{{localize "ASOIAF.Tab.abilities"}}
+        <small class="{{#if xpOver}}warning{{/if}}">XP {{system.xpSpent}} / {{system.xpTotal}}</small></h3>
+      <div class="unit-abilities">
+        {{#each abilities}}
+          <div class="unit-ability {{#if key_}}key{{/if}}">
+            <a class="rollable" data-action="rollAbility" data-ability="{{key}}"><i class="fa-solid fa-dice-six"></i> {{label}}</a>
+            <input type="number" min="0" max="10" name="system.abilities.{{key}}.value" value="{{value}}">
+          </div>
+        {{/each}}
+      </div>
+      <p class="hint">{{localize "ASOIAF.Unit.abilitiesHint"}}</p>
+    </div>
+
+    {{!-- Notes --}}
+    <div class="tab-panel {{#if (asEq activeTab 'notes')}}active{{/if}}" data-tab="notes">
+      <label class="block">{{localize "ASOIAF.Bio.notes"}}<textarea name="system.notes" rows="14">{{system.notes}}</textarea></label>
+    </div>
+  </section>
+</div>

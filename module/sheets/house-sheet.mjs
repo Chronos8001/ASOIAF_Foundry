@@ -2,6 +2,7 @@ import { AsoiafActorSheet } from "./base-sheet.mjs";
 import { ASOIAF } from "../config.mjs";
 import * as House from "../house.mjs";
 import * as Artisans from "../artisans.mjs";
+import { deployUnit } from "../warfare.mjs";
 
 const HOUSE_ITEM_TYPES = ["holding", "domain", "unit", "artisan"];
 
@@ -30,7 +31,8 @@ export class HouseSheet extends AsoiafActorSheet {
       artisanBuy: HouseSheet.#artisan(Artisans.buyBudget),
       artisanXp: HouseSheet.#artisan(Artisans.spendXp),
       artisanDeath: HouseSheet.#artisan(Artisans.death),
-      groupProject: HouseSheet.#call(Artisans.groupProject)
+      groupProject: HouseSheet.#call(Artisans.groupProject),
+      deployUnit: HouseSheet.#artisan(deployUnit)
     }
   };
 
@@ -93,7 +95,8 @@ export class HouseSheet extends AsoiafActorSheet {
       training: loc(`ASOIAF.Training.${u.system.training}`),
       types: u.system.typeList.map(t => loc(`ASOIAF.UnitType.${t}`)).join(" / ") || "—",
       discipline: u.system.discipline,
-      keyAbilities: u.system.keyAbilities.map(a => loc(`ASOIAF.Ability.${a}`)).join(", ")
+      keyAbilities: u.system.keyAbilities.map(a => loc(`ASOIAF.Ability.${a}`)).join(", "),
+      deployed: !!u.getFlag("asoiaf", "actor") && !!fromUuidSync(u.getFlag("asoiaf", "actor"))
     }));
     context.catalog = Object.fromEntries(Object.entries(ASOIAF.holdingCatalog).map(([r, list]) =>
       [r, list.map((e, i) => ({ index: i, label: `${e.name} (${e.cost})` }))]));

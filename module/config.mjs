@@ -293,5 +293,68 @@ ASOIAF.artisan = {
   lentWealth: 1
 };
 
+/* -------------------------------------------- */
+/*  Guerre (Chapitre 10)                        */
+/* -------------------------------------------- */
+
+/**
+ * Équipement des unités (Tables 10-1 et 10-2) : [VA, pénalité, encombrement, dégâts de Combat, dégâts de Tir].
+ * Dégâts : [capacité, modificateur] ; tir : [capacité, modificateur, portée] ou null.
+ */
+const EQ = (ar, penalty, bulk, fight, shoot = null) => ({ ar, penalty, bulk, fight, shoot });
+ASOIAF.unitEquipment = {
+  archers: { base: EQ(2, -1, 0, ["athletics", -1], ["agility", 2, "long"]), upgrade: EQ(3, -2, 0, ["athletics", 0], ["agility", 3, "long"]) },
+  cavalry: { base: EQ(5, -3, 2, ["animalHandling", 3]), upgrade: EQ(9, -5, 3, ["animalHandling", 5]), shields: true },
+  criminals: { base: EQ(1, 0, 0, ["athletics", 1]), upgrade: EQ(4, -2, 1, ["athletics", 2]) },
+  crusaders: { base: EQ(3, -2, 0, ["athletics", 1]), upgrade: EQ(4, -2, 1, ["athletics", 2]), shields: true },
+  engineers: { base: EQ(2, -1, 0, ["athletics", -1]), upgrade: EQ(5, -3, 2, ["athletics", 0]) },
+  garrison: { base: EQ(3, -2, 0, ["athletics", 1]), upgrade: EQ(5, -3, 2, ["athletics", 2]) },
+  guerillas: { base: EQ(1, 0, 0, ["athletics", 0], ["agility", 1, "close"]), upgrade: EQ(3, -2, 0, ["athletics", 1], ["agility", 2, "close"]) },
+  infantry: { base: EQ(3, -2, 0, ["athletics", 1]), upgrade: EQ(4, -2, 1, ["athletics", 2]), shields: true },
+  mercenaries: { base: EQ(4, -2, 1, ["athletics", 1]), upgrade: EQ(5, -3, 2, ["athletics", 3]), shields: true },
+  levies: { base: EQ(0, 0, 0, ["athletics", -1], ["athletics", -1, "close"]), upgrade: EQ(2, -1, 0, ["athletics", 0], ["athletics", 0, "close"]) },
+  personalGuard: { base: EQ(6, -3, 2, ["athletics", 1]), upgrade: EQ(10, -6, 3, ["athletics", 2]), shields: true },
+  raiders: { base: EQ(2, -1, 0, ["athletics", 1]), upgrade: EQ(5, -2, 2, ["athletics", 2]) },
+  sailors: { base: EQ(0, 0, 0, ["athletics", 1]), upgrade: EQ(2, -1, 0, ["athletics", 2]) },
+  scouts: { base: EQ(2, -1, 0, ["athletics", 0], ["agility", 0, "long"]), upgrade: EQ(3, -2, 0, ["athletics", 1], ["agility", 1, "long"]) },
+  special: { base: EQ(2, -1, 0, ["athletics", 0], ["agility", 0, "both"]), upgrade: EQ(6, -3, 2, ["athletics", 1], ["agility", 1, "both"]) },
+  support: { base: EQ(0, 0, 0, ["athletics", -1]), upgrade: EQ(2, -1, 0, ["athletics", 0]) },
+  warships: { base: EQ(5, 0, 0, ["athletics", 1], ["agility", 1, "long"]), upgrade: EQ(10, 0, 0, ["athletics", 4], ["agility", 3, "long"]) }
+};
+
+/** Portées de tir des unités, en mètres (le livre compte en yards ; 1 case = 10). */
+ASOIAF.unitRanges = { close: 20, long: 200, both: 200 };
+
+/** Ordres de bataille. persistent : devient un ordre permanent. */
+ASOIAF.unitOrders = {
+  attack: { persistent: true, attack: true },
+  charge: { persistent: true, attack: true, penaltyDice: 1, damage: 2 },
+  defend: { persistent: true },
+  withdraw: { persistent: true, attack: true, penaltyDice: 1 },
+  move: { persistent: false },
+  organize: { persistent: false },
+  rally: { persistent: false },
+  regroup: { persistent: false },
+  ready: { persistent: true },
+  retreat: { persistent: true },
+  surrender: { persistent: false }
+};
+
+/** Dégâts subis par un personnage rattaché selon ce qui arrive à son unité. */
+ASOIAF.attachedDamage = { damaged: 1, disorganized: 2, routed: 5, destroyed: 10 };
+
+/**
+ * Survivants (Table 10-6) : résultat du d6 (≤0 à 6) -> variation d'entraînement, ou "destroyed".
+ * On retire 1 au d6 par désorganisation au-delà de la première.
+ */
+ASOIAF.unitSurvivors = {
+  none: [-2, -1, 0, 0, 0, 1, 2],
+  damaged: [-2, -1, 0, 0, 0, 0, 1],
+  disorganized: [-3, -3, -2, -1, 0, 0, 0],
+  routed: ["destroyed", "destroyed", -3, -2, -1, 0, 0],
+  destroyed: ["destroyed", "destroyed", "destroyed", -3, -2, -1, 0]
+};
+ASOIAF.trainingOrder = ["green", "trained", "veteran", "elite"];
+
 /** Utilitaire : trouve la valeur associée au premier palier >= value. */
 ASOIAF.lookup = (table, value) => table.find(([max]) => value <= max)[1];

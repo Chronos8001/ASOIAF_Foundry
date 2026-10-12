@@ -148,7 +148,9 @@
               <td><select data-item-field="system.status">
                 {{selectOptions @root.unitStatusOptions selected=item.system.status localize=true}}
               </select></td>
-              <td class="controls"><a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a></td>
+              <td class="controls">
+                {{#if @root.editable}}<a data-action="deployUnit" data-tooltip="{{#if deployed}}ASOIAF.Unit.redeploy{{else}}ASOIAF.Unit.deploy{{/if}}"><i class="fa-solid {{#if deployed}}fa-chess-rook{{else}}fa-chess-pawn{{/if}}"></i></a>{{/if}}
+                <a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a></td>
             </tr>
           {{else}}
             <tr><td colspan="7" class="hint">{{localize "ASOIAF.House.noUnit"}}</td></tr>

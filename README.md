@@ -85,6 +85,23 @@ Copier le contenu du dépôt dans `Data/systems/asoiaf/`. Le nom du dossier doit
 
 Les compendiums sont construits par le workflow de publication. En local : `npm install` puis `npm run build:packs`.
 
+### Batailles (chapitre 10) : unités sur la carte
+- **Déployer** : dans l'onglet Possessions de la Maison, l'icône de pion à côté d'une unité crée un acteur **Unité**. Il reprend l'entraînement, les types et le lien vers la Maison. Glissez-le ensuite sur la carte de bataille (1 case = 10 mètres). Le jeton affiche la barre de Santé et l'état de l'unité (désorganisée, en déroute, détruite).
+- **Fiche d'unité** :
+  - Défense = Agilité + Athlétisme + Vigilance + pénalité d'armure ; un personnage seul doit battre cette Défense +20 ;
+  - VA, encombrement, dégâts de corps à corps et de tir selon les tables 10-1 et 10-2, avec les améliorations d'équipement ;
+  - Discipline, déplacement (40 m, cavalerie 80 m, navires 60 m) et course ;
+  - Santé = Endurance × 3 ; expérience de l'entraînement (20 XP par rang).
+- **Commandant et héros** : glissez un personnage dans « Commandant » (son Art de la guerre sert aux ordres et à l'initiative) ou dans « Personnage rattaché » (Discipline -3, +1D en Combat et en Tir, il encaisse des dégâts quand l'unité est touchée).
+- **Ordres** : « Donner un ordre » lance l'Art de la guerre (Commandement) du commandant contre la Discipline, +3 par ordre déjà donné au même round.
+  - En cas d'échec, l'unité suit son ordre permanent ; sur un échec critique, elle ne fait rien.
+  - Ordres disponibles : Attaquer, Charger (-1D, +2 dégâts), Défendre (test d'Agilité, +1D avec boucliers), Repli combatif, Se déplacer, Réorganiser, Rallier, Se regrouper, Se tenir prêt, Battre en retraite, Se rendre.
+- **Attaques** : ciblez le jeton ennemi.
+  - La Difficulté se remplit seule : Défense de l'unité, ou Défense de combat du personnage (l'unité gagne alors +2D).
+  - « Appliquer aux cibles » gère la VA et le moral : Santé à 0 → désorganisée (-1D, Discipline +3, cumulatif) ; touchée en étant désorganisée → déroute ; touchée en déroute, ou plus du double de sa Santé en un coup → détruite.
+- **Rounds** : le compteur d'ordres se remet à zéro quand le round du suivi de combat avance. L'initiative d'une unité est l'Art de la guerre (Stratégie) de son commandant.
+- **Fin de bataille** : table des survivants (10-6). L'entraînement monte ou baisse, et il est reporté sur l'unité de la Maison. Une unité perdue retire sa Puissance investie.
+
 ### Artisans (règle maison)
 Onglet **Artisans** de la fiche de Maison. Pour en créer un : bouton dédié, ou « Artisan » dans les possessions de Richesse.
 - **Au départ** : rang 5 dans la compétence de métier, budget max 10, Richesse investie (perdue au décès).
