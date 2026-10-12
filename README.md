@@ -8,7 +8,7 @@ Compatible Foundry VTT **v12 et v13**, et The Forge.
 ## Installation
 
 ### Sur The Forge
-1. Publier une *release* GitHub (voir plus bas). Le workflow joint automatiquement `system.json` et `asoiaf.zip`.
+1. Publier une version : `git tag vX.Y.Z && git push origin vX.Y.Z`. Le workflow crée la release et y joint `system.json` et `asoiaf.zip`.
 2. Dans Forge : **Game Systems → Install System → Manifest URL**, puis coller :
    `https://github.com/Chronos8001/ASOIAF_Foundry/releases/latest/download/system.json`
 

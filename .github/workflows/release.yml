@@ -1,8 +1,9 @@
 name: Publier le système
 
+# Pousser un tag vX.Y.Z crée la release et y joint system.json + asoiaf.zip.
 on:
-  release:
-    types: [published]
+  push:
+    tags: ["v*"]
 
 permissions:
   contents: write
@@ -23,7 +24,10 @@ jobs:
       - name: Archive
         run: zip -r asoiaf.zip system.json module templates styles lang README.md
 
-      - name: Joindre à la release
-        run: gh release upload "$GITHUB_REF_NAME" system.json asoiaf.zip --clobber
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            system.json
+            asoiaf.zip
+          make_latest: true

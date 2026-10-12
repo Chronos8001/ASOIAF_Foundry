@@ -31,6 +31,7 @@ class AsoiafItem extends Item {
 }
 
 Hooks.once("init", () => {
+  console.log("ASOIAF | Initialisation du système");
   CONFIG.ASOIAF = ASOIAF;
   game.asoiaf = { rollTest, config: ASOIAF };
 
@@ -55,12 +56,7 @@ Hooks.once("init", () => {
     npc: { bar: ["health", "composure"], value: [] }
   };
 
-  const Actors = foundry.documents?.collections?.Actors ?? globalThis.Actors;
-  const Items = foundry.documents?.collections?.Items ?? globalThis.Items;
-  Actors.registerSheet("asoiaf", CharacterSheet, { types: ["character", "npc"], makeDefault: true, label: "ASOIAF.Sheet.character" });
-  Actors.registerSheet("asoiaf", HouseSheet, { types: ["house"], makeDefault: true, label: "ASOIAF.Sheet.house" });
-  Items.registerSheet("asoiaf", AsoiafItemSheet, { makeDefault: true, label: "ASOIAF.Sheet.item" });
-
+  registerSheets();
   registerHandlebarsHelpers();
   const loadTemplates = foundry.applications.handlebars?.loadTemplates ?? globalThis.loadTemplates;
   loadTemplates([
@@ -69,6 +65,38 @@ Hooks.once("init", () => {
     "systems/asoiaf/templates/dialog/fortune.hbs",
     "systems/asoiaf/templates/actor/holding-list.hbs"
   ]);
+});
+
+/**
+ * Enregistre les fiches du système et retire les fiches génériques de Foundry,
+ * pour qu'elles ne puissent pas être choisies à la place des nôtres.
+ */
+function registerSheets() {
+  const DSC = foundry.applications.apps?.DocumentSheetConfig ?? globalThis.DocumentSheetConfig;
+  const CoreActorSheet = foundry.appv1?.sheets?.ActorSheet ?? globalThis.ActorSheet;
+  const CoreItemSheet = foundry.appv1?.sheets?.ItemSheet ?? globalThis.ItemSheet;
+
+  try {
+    DSC.unregisterSheet(Actor, "core", CoreActorSheet);
+    DSC.unregisterSheet(Item, "core", CoreItemSheet);
+  } catch (err) {
+    console.warn("ASOIAF | Impossible de retirer les fiches génériques", err);
+  }
+
+  DSC.registerSheet(Actor, "asoiaf", CharacterSheet, { types: ["character", "npc"], makeDefault: true, label: "ASOIAF.Sheet.character" });
+  DSC.registerSheet(Actor, "asoiaf", HouseSheet, { types: ["house"], makeDefault: true, label: "ASOIAF.Sheet.house" });
+  DSC.registerSheet(Item, "asoiaf", AsoiafItemSheet, { types: Object.keys(CONFIG.Item.dataModels), makeDefault: true, label: "ASOIAF.Sheet.item" });
+  console.log("ASOIAF | Fiches enregistrées");
+}
+
+/** Diagnostic : signale clairement si une fiche n'est pas active. */
+Hooks.once("ready", () => {
+  console.log(`ASOIAF | Prêt (Foundry ${game.version})`);
+  const missing = ["character", "npc", "house"].filter(type =>
+    !Object.keys(CONFIG.Actor.sheetClasses?.[type] ?? {}).some(id => id.startsWith("asoiaf.")));
+  if (missing.length) {
+    ui.notifications.error(`Trône de Fer : fiches non enregistrées pour ${missing.join(", ")}. Ouvrez la console (F12) et cherchez « ASOIAF ».`, { permanent: true });
+  }
 });
 
 function registerHandlebarsHelpers() {
