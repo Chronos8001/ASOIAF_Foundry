@@ -78,7 +78,12 @@
 .asoiaf .pair { display: flex; align-items: center; gap: 4px; }
 .asoiaf .pair input { width: 3.5em; }
 .asoiaf .house-link { display: flex; align-items: center; gap: 4px; font-size: 1.2em; color: var(--as-ink); }
-.asoiaf .house-link img { width: 20px; height: 20px; border: none; vertical-align: middle; margin-right: 3px; }
+.asoiaf .house-link > a { display: inline-flex; align-items: center; gap: 6px; }
+/* Blason : taille fixe, proportions conservées quelle que soit l'image. */
+.asoiaf .house-link img {
+  flex: 0 0 auto; width: 28px; height: 28px; min-height: 0; max-height: 28px;
+  object-fit: contain; border: none; margin: 0;
+}
 .asoiaf .derived-strip { display: flex; gap: 6px; flex-wrap: wrap; }
 .asoiaf .derived {
   flex: 1; min-width: 90px; text-align: center; border: 1px solid var(--as-line); border-radius: 4px;
