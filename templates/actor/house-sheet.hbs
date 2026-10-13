@@ -379,7 +379,8 @@
       <div class="arms-panel">
         <img class="arms-large" src="{{armsImg}}" alt="" data-action="editImage" data-field="system.arms">
         <div class="grow">
-          <label class="block">{{localize "ASOIAF.House.motto"}}<input type="text" name="system.motto" value="{{system.motto}}"></label>
+          {{!-- Rappel en lecture seule : un second champ "system.motto" dupliquerait la devise à chaque envoi. --}}
+          <label class="block">{{localize "ASOIAF.House.motto"}}<input type="text" value="{{system.motto}}" readonly></label>
           <label class="block">{{localize "ASOIAF.House.blazon"}}<textarea name="system.blazon" rows="6" placeholder="{{localize 'ASOIAF.House.blazonPlaceholder'}}">{{system.blazon}}</textarea></label>
           <p class="hint">{{localize "ASOIAF.House.armsHint"}}</p>
         </div>

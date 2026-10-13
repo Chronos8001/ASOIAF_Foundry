@@ -37,6 +37,29 @@ export class AsoiafActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   static SHEET_TABS = [];
 
+  #renderTimer = null;
+  #renderPending = null;
+  #renderResolve = null;
+  #renderArgs = null;
+
+  /**
+   * Regroupe les rendus rapprochés (une action fait souvent plusieurs mises à jour d'affilée) :
+   * un seul rendu de la fiche au lieu d'un par mise à jour. Le premier rendu reste immédiat.
+   */
+  render(options = {}, _options = {}) {
+    const force = typeof options === "boolean" ? options : options?.force;
+    if (force || !this.rendered) return super.render(options, _options);
+    this.#renderArgs = [options, _options];
+    this.#renderPending ??= new Promise(resolve => this.#renderResolve = resolve);
+    clearTimeout(this.#renderTimer);
+    this.#renderTimer = setTimeout(() => {
+      const resolve = this.#renderResolve;
+      this.#renderPending = this.#renderResolve = null;
+      resolve(this.rendered ? super.render(...this.#renderArgs) : this);
+    }, 30);
+    return this.#renderPending;
+  }
+
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     this._asTab ??= this.constructor.SHEET_TABS[0];

@@ -356,3 +356,27 @@ export async function addBanner(house, banner) {
     system: { resource: "power", kind: "banner", investment: cost, linked: banner.uuid }
   }]);
 }
+
+/* -------------------------------------------- */
+/*  Réparation                                  */
+/* -------------------------------------------- */
+
+/**
+ * Devise gonflée par l'ancien double champ de la fiche (0.3.1 et avant) : chaque envoi
+ * recollait « nouvelle,ancienne », doublant le texte. On garde chaque segment une seule fois.
+ */
+export function cleanMotto(motto) {
+  const parts = motto.split(",").map(p => p.trim());
+  const unique = [...new Set(parts)].filter(Boolean);
+  return unique.length === parts.length ? motto : unique.join(", ");
+}
+
+/** Répare les devises des Maisons du monde (MJ, au chargement). */
+export async function repairMottos() {
+  const updates = game.actors.filter(a => a.type === "house")
+    .map(a => ({ _id: a.id, "system.motto": cleanMotto(a.system.motto) }))
+    .filter(u => u["system.motto"] !== game.actors.get(u._id).system.motto);
+  if (!updates.length) return;
+  await Actor.updateDocuments(updates);
+  console.log(`ASOIAF | Devise réparée pour ${updates.length} Maison(s)`);
+}

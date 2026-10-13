@@ -103,7 +103,8 @@ export class HouseSheet extends AsoiafActorSheet {
     context.siegeCatalog = Object.entries(CONFIG.ASOIAF.siegeEngines).map(([k, d]) => ({
       key: k, label: `${loc(`ASOIAF.SiegeKind.${k}`)} (${costLabel(d.cost)})`
     }));
-    context.siegeEngines = game.actors.filter(a => a.type === "siege" && a.system.house === this.actor.uuid)
+    const uuid = this.actor.uuid;
+    context.siegeEngines = game.actors.filter(a => a.type === "siege" && a.system.house === uuid)
       .map(a => ({ uuid: a.uuid, name: a.name, img: a.img, destroyed: a.system.status === "destroyed",
         kind: loc(`ASOIAF.SiegeKind.${a.system.kind}`), health: a.system.health.value, max: a.system.health.max }));
     context.catalog = Object.fromEntries(Object.entries(ASOIAF.holdingCatalog).map(([r, list]) =>

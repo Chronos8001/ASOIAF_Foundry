@@ -258,12 +258,14 @@ async function chooseKind(unit) {
 
 /** Nouveau round de bataille : compteurs d'ordres et Défense « Défendre » remis à zéro. */
 export async function resetRound(units) {
-  for (const unit of units) {
-    if (unit?.type !== "unit" || !unit.isOwner) continue;
-    const update = { "system.ordersThisRound": 0 };
-    if (unit.system.standingOrder !== "defend") update["system.defendResult"] = 0;
-    await unit.update(update);
-  }
+  // Seules les unités qui changent sont mises à jour, en parallèle.
+  await Promise.all(units.map(unit => {
+    if (unit?.type !== "unit" || !unit.isOwner) return null;
+    const update = {};
+    if (unit.system.ordersThisRound) update["system.ordersThisRound"] = 0;
+    if (unit.system.standingOrder !== "defend" && unit.system.defendResult) update["system.defendResult"] = 0;
+    return foundry.utils.isEmpty(update) ? null : unit.update(update);
+  }));
 }
 
 /* -------------------------------------------- */
