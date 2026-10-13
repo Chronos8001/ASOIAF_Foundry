@@ -520,7 +520,10 @@
       "green": "Bleus",
       "trained": "Entraînés",
       "veteran": "Vétérans",
-      "elite": "Élite"
+      "elite": "Élite",
+      "elite1": "Élite +1",
+      "elite2": "Élite +2",
+      "elite3": "Élite +3"
     },
     "UnitType": {
       "archers": "Archers",
@@ -625,7 +628,7 @@
       "vsCharacters": "Contre personnages",
       "defenseHint": "Agilité + Athlétisme + Vigilance + pénalité d'armure. Remplacée par le test d'Agilité de l'ordre Défendre.",
       "vsCharactersHint": "Un personnage seul qui attaque l'unité doit battre sa Défense +20.",
-      "disciplineHint": "Difficulté des ordres : entraînement + types, +3 par désorganisation, -3 avec un personnage rattaché.",
+      "disciplineHint": "Difficulté des ordres : entraînement + types, +3 par désorganisation, -3 avec un personnage rattaché. Peut être négative (règle maison).",
       "disorganizations": "Désorganisations",
       "disorgHint": "Chaque désorganisation : -1D à tous les tests et +3 en Discipline. Autant que l'Endurance : l'unité est détruite.",
       "orders": "Ordres",

@@ -170,8 +170,9 @@ export class UnitData extends BaseItemData {
     this.typeList = selected;
     // Formation par un artisan (règle maison) : réduction libre du coût en Puissance.
     this.investment = Math.max(0, training.cost + selected.reduce((t, k) => t + ASOIAF.unitTypes[k].cost, 0) - this.discount);
-    this.discipline = Math.max(0, training.discipline + this.disciplineMod
-      + selected.reduce((t, k) => t + ASOIAF.unitTypes[k].discipline, 0));
+    // Règle maison : la Discipline peut être négative (une très bonne unité facilite les ordres).
+    this.discipline = training.discipline + this.disciplineMod
+      + selected.reduce((t, k) => t + ASOIAF.unitTypes[k].discipline, 0);
     this.experience = training.xp;
     this.keyAbilities = [...new Set(selected.flatMap(k => ASOIAF.unitTypes[k].abilities))];
     this.wealthCost = this.types.mercenaries ? ASOIAF.mercenaryWealth[this.training] : 0;

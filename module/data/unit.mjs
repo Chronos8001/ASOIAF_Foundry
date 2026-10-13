@@ -83,12 +83,13 @@ export class UnitActorData extends foundry.abstract.TypeDataModel {
     this.shootRangeKey = shoot?.[2] ?? "";
 
     // Discipline : entraînement + types, +3 par désorganisation, -3 si un personnage est rattaché.
+    // Règle maison : elle peut être négative (une très bonne unité facilite les ordres).
     const training = ASOIAF.unitTraining[this.training];
-    this.discipline = Math.max(0, training.discipline + this.disciplineMod
+    this.discipline = training.discipline + this.disciplineMod
       + selected.reduce((t, k) => t + ASOIAF.unitTypes[k].discipline, 0)
       + 3 * this.disorganizations
       - (this.attached ? 3 : 0)
-      + (this.gear.wildfire ? ASOIAF.unitGear.wildfire.discipline : 0));
+      + (this.gear.wildfire ? ASOIAF.unitGear.wildfire.discipline : 0);
 
     // Équipements spéciaux et abri (tour de siège, bélier couvert).
     let shelter = null;

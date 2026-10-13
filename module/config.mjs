@@ -247,7 +247,11 @@ ASOIAF.unitTraining = {
   green: { cost: 1, discipline: 9, xp: 20 },
   trained: { cost: 3, discipline: 6, xp: 60 },
   veteran: { cost: 5, discipline: 3, xp: 100 },
-  elite: { cost: 7, discipline: 0, xp: 140 }
+  elite: { cost: 7, discipline: 0, xp: 140 },
+  // Au-delà de l'élite (p. 189) : +1 rang dans une capacité par palier (20 XP), sans coût en Puissance.
+  elite1: { cost: 7, discipline: 0, xp: 160 },
+  elite2: { cost: 7, discipline: 0, xp: 180 },
+  elite3: { cost: 7, discipline: 0, xp: 200 }
 };
 ASOIAF.unitTypes = {
   archers: { cost: 3, discipline: 3, abilities: ["agility", "awareness", "marksmanship"] },
@@ -269,7 +273,7 @@ ASOIAF.unitTypes = {
   warships: { cost: 7, discipline: 0, abilities: ["awareness", "fighting", "marksmanship"] }
 };
 /** Coût en Richesse des mercenaires par niveau d'entraînement. */
-ASOIAF.mercenaryWealth = { green: 1, trained: 3, veteran: 6, elite: 9 };
+ASOIAF.mercenaryWealth = { green: 1, trained: 3, veteran: 6, elite: 9, elite1: 9, elite2: 9, elite3: 9 };
 
 ASOIAF.houseRoles = [
   "lord", "lady", "heir", "child", "castellan", "steward", "maester", "septon",
@@ -354,7 +358,7 @@ ASOIAF.unitSurvivors = {
   routed: ["destroyed", "destroyed", -3, -2, -1, 0, 0],
   destroyed: ["destroyed", "destroyed", "destroyed", -3, -2, -1, 0]
 };
-ASOIAF.trainingOrder = ["green", "trained", "veteran", "elite"];
+ASOIAF.trainingOrder = Object.keys(ASOIAF.unitTraining);
 
 /**
  * Engins de siège (chapitre 10). Portées et déplacements en mètres (le livre compte en yards).
