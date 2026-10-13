@@ -14,7 +14,7 @@ import { AsoiafItemSheet } from "./sheets/item-sheet.mjs";
 import { UnitSheet } from "./sheets/unit-sheet.mjs";
 import { SiegeSheet } from "./sheets/siege-sheet.mjs";
 import { burnTick } from "./siege.mjs";
-import { repairMottos } from "./house.mjs";
+import { repairMottos, syncArms } from "./house.mjs";
 import { registerStatusEffects, resetRound } from "./warfare.mjs";
 import { bindChatButtons, rollTest } from "./dice.mjs";
 
@@ -122,6 +122,7 @@ Hooks.once("ready", () => {
     ui.notifications.error(`Trône de Fer : fiches non enregistrées pour ${missing.join(", ")}. Ouvrez la console (F12) et cherchez « ASOIAF ».`, { permanent: true });
   }
   if (game.user.isGM) repairMottos().catch(err => console.error("ASOIAF | Réparation des devises impossible", err));
+  if (game.user.isGM) syncArms().catch(err => console.error("ASOIAF | Synchronisation des blasons impossible", err));
 });
 
 function registerHandlebarsHelpers() {

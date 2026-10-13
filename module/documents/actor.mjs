@@ -5,6 +5,7 @@ import { applyUnitDamage } from "../warfare.mjs";
 import { applySiegeDamage } from "../siege.mjs";
 
 const loc = key => game.i18n.localize(key);
+export const HOUSE_IMG = "icons/svg/castle.svg";
 
 export class AsoiafActor extends Actor {
   /** @override Valeurs par défaut à la création. */
@@ -13,7 +14,7 @@ export class AsoiafActor extends Actor {
     if (allowed === false) return false;
     const prototypeToken = { actorLink: true, disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY };
     if (this.type === "character") prototypeToken.sight = { enabled: true };
-    if (this.type === "house" && !data.img) this.updateSource({ img: "icons/svg/castle.svg" });
+    if (this.type === "house" && !data.img) this.updateSource({ img: HOUSE_IMG });
     if (this.type === "unit" || this.type === "siege") {
       if (!data.img) this.updateSource({ img: this.type === "unit" ? "icons/svg/combat.svg" : "icons/svg/target.svg" });
       prototypeToken.displayBars = CONST.TOKEN_DISPLAY_MODES.ALWAYS;
@@ -22,6 +23,21 @@ export class AsoiafActor extends Actor {
       prototypeToken.bar2 = { attribute: null };
     }
     if (this.type !== "npc") this.updateSource({ prototypeToken });
+  }
+
+  /** @override Le blason d'une Maison sert aussi d'image (liste des acteurs, jeton). */
+  async _preUpdate(changes, options, user) {
+    const allowed = await super._preUpdate(changes, options, user);
+    if (allowed === false) return false;
+    const arms = foundry.utils.getProperty(changes, "system.arms");
+    if (this.type !== "house" || !arms) return;
+    const img = changes.img ?? this.img;
+    // On ne remplace que l'image par défaut ou l'ancien blason, pas une image choisie à part.
+    if ([HOUSE_IMG, this.system.arms].includes(img)) changes.img = arms;
+    const token = this.prototypeToken.texture.src;
+    if ([HOUSE_IMG, this.system.arms, CONST.DEFAULT_TOKEN].includes(token)) {
+      foundry.utils.setProperty(changes, "prototypeToken.texture.src", arms);
+    }
   }
 
   /* -------------------------------------------- */

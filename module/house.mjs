@@ -380,3 +380,16 @@ export async function repairMottos() {
   await Actor.updateDocuments(updates);
   console.log(`ASOIAF | Devise réparée pour ${updates.length} Maison(s)`);
 }
+
+/** Maisons dont le blason a été posé avant la 0.3.4 : l'image de l'acteur restait le château. */
+export async function syncArms() {
+  const updates = game.actors.filter(a => a.type === "house" && a.system.arms && a.img === "icons/svg/castle.svg")
+    .map(a => {
+      const update = { _id: a.id, img: a.system.arms };
+      if ([a.img, CONST.DEFAULT_TOKEN].includes(a.prototypeToken.texture.src)) update["prototypeToken.texture.src"] = a.system.arms;
+      return update;
+    });
+  if (!updates.length) return;
+  await Actor.updateDocuments(updates);
+  console.log(`ASOIAF | Blason appliqué à l'image de ${updates.length} Maison(s)`);
+}
