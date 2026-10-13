@@ -53,12 +53,15 @@ export class UnitSheet extends AsoiafActorSheet {
       key: k, label: loc(`ASOIAF.UnitType.${k}`), checked: s.types[k]
     }));
     context.equipmentOptions = Object.fromEntries(s.typeList.map(t => [t, `ASOIAF.UnitType.${t}`]));
+    context.shootOptions = Object.fromEntries(s.typeList
+      .filter(t => ASOIAF.unitEquipment[t]?.base.shoot).map(t => [t, `ASOIAF.UnitType.${t}`]));
     context.abilities = Object.keys(ASOIAF.abilities).map(k => ({
       key: k, label: loc(`ASOIAF.Ability.${k}`), value: s.abilities[k].value, key_: s.keyAbilities.includes(k)
     })).sort((a, b) => (b.key_ - a.key_) || a.label.localeCompare(b.label, game.i18n.lang));
     context.healthPct = s.health.max ? Math.round(100 * s.health.value / s.health.max) : 0;
     context.disorgSlots = Array.from({ length: s.abilities.endurance.value }, (_, i) => ({ filled: i < s.disorganizations }));
     context.standingLabel = s.standingOrder ? loc(`ASOIAF.Order.${s.standingOrder}`) : "—";
+    context.standingHint = s.standingOrder ? loc(`ASOIAF.OrderHint.${s.standingOrder}`) : "";
     context.xpOver = s.xpSpent > s.xpTotal;
     context.fightLabel = `${loc(`ASOIAF.Ability.${s.fightDamage.ability}`)} ${s.fightDamage.mod >= 0 ? "+" : ""}${s.fightDamage.mod}`;
     context.shootLabel = s.shootDamage

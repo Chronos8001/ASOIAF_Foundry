@@ -21,6 +21,8 @@ export class UnitActorData extends foundry.abstract.TypeDataModel {
       training: new StringField({ required: true, initial: "trained", choices: ASOIAF.trainingOrder }),
       types: new SchemaField(types),
       equipment: new StringField({ required: true, blank: true, initial: "" }),
+      equipmentFight: new StringField({ required: true, blank: true, initial: "" }),
+      equipmentShoot: new StringField({ required: true, blank: true, initial: "" }),
       upgrades: new SchemaField({
         armor: new BooleanField({ initial: false }),
         fighting: new BooleanField({ initial: false }),
@@ -57,17 +59,25 @@ export class UnitActorData extends foundry.abstract.TypeDataModel {
     const selected = Object.entries(this.types).filter(([, v]) => v).map(([k]) => k);
     this.typeList = selected;
 
-    // Équipement : celui du type choisi (ou du premier type sélectionné).
-    const eqKey = selected.includes(this.equipment) ? this.equipment : selected[0];
-    const pack = ASOIAF.unitEquipment[eqKey] ?? ASOIAF.unitEquipment.infantry;
-    const base = pack.base;
-    const up = pack.upgrade;
-    const armor = this.upgrades.armor ? up : base;
+    // Équipement : armure, corps à corps et distance peuvent venir de types différents.
+    // Par défaut, celui de l'armure (ou du premier type) ; pour la distance, le premier type qui tire.
+    const pick = key => selected.includes(key) ? key : null;
+    const eqKey = pick(this.equipment) ?? selected[0];
+    const packOf = key => ASOIAF.unitEquipment[key] ?? ASOIAF.unitEquipment.infantry;
+    const fightKey = pick(this.equipmentFight) ?? eqKey;
+    const shootKey = pick(this.equipmentShoot)
+      ?? [eqKey, ...selected].find(k => ASOIAF.unitEquipment[k]?.base.shoot) ?? null;
+    const pack = packOf(eqKey);
+    const armor = this.upgrades.armor ? pack.upgrade : pack.base;
     this.equipmentKey = eqKey ?? "";
+    this.equipmentFightKey = fightKey ?? "";
+    this.equipmentShootKey = shootKey ?? "";
     this.armor = { rating: armor.ar, penalty: armor.penalty, bulk: armor.bulk };
     this.shields = !!pack.shields;
-    this.fightDamage = this.#damage(this.upgrades.fighting ? up.fight : base.fight);
-    const shoot = this.upgrades.marksmanship ? up.shoot : base.shoot;
+    const fightPack = packOf(fightKey);
+    this.fightDamage = this.#damage(this.upgrades.fighting ? fightPack.upgrade.fight : fightPack.base.fight);
+    const shootPack = shootKey ? packOf(shootKey) : null;
+    const shoot = shootPack ? (this.upgrades.marksmanship ? shootPack.upgrade.shoot : shootPack.base.shoot) : null;
     this.shootDamage = shoot ? this.#damage(shoot) : null;
     this.shootRange = shoot ? ASOIAF.unitRanges[shoot[2]] : 0;
     this.shootRangeKey = shoot?.[2] ?? "";

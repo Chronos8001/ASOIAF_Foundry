@@ -646,6 +646,13 @@
       "dropAttached": "Glissez un héros pour le rattacher à l'unité.",
       "attachedEffect": "Discipline -3 et +1D aux tests de Combat et de Tir ; le héros subit des dégâts quand l'unité est touchée.",
       "equipment": "Équipement (type)",
+      "equipmentArmor": "Armure",
+      "equipmentFight": "Corps à corps",
+      "equipmentShoot": "Distance",
+      "equipmentNone": "Aucune",
+      "equipmentHint": "Avec plusieurs types, chaque partie de l'équipement (armure, corps à corps, distance) peut venir d'un type différent.",
+      "discount": "Réduction (formation artisan)",
+      "discountHint": "Règle maison : points de Puissance retirés au coût de l'unité.",
       "defenseMod": "Bonus de Défense (couvert, fortification)",
       "defenseModHint": "Couvert du terrain ou fortification : château +8, fort +4, tour +3, bois dense +5…",
       "upgrades": "Améliorations d'équipement (1 Richesse chacune)",
@@ -874,8 +881,17 @@
       "surrender": "Se rendre"
     },
     "OrderHint": {
+      "attack": "l'unité attaque l'unité désignée : Combat si elle est au contact, Tir si elle est à portée, contre sa Défense. Dégâts × degrés, moins la VA. Permanent : continue d'attaquer chaque round.",
+      "charge": "l'unité se déplace jusqu'à sa course puis attaque au corps à corps : -1D au test de Combat, +2 aux dégâts de base. Permanent : continue d'attaquer les unités au contact.",
+      "defend": "test d'Agilité (+1D avec boucliers) qui remplace la Défense de l'unité pour un round, même s'il est plus bas. Permanent : continue de se défendre.",
+      "withdraw": "l'unité attaque (Combat ou Tir à -1D) puis recule de la moitié de son déplacement. Échec critique : l'unité est désorganisée. Permanent : recule vers son commandant.",
+      "move": "l'unité se déplace à son rythme normal, ou court en ligne droite. Ensuite, elle ne fait plus rien jusqu'au prochain ordre.",
+      "organize": "une unité désorganisée redevient simplement endommagée. La hausse de Discipline reste.",
+      "rally": "une unité en déroute redevient désorganisée et peut de nouveau recevoir des ordres.",
+      "regroup": "l'unité récupère 1 point de Santé par degré de réussite.",
       "ready": "l'unité attend la condition fixée pour attaquer ou bouger.",
-      "retreat": "l'unité s'éloigne de la bataille d'un déplacement par round (déroute sur un échec critique)."
+      "retreat": "l'unité s'éloigne de la bataille d'un déplacement par round (déroute sur un échec critique).",
+      "surrender": "test d'Art de la guerre pour chaque unité : sur un échec, elle est mise en déroute. L'unité qui se rend est retirée du jeu."
     },
     "GearHint": {
       "ram": "Bélier simple : l'unité ne peut pas attaquer mais gagne +2D en Athlétisme pour enfoncer portes et herses. Perdu si l'unité est mise en déroute.",

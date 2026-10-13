@@ -121,8 +121,9 @@ export async function issueOrder(unit) {
   if (s.status === "destroyed") return ui.notifications.warn(loc("ASOIAF.Unit.warnDestroyed"));
   const commanders = commanderChoices(unit);
   const difficulty = s.discipline + 3 * s.ordersThisRound;
+  const selected = s.standingOrder || "attack";
   const orders = Object.keys(ASOIAF.unitOrders)
-    .map(o => `<option value="${o}" ${o === (s.standingOrder || "attack") ? "selected" : ""}>${loc(`ASOIAF.Order.${o}`)}</option>`).join("");
+    .map(o => `<option value="${o}" ${o === selected ? "selected" : ""}>${loc(`ASOIAF.Order.${o}`)}</option>`).join("");
   const options = commanders.map(a => `<option value="${a.uuid}" ${a.uuid === s.commander ? "selected" : ""}>${a.name}
     (${loc("ASOIAF.Ability.warfare")} ${a.system.abilities.warfare.value})</option>`).join("");
 
@@ -131,6 +132,7 @@ export async function issueOrder(unit) {
     position: { width: 440 },
     content: `
       <div class="form-group"><label>${loc("ASOIAF.Unit.order")}</label><select name="order">${orders}</select></div>
+      <p class="hint order-hint">${loc(`ASOIAF.OrderHint.${selected}`)}</p>
       <div class="form-group"><label>${loc("ASOIAF.Unit.commander")}</label>
         <select name="commander"><option value="">${loc("ASOIAF.Unit.noCommander")}</option>${options}</select></div>
       <div class="form-group"><label>${loc("ASOIAF.Unit.discipline")}</label>
@@ -138,6 +140,13 @@ export async function issueOrder(unit) {
       <label class="checkbox"><input type="checkbox" name="standing"> ${loc("ASOIAF.Unit.standingCheckbox")}</label>
       <p class="hint">${loc("ASOIAF.Unit.orderHint")}</p>`,
     ok: { label: loc("ASOIAF.Unit.give"), icon: "fa-solid fa-flag", callback: (e, button) => readForm(button.form) },
+    // Description de l'ordre choisi, mise à jour à chaque changement.
+    render: (event, dialog) => {
+      const html = dialog instanceof HTMLElement ? dialog : dialog.element;
+      const select = html.querySelector("select[name='order']");
+      const hint = html.querySelector(".order-hint");
+      select?.addEventListener("change", () => hint.textContent = loc(`ASOIAF.OrderHint.${select.value}`));
+    },
     rejectClose: false
   });
   if (!data) return;

@@ -155,6 +155,7 @@ export class UnitData extends BaseItemData {
       types: new SchemaField(types),
       abilities: text(),
       disciplineMod: num(0),
+      discount: num(0, { min: 0 }),
       status: new StringField({ required: true, initial: "ready", choices: ["ready", "disorganized", "routed", "destroyed"] })
     };
   }
@@ -167,7 +168,8 @@ export class UnitData extends BaseItemData {
     const training = ASOIAF.unitTraining[this.training];
     const selected = Object.entries(this.types).filter(([, v]) => v).map(([k]) => k);
     this.typeList = selected;
-    this.investment = training.cost + selected.reduce((t, k) => t + ASOIAF.unitTypes[k].cost, 0);
+    // Formation par un artisan (règle maison) : réduction libre du coût en Puissance.
+    this.investment = Math.max(0, training.cost + selected.reduce((t, k) => t + ASOIAF.unitTypes[k].cost, 0) - this.discount);
     this.discipline = Math.max(0, training.discipline + this.disciplineMod
       + selected.reduce((t, k) => t + ASOIAF.unitTypes[k].discipline, 0));
     this.experience = training.xp;

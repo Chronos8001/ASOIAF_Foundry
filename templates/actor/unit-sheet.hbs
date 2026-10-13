@@ -52,7 +52,7 @@
       <div class="two-cols">
         <fieldset>
           <legend>{{localize "ASOIAF.Unit.orders"}}</legend>
-          <p>{{localize "ASOIAF.Unit.standingOrder"}} : <strong>{{standingLabel}}</strong>
+          <p>{{localize "ASOIAF.Unit.standingOrder"}} : <strong data-tooltip="{{standingHint}}">{{standingLabel}}</strong>
             · {{localize "ASOIAF.Unit.ordersThisRound"}} : <strong>{{system.ordersThisRound}}</strong></p>
           {{#if editable}}
             <div class="buttons-row">
@@ -141,8 +141,12 @@
         {{#each types}}<label class="checkbox"><input type="checkbox" name="system.types.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
       </div>
       <div class="form-grid">
-        <label>{{localize "ASOIAF.Unit.equipment"}}
+        <label>{{localize "ASOIAF.Unit.equipmentArmor"}}
           <select name="system.equipment"><option value=""></option>{{selectOptions equipmentOptions selected=system.equipmentKey localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Unit.equipmentFight"}}
+          <select name="system.equipmentFight"><option value=""></option>{{selectOptions equipmentOptions selected=system.equipmentFightKey localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Unit.equipmentShoot"}}
+          <select name="system.equipmentShoot"><option value="">{{#unless system.equipmentShootKey}}{{localize "ASOIAF.Unit.equipmentNone"}}{{/unless}}</option>{{selectOptions shootOptions selected=system.equipmentShootKey localize=true}}</select></label>
         <label>{{localize "ASOIAF.Unit.disciplineMod"}}<input type="number" name="system.disciplineMod" value="{{system.disciplineMod}}"></label>
         <label data-tooltip="ASOIAF.Unit.defenseModHint">{{localize "ASOIAF.Unit.defenseMod"}}<input type="number" name="system.defenseMod" value="{{system.defenseMod}}"></label>
       </div>
@@ -152,7 +156,7 @@
         <label class="checkbox"><input type="checkbox" name="system.upgrades.fighting" {{checked system.upgrades.fighting}}> {{localize "ASOIAF.Unit.upgradeFighting"}}</label>
         <label class="checkbox"><input type="checkbox" name="system.upgrades.marksmanship" {{checked system.upgrades.marksmanship}}> {{localize "ASOIAF.Unit.upgradeMarksmanship"}}</label>
       </div>
-      <p class="hint">{{localize "ASOIAF.Unit.upgradesHint"}}</p>
+      <p class="hint">{{localize "ASOIAF.Unit.upgradesHint"}} {{localize "ASOIAF.Unit.equipmentHint"}}</p>
 
       <h3 class="section-title">{{localize "ASOIAF.Tab.abilities"}}
         <small class="{{#if xpOver}}warning{{/if}}">XP {{system.xpSpent}} / {{system.xpTotal}}</small></h3>

@@ -349,8 +349,8 @@ ASOIAF.attachedDamage = { damaged: 1, disorganized: 2, routed: 5, destroyed: 10 
  */
 ASOIAF.unitSurvivors = {
   none: [-2, -1, 0, 0, 0, 1, 2],
-  damaged: [-2, -1, 0, 0, 0, 0, 1],
-  disorganized: [-3, -3, -2, -1, 0, 0, 0],
+  damaged: [-3, -2, -1, 0, 0, 0, 1],
+  disorganized: ["destroyed", -3, -2, -1, 0, 0, 0],
   routed: ["destroyed", "destroyed", -3, -2, -1, 0, 0],
   destroyed: ["destroyed", "destroyed", "destroyed", -3, -2, -1, 0]
 };

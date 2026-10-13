@@ -97,6 +97,7 @@
         <label>{{localize "ASOIAF.Unit.training"}}<select name="system.training">{{selectOptions trainingOptions selected=system.training}}</select></label>
         <label>{{localize "ASOIAF.Unit.status"}}<select name="system.status">{{selectOptions statusOptions selected=system.status localize=true}}</select></label>
         <label>{{localize "ASOIAF.Unit.disciplineMod"}}<input type="number" name="system.disciplineMod" value="{{system.disciplineMod}}"></label>
+        <label data-tooltip="ASOIAF.Unit.discountHint">{{localize "ASOIAF.Unit.discount"}}<input type="number" min="0" name="system.discount" value="{{system.discount}}"></label>
       </div>
       <div class="unit-summary">
         <span>{{localize "ASOIAF.Common.cost"}} : <strong>{{system.investment}}</strong></span>
