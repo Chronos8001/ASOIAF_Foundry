@@ -1,6 +1,7 @@
 import { ASOIAF } from "./config.mjs";
 import { applyRerolls, convertCount, emptyContribution, mergeContribution } from "./effects.mjs";
 import { ignite } from "./siege.mjs";
+import { applyPoisonMessage, poisonFollowUp } from "./poisons.mjs";
 
 const renderTpl = (...args) => (foundry.applications.handlebars?.renderTemplate ?? renderTemplate)(...args);
 const DialogV2 = foundry.applications.api.DialogV2;
@@ -23,7 +24,7 @@ export async function rollTest({
   actor, label, testDice, bonusDice = 0, penaltyDice = 0, modifier = 0,
   convert = 0, convertHalf = false, reroll1 = 0, reroll6 = false,
   difficulty = null, extraFormula = "", damage = null, damageAfter = 0, piercing = 0, burn = null,
-  extra = null, effects = [], speaker = null
+  extra = null, effects = [], speaker = null, poison = null
 }) {
   testDice = Math.max(1, testDice);
   bonusDice = Math.max(0, bonusDice);
@@ -82,14 +83,16 @@ export async function rollTest({
   const content = await renderTpl("systems/asoiaf/templates/chat/roll.hbs", {
     label, dice, testDice, bonusDice, penaltyDice, modifier, extraFormula, extraTotal, total, converted,
     rerolls: dice.filter(d => d.original !== null).length,
-    difficulty, outcome, damage: damageData, extra, effects
+    difficulty, outcome, damage: damageData, extra, effects,
+    poison: poison && (outcome?.success || !outcome) ? poison : null
   });
 
   await ChatMessage.create({
     speaker: speaker ?? ChatMessage.getSpeaker({ actor }),
     content,
     rolls,
-    sound: CONFIG.sounds.dice
+    sound: CONFIG.sounds.dice,
+    flags: poison && (outcome?.success || !outcome) ? { asoiaf: { poison } } : {}
   });
   return { total, outcome, dice };
 }
@@ -181,6 +184,20 @@ export function bindChatButtons(message, html) {
         // Munitions incendiaires : la cible brûle pendant plusieurs rounds.
         if (btn.dataset.burnDamage) await ignite(actor, Number(btn.dataset.burnDamage), btn.dataset.burnRounds);
       }
+    });
+  });
+
+  // Poison : empoisonner les cibles (arme enduite, dose administrée), test de suivi d'une attaque.
+  html.querySelectorAll("[data-action='apply-poison']").forEach(btn => {
+    btn.addEventListener("click", event => {
+      event.preventDefault();
+      return applyPoisonMessage(message);
+    });
+  });
+  html.querySelectorAll("[data-action='poison-follow']").forEach(btn => {
+    btn.addEventListener("click", event => {
+      event.preventDefault();
+      return poisonFollowUp(message);
     });
   });
 

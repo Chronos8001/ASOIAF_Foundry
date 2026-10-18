@@ -19,6 +19,7 @@
         <label>{{localize "ASOIAF.Weapon.grade"}}<select name="system.grade">{{selectOptions gradeOptions selected=system.grade localize=true}}</select></label>
         <label>{{localize "ASOIAF.Combat.bulk"}}<input type="number" min="0" name="system.bulk" value="{{system.bulk}}"></label>
         <label>{{localize "ASOIAF.Common.cost"}}<input type="text" name="system.cost" value="{{system.cost}}"></label>
+        <label>{{localize "ASOIAF.Inventory.weight"}} (kg)<input type="number" min="0" step="0.1" name="system.weight" value="{{system.weight}}"></label>
         <label class="checkbox"><input type="checkbox" name="system.equipped" {{checked system.equipped}}> {{localize "ASOIAF.Common.equipped"}}</label>
       </div>
       <label class="block">{{localize "ASOIAF.Weapon.qualities"}}<input type="text" name="system.qualities" value="{{system.qualities}}"></label>
@@ -30,17 +31,55 @@
         <label>{{localize "ASOIAF.Armor.penalty"}}<input type="number" max="0" name="system.penalty" value="{{system.penalty}}"></label>
         <label>{{localize "ASOIAF.Combat.bulk"}}<input type="number" min="0" name="system.bulk" value="{{system.bulk}}"></label>
         <label>{{localize "ASOIAF.Common.cost"}}<input type="text" name="system.cost" value="{{system.cost}}"></label>
+        <label>{{localize "ASOIAF.Inventory.weight"}} (kg)<input type="number" min="0" step="0.1" name="system.weight" value="{{system.weight}}"></label>
         <label class="checkbox"><input type="checkbox" name="system.equipped" {{checked system.equipped}}> {{localize "ASOIAF.Common.equipped"}}</label>
       </div>
     {{/if}}
 
     {{#if isType.equipment}}
       <div class="form-grid">
+        <label>{{localize "ASOIAF.Inventory.category"}}<select name="system.category">{{selectOptions categoryOptions selected=system.category localize=true}}</select></label>
         <label>{{localize "ASOIAF.Common.quantity"}}<input type="number" min="0" name="system.quantity" value="{{system.quantity}}"></label>
         <label>{{localize "ASOIAF.Combat.bulk"}}<input type="number" min="0" name="system.bulk" value="{{system.bulk}}"></label>
         <label>{{localize "ASOIAF.Common.cost"}}<input type="text" name="system.cost" value="{{system.cost}}"></label>
+        <label>{{localize "ASOIAF.Inventory.weight"}} (kg)<input type="number" min="0" step="0.1" name="system.weight" value="{{system.weight}}"></label>
         <label class="checkbox"><input type="checkbox" name="system.equipped" {{checked system.equipped}}> {{localize "ASOIAF.Common.carried"}}</label>
       </div>
+    {{/if}}
+
+    {{#if isType.poison}}
+      {{#if system.active}}<p class="hint warning">{{localize "ASOIAF.Poison.activeHint"}}</p>{{/if}}
+      <div class="form-grid">
+        <label>{{localize "ASOIAF.Poison.delivery"}}<input type="text" name="system.delivery" value="{{system.delivery}}" data-tooltip="ASOIAF.Poison.deliveryHint"></label>
+        <label>{{localize "ASOIAF.Poison.virulence"}}<input type="number" min="0" name="system.virulence" value="{{system.virulence}}"></label>
+        <label>{{localize "ASOIAF.Poison.diagnosis"}}<input type="number" min="0" name="system.diagnosis" value="{{system.diagnosis}}"></label>
+        <label data-tooltip="ASOIAF.Poison.resistHint">{{localize "ASOIAF.Poison.resistBonus"}}<input type="number" name="system.resistBonus" value="{{system.resistBonus}}"></label>
+        <label data-tooltip="ASOIAF.Poison.cureHint">{{localize "ASOIAF.Poison.cureDegrees"}}<input type="number" min="0" name="system.cureDegrees" value="{{system.cureDegrees}}"></label>
+        <label>{{localize "ASOIAF.Poison.alcohol"}}<select name="system.alcohol">{{selectOptions alcoholOptions selected=system.alcohol localize=true}}</select></label>
+        <label>{{localize "ASOIAF.Common.quantity"}}<input type="number" min="0" name="system.quantity" value="{{system.quantity}}"></label>
+        <label>{{localize "ASOIAF.Common.cost"}}<input type="text" name="system.cost" value="{{system.cost}}"></label>
+        <label>{{localize "ASOIAF.Inventory.weight"}} (kg)<input type="number" min="0" step="0.1" name="system.weight" value="{{system.weight}}"></label>
+      </div>
+      <h4>{{localize "ASOIAF.Poison.stages"}}</h4>
+      <ol class="poison-stages">
+        {{#each poisonStages}}
+          <li><strong>{{title}}</strong> — {{schedule}}
+            <ul>{{#each effects}}<li>{{this}}</li>{{/each}}</ul>
+            {{#if follow}}<div class="hint">{{follow}}</div>{{/if}}
+          </li>
+        {{/each}}
+      </ol>
+      {{#if poisonThresholds.length}}<p><strong>{{localize "ASOIAF.Poison.thresholds"}} :</strong> {{poisonThresholds}}</p>{{/if}}
+      <p><strong>{{localize "ASOIAF.Poison.recoveryTitle"}} :</strong> {{poisonRecovery}}</p>
+      {{#if editable}}
+        <details class="modifier-help">
+          <summary>{{localize "ASOIAF.Poison.advanced"}}</summary>
+          <p class="hint">{{localize "ASOIAF.Poison.advancedHint"}}</p>
+          <label class="block">{{localize "ASOIAF.Poison.stages"}}<textarea data-json="stages" rows="10" class="code">{{poisonJson.stages}}</textarea></label>
+          <label class="block">{{localize "ASOIAF.Poison.thresholds"}}<textarea data-json="thresholds" rows="3" class="code">{{poisonJson.thresholds}}</textarea></label>
+          <label class="block">{{localize "ASOIAF.Poison.recoveryTitle"}}<textarea data-json="recovery" rows="3" class="code">{{poisonJson.recovery}}</textarea></label>
+        </details>
+      {{/if}}
     {{/if}}
 
     {{#if isType.benefit}}

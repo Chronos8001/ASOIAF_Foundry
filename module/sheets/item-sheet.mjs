@@ -1,5 +1,6 @@
 import { ASOIAF } from "../config.mjs";
 import { ALL_TYPES, DERIVED_TARGETS, describe } from "../effects.mjs";
+import { describeRule, intervalLabel } from "../poisons.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
@@ -60,8 +61,43 @@ export class AsoiafItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         summary: describe(m, item.parent?.system?.abilities)
       })),
       modifierTypes: Object.fromEntries(ALL_TYPES.map(t => [t, `ASOIAF.Modifier.type_${t}`])),
-      targetSuggestions: AsoiafItemSheet.#targetSuggestions()
+      targetSuggestions: AsoiafItemSheet.#targetSuggestions(),
+      categoryOptions: options(ASOIAF.equipmentCategories, "ASOIAF.EquipmentCategory"),
+      ...(item.type === "poison" ? AsoiafItemSheet.#poisonContext(item.system) : {})
     });
+  }
+
+  /** Résumé lisible des phases, seuils et de la récupération d'un poison. */
+  static #poisonContext(sys) {
+    const loc = k => game.i18n.localize(k);
+    const fmt = (k, d) => game.i18n.format(k, d);
+    const ability = a => loc(`ASOIAF.Ability.${a}`);
+    const json = v => JSON.stringify(v, null, 1);
+    const r = sys.recovery;
+    const recovery = {
+      fade: r.fadeOnWake ? loc("ASOIAF.Poison.rec_wake") : fmt("ASOIAF.Poison.rec_fade", { hours: Math.round(r.fadeAfter / 360) / 10 }),
+      periodic: fmt("ASOIAF.Poison.rec_periodic", { amount: r.amount, every: intervalLabel(r.interval) }),
+      test: fmt("ASOIAF.Poison.rec_test", { difficulty: r.difficulty, every: intervalLabel(r.interval) }),
+      permanent: loc("ASOIAF.Poison.rec_permanent")
+    }[r.mode];
+    return {
+      alcoholOptions: { "": "ASOIAF.Common.none", beer: "ASOIAF.Poison.alcohol_beer", wine: "ASOIAF.Poison.alcohol_wine", spirits: "ASOIAF.Poison.alcohol_spirits" },
+      poisonStages: sys.stages.map((st, i) => ({
+        title: st.label || fmt("ASOIAF.Poison.stageN", { n: i + 1 }),
+        schedule: st.auto
+          ? loc("ASOIAF.Poison.autoStage")
+          : fmt("ASOIAF.Poison.schedule", { toxicity: st.toxicity, every: intervalLabel(st.interval), ability: ability(st.defense) }),
+        effects: st.effects.map(describeRule),
+        follow: st.followAbility ? fmt("ASOIAF.Poison.followText", {
+          ability: ability(st.followAbility), difficulty: st.followDifficulty, fail: describeRule(st.followFail)
+        }) : ""
+      })),
+      poisonThresholds: sys.thresholds.map(t => fmt(`ASOIAF.Poison.threshold_${t.result}`, {
+        ability: ability(t.ability), multiplier: t.multiplier > 1 ? `${t.multiplier} × ` : "", hours: t.hours
+      })).join(" ; "),
+      poisonRecovery: recovery + (r.destinyDelay ? ` ${fmt("ASOIAF.Poison.rec_destiny", { delay: r.destinyDelay })}` : ""),
+      poisonJson: { stages: json(sys.stages), thresholds: json(sys.thresholds), recovery: json(sys.recovery) }
+    };
   }
 
   /** Cibles proposées dans l'éditeur d'effets. */
@@ -79,6 +115,17 @@ export class AsoiafItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   _onFirstRender(context, options_) {
     super._onFirstRender?.(context, options_);
+    // Éditeur avancé des poisons : JSON des phases, seuils et récupération.
+    this.element.addEventListener("change", event => {
+      const area = event.target.closest("[data-json]");
+      if (!area) return;
+      event.stopPropagation();
+      try {
+        this.item.update({ [`system.${area.dataset.json}`]: JSON.parse(area.value) });
+      } catch (err) {
+        ui.notifications.error(game.i18n.format("ASOIAF.Poison.jsonError", { error: err.message }));
+      }
+    }, true);
     // Champs de l'éditeur d'effets (sans attribut name).
     this.element.addEventListener("change", event => {
       const input = event.target.closest("[data-mod-index]");

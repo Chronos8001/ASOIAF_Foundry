@@ -21,6 +21,8 @@
  * Un "-" devant inverse le signe.
  */
 
+import { poisonModifiers } from "./poison-rules.mjs";
+
 /** Valeur utilisée pour « tous les dés ». */
 export const ALL = 99;
 
@@ -33,10 +35,14 @@ export const DERIVED_TYPES = ["derived"];
 export const DERIVED_TARGETS = ["health", "composure", "combatDefense", "intrigueDefense", "movement", "sprintMult", "armorRating", "bulk"];
 export const ALL_TYPES = [...TEST_TYPES, ...WEAPON_TYPES, ...DERIVED_TYPES, "houseFortune"];
 
-/** Liste des modificateurs actifs d'un acteur (qualités possédées). */
+/** Liste des modificateurs actifs d'un acteur (qualités possédées, poisons et drogues en cours). */
 export function collectModifiers(items) {
   const list = [];
   for (const item of items) {
+    if (item.type === "poison") {
+      if (item.system.active) list.push(...poisonModifiers(item.name, item.id, item.system.state?.penalties));
+      continue;
+    }
     if (!["benefit", "drawback"].includes(item.type)) continue;
     const mods = item.system.modifiers ?? [];
     mods.forEach((m, index) => {

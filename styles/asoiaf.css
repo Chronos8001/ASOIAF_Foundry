@@ -442,3 +442,22 @@
 .asoiaf .ammo-list { display: flex; flex-direction: column; gap: 3px; }
 .asoiaf .siege-sheet.status-destroyed .portrait { filter: grayscale(1); }
 .asoiaf .item-list li.destroyed { opacity: 0.5; text-decoration: line-through; }
+
+/* ---------- Inventaire ---------- */
+.asoiaf .inventory-totals { margin: 4px 0 8px; }
+.asoiaf h4.inventory-group {
+  margin: 8px 0 2px; font-size: 0.9em; color: var(--as-ink-soft);
+  border-bottom: 1px dotted var(--as-line); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.asoiaf .tag.flaw a { margin-left: 2px; }
+
+/* ---------- Poisons et drogues ---------- */
+.asoiaf .afflictions li { background: rgba(61, 107, 58, 0.08); border-radius: 4px; padding: 4px 6px; }
+.asoiaf .afflictions li.dead { background: rgba(122, 28, 28, 0.12); }
+.asoiaf .afflictions .buttons-row button { font-size: 0.85em; }
+.asoiaf .poison-stages { margin: 2px 0 6px; padding-left: 20px; }
+.asoiaf .poison-stages ul { margin: 2px 0; padding-left: 16px; font-size: 0.9em; }
+.asoiaf textarea.code { font-family: monospace; font-size: 0.8em; }
+.asoiaf-chat.poison-card h3 { color: #3d6b3a; }
+.asoiaf-chat .poison-coat { margin-top: 6px; }
+.asoiaf-chat .warning { color: #a33a2a; }

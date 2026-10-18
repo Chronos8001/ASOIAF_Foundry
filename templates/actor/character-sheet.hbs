@@ -130,6 +130,42 @@
         </fieldset>
       </div>
 
+      {{#if afflictions.length}}
+        <h3 class="section-title"><i class="fa-solid fa-flask"></i> {{localize "ASOIAF.Poison.afflictions"}}</h3>
+        <ul class="item-list afflictions">
+          {{#each afflictions}}
+            <li data-item-id="{{id}}" class="{{#if dead}}dead{{/if}}">
+              <img src="{{img}}" alt="">
+              <div class="grow">
+                <strong>{{name}}</strong>
+                {{#if servings}}<span class="tag">{{servings}} {{localize "ASOIAF.Poison.servings"}}</span>{{/if}}
+                {{#if unconscious}}<span class="tag flaw"><i class="fa-solid fa-bed"></i> {{localize "ASOIAF.Poison.unconscious"}} ({{unconscious}})</span>{{/if}}
+                {{#if dead}}<span class="tag flaw"><i class="fa-solid fa-skull"></i> {{localize "ASOIAF.Poison.dead"}}</span>{{/if}}
+                {{#if diagnosed}}<span class="tag"><i class="fa-solid fa-stethoscope"></i> {{localize "ASOIAF.Poison.diagnosedTag"}}{{#if treatment}} ({{treatment}}){{/if}}</span>{{/if}}
+                {{#each stages}}
+                  <div class="effects-line">{{label}} : {{left}} × {{every}}{{#if next}} — {{localize "ASOIAF.Poison.nextIn"}} {{next}}{{/if}}{{#if waiting}} — {{localize "ASOIAF.Poison.waiting"}}{{/if}}</div>
+                {{/each}}
+                {{#if penalties}}<div class="desc">{{penalties}}</div>{{/if}}
+                {{#if recoveryText}}<div class="hint">{{recoveryText}}</div>{{/if}}
+                {{#if @root.editable}}
+                  <div class="buttons-row">
+                    {{#if hasAttacks}}
+                      <button type="button" data-action="poisonNext" data-tooltip="ASOIAF.Poison.nextHint"><i class="fa-solid fa-forward-step"></i> {{localize "ASOIAF.Poison.next"}}</button>
+                      <button type="button" data-action="poisonResolve" data-tooltip="ASOIAF.Poison.resolveHint"><i class="fa-solid fa-forward-fast"></i> {{localize "ASOIAF.Poison.resolve"}}</button>
+                    {{/if}}
+                    {{#unless diagnosed}}<button type="button" data-action="poisonDiagnose" data-tooltip="ASOIAF.Poison.healerHint"><i class="fa-solid fa-stethoscope"></i> {{localize "ASOIAF.Poison.diagnose"}}</button>{{/unless}}
+                    {{#if diagnosed}}<button type="button" data-action="poisonTreat" data-tooltip="ASOIAF.Poison.healerHint"><i class="fa-solid fa-kit-medical"></i> {{localize "ASOIAF.Poison.treat"}}</button>{{/if}}
+                    {{#if canRecover}}<button type="button" data-action="poisonRecover"><i class="fa-solid fa-heart-pulse"></i> {{localize "ASOIAF.Poison.recover"}}</button>{{/if}}
+                    <button type="button" data-action="poisonDestiny" data-tooltip="ASOIAF.Poison.burnHint"><i class="fa-solid fa-fire"></i> {{localize "ASOIAF.Poison.burnDestiny"}}</button>
+                  </div>
+                {{/if}}
+              </div>
+              <span class="controls"><a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete" data-tooltip="ASOIAF.Poison.removeHint"><i class="fa-solid fa-trash"></i></a></span>
+            </li>
+          {{/each}}
+        </ul>
+      {{/if}}
+
       <h3 class="section-title">{{localize "ASOIAF.Combat.weapons"}}</h3>
       <table class="items-table">
         <thead><tr>
@@ -141,7 +177,10 @@
           {{#each weapons}}
             <tr data-item-id="{{id}}">
               <td><a class="equip {{#if item.system.equipped}}on{{/if}}" data-action="itemToggle" data-tooltip="ASOIAF.Common.equipped"><i class="fa-solid fa-hand-fist"></i></a></td>
-              <td><a class="rollable item-name" data-action="rollWeapon"><img src="{{item.img}}" alt=""> {{item.name}}</a></td>
+              <td><a class="rollable item-name" data-action="rollWeapon"><img src="{{item.img}}" alt=""> {{item.name}}</a>
+                {{#if grade}}<span class="tag">{{grade}}</span>{{/if}}
+                {{#if coating}}<span class="tag flaw" data-tooltip="ASOIAF.Poison.coatedTag"><i class="fa-solid fa-flask"></i> {{coating}}
+                  <a data-action="removeCoating"><i class="fa-solid fa-xmark"></i></a></span>{{/if}}</td>
               <td>{{specialtyLabel}}</td>
               <td class="{{#if trainingWarning}}warning{{/if}}">{{#if item.system.training}}{{item.system.training}}B{{else}}—{{/if}}</td>
               <td class="center"><strong>{{damage}}</strong></td>
@@ -273,26 +312,75 @@
       </ul>
     </div>
 
-    {{!-- Équipement --}}
+    {{!-- Inventaire --}}
     <div class="tab-panel {{#if (asEq activeTab 'gear')}}active{{/if}}" data-tab="gear">
       <div class="coins">
         <label><i class="fa-solid fa-coins gold"></i> {{localize "ASOIAF.Coin.dragons"}} <input type="number" name="system.coin.dragons" value="{{system.coin.dragons}}"></label>
         <label><i class="fa-solid fa-coins silver"></i> {{localize "ASOIAF.Coin.stags"}} <input type="number" name="system.coin.stags" value="{{system.coin.stags}}"></label>
         <label><i class="fa-solid fa-coins copper"></i> {{localize "ASOIAF.Coin.pennies"}} <input type="number" name="system.coin.pennies" value="{{system.coin.pennies}}"></label>
       </div>
-      <h3 class="section-title">{{localize "ASOIAF.Gear.title"}}
-        {{#if editable}}<a class="add" data-action="itemCreate" data-type="equipment"><i class="fa-solid fa-plus"></i></a>{{/if}}</h3>
+      <p class="hint">{{localize "ASOIAF.Inventory.hint"}}</p>
+      <p class="inventory-totals">{{localize "ASOIAF.Inventory.purseTotal"}} : <strong>{{purse}}</strong> · {{localize "ASOIAF.Inventory.weight"}} : <strong>{{system.carriedWeight}} kg</strong></p>
+
+      <h3 class="section-title">{{localize "ASOIAF.Inventory.arms"}}</h3>
       <table class="items-table">
-        <thead><tr><th>{{localize "ASOIAF.Common.name"}}</th><th>{{localize "ASOIAF.Common.quantity"}}</th><th>{{localize "ASOIAF.Combat.bulk"}}</th><th>{{localize "ASOIAF.Common.cost"}}</th><th></th></tr></thead>
+        <thead><tr><th></th><th>{{localize "ASOIAF.Common.name"}}</th><th>{{localize "ASOIAF.Common.quantity"}}</th><th>{{localize "ASOIAF.Inventory.weightShort"}}</th><th>{{localize "ASOIAF.Common.cost"}}</th><th></th></tr></thead>
         <tbody>
-          {{#each equipment}}
+          {{#each arms}}
             <tr data-item-id="{{id}}">
+              <td><a class="equip {{#if system.equipped}}on{{/if}}" data-action="itemToggle" data-tooltip="ASOIAF.Common.equipped"><i class="fa-solid fa-hand-fist"></i></a></td>
               <td class="item-name"><img src="{{img}}" alt=""> {{name}}</td>
               <td class="center"><input class="mini" type="number" min="0" data-item-field="system.quantity" value="{{system.quantity}}"></td>
-              <td class="center">{{system.bulk}}</td>
+              <td class="center">{{system.weight}}</td>
               <td>{{system.cost}}</td>
               <td class="controls"><a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a></td>
             </tr>
+          {{else}}
+            <tr><td colspan="6" class="hint">{{localize "ASOIAF.Inventory.empty"}}</td></tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <h3 class="section-title">{{localize "ASOIAF.Gear.title"}}
+        {{#if editable}}<a class="add" data-action="itemCreate" data-type="equipment"><i class="fa-solid fa-plus"></i></a>{{/if}}</h3>
+      {{#each inventory}}
+        <h4 class="inventory-group">{{label}}</h4>
+        <table class="items-table">
+          <tbody>
+            {{#each items}}
+              <tr data-item-id="{{id}}">
+                <td><a class="equip {{#if system.equipped}}on{{/if}}" data-action="itemToggle" data-tooltip="ASOIAF.Common.carried"><i class="fa-solid fa-sack-dollar"></i></a></td>
+                <td class="item-name"><img src="{{img}}" alt=""> {{name}}</td>
+                <td class="center"><input class="mini" type="number" min="0" data-item-field="system.quantity" value="{{system.quantity}}"></td>
+                <td class="center">{{system.weight}}</td>
+                <td>{{system.cost}}</td>
+                <td class="controls"><a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a></td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      {{else}}
+        <p class="hint">{{localize "ASOIAF.Inventory.empty"}}</p>
+      {{/each}}
+
+      <h3 class="section-title"><i class="fa-solid fa-flask"></i> {{localize "ASOIAF.Poison.title"}}</h3>
+      <table class="items-table">
+        <thead><tr><th>{{localize "ASOIAF.Common.name"}}</th><th>{{localize "ASOIAF.Poison.delivery"}}</th><th>{{localize "ASOIAF.Poison.virulence"}}</th><th>{{localize "ASOIAF.Common.quantity"}}</th><th>{{localize "ASOIAF.Common.cost"}}</th><th></th></tr></thead>
+        <tbody>
+          {{#each poisons}}
+            <tr data-item-id="{{id}}">
+              <td class="item-name"><img src="{{item.img}}" alt=""> {{item.name}}</td>
+              <td>{{delivery}}</td>
+              <td class="center">{{#if item.system.alcohol}}—{{else}}{{item.system.virulence}}{{/if}}</td>
+              <td class="center"><input class="mini" type="number" min="0" data-item-field="system.quantity" value="{{item.system.quantity}}"></td>
+              <td>{{item.system.cost}}</td>
+              <td class="controls">
+                {{#if @root.editable}}<a data-action="administer" data-tooltip="ASOIAF.Poison.administerHint"><i class="fa-solid fa-syringe"></i></a>{{/if}}
+                <a data-action="itemEdit"><i class="fa-solid fa-pen"></i></a><a data-action="itemDelete"><i class="fa-solid fa-trash"></i></a>
+              </td>
+            </tr>
+          {{else}}
+            <tr><td colspan="6" class="hint">{{localize "ASOIAF.Poison.none"}}</td></tr>
           {{/each}}
         </tbody>
       </table>

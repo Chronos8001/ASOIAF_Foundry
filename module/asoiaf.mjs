@@ -17,6 +17,7 @@ import { burnTick } from "./siege.mjs";
 import { repairMottos, syncArms } from "./house.mjs";
 import { registerStatusEffects, resetRound } from "./warfare.mjs";
 import { bindChatButtons, rollTest } from "./dice.mjs";
+import { isMainGM, roundTick, tickAll } from "./poisons.mjs";
 
 const DEFAULT_ICONS = {
   weapon: "icons/svg/sword.svg",
@@ -27,7 +28,8 @@ const DEFAULT_ICONS = {
   holding: "icons/svg/tower.svg",
   domain: "icons/svg/mountain.svg",
   unit: "icons/svg/combat.svg",
-  artisan: "icons/svg/anchor.svg"
+  artisan: "icons/svg/anchor.svg",
+  poison: "icons/svg/poison.svg"
 };
 
 class AsoiafItem extends Item {
@@ -68,7 +70,8 @@ Hooks.once("init", () => {
     holding: ItemModels.HoldingData,
     domain: ItemModels.DomainData,
     unit: ItemModels.UnitData,
-    artisan: ItemModels.ArtisanData
+    artisan: ItemModels.ArtisanData,
+    poison: ItemModels.PoisonData
   };
 
   CONFIG.Actor.trackableAttributes = {
@@ -140,6 +143,15 @@ Hooks.on("updateCombat", async (combat, changes) => {
   const actors = combat.combatants.map(c => c.actor).filter(a => ["unit", "siege"].includes(a?.type));
   await burnTick(actors);
   await resetRound(actors.filter(a => a.type === "unit"));
+  // Poisons « à chaque round » des personnages au combat.
+  if (isMainGM()) await roundTick(combat.combatants.map(c => c.actor).filter(a => ["character", "npc"].includes(a?.type)));
+});
+
+// Le temps du monde avance (MJ, calendrier…) : attaques de poison dues, réveils et récupération.
+let poisonQueue = Promise.resolve();
+Hooks.on("updateWorldTime", worldTime => {
+  if (!isMainGM()) return;
+  poisonQueue = poisonQueue.then(() => tickAll(worldTime)).catch(err => console.error("ASOIAF | Poisons", err));
 });
 
 Hooks.on("renderChatMessageHTML", (message, html) => bindChatButtons(message, html));

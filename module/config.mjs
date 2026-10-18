@@ -128,6 +128,24 @@ ASOIAF.armors = [
 ].map(([name, rating, penalty, bulk]) => ({ name, rating, penalty, bulk }));
 
 /* -------------------------------------------- */
+/*  Inventaire (Chapitre 7)                     */
+/* -------------------------------------------- */
+
+/** Catégories d'équipement, dans l'ordre d'affichage de l'inventaire. */
+ASOIAF.equipmentCategories = ["gear", "ammunition", "tools", "clothing", "instrument", "food", "mount", "barding", "vehicle", "tradeGood", "valuable", "other"];
+
+/** Qualité d'arme (Table 7-3) : dés de pénalité, bonus au résultat (dégâts : voir WeaponData.baseDamage). */
+ASOIAF.weaponGrades = {
+  poor: { penaltyDice: 1, modifier: 0 },
+  common: { penaltyDice: 0, modifier: 0 },
+  superior: { penaltyDice: 0, modifier: 1 },
+  extraordinary: { penaltyDice: 0, modifier: 1 }
+};
+
+/** Modes d'administration d'un poison. */
+ASOIAF.poisonDelivery = ["ingested", "contact", "inhaled"];
+
+/* -------------------------------------------- */
 /*  Maison & Terres (Chapitre 6)                */
 /* -------------------------------------------- */
 

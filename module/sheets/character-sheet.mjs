@@ -1,6 +1,9 @@
 import { AsoiafActorSheet } from "./base-sheet.mjs";
 import { ASOIAF } from "../config.mjs";
 import { describe, needsChoice } from "../effects.mjs";
+import { acquireItem, PHYSICAL_TYPES } from "../inventory.mjs";
+import * as Poisons from "../poisons.mjs";
+import { formatCoins, purseValue } from "../poison-rules.mjs";
 
 /** Libellé lisible d'une cible d'effet. */
 function targetLabel(target) {
@@ -29,7 +32,15 @@ export class CharacterSheet extends AsoiafActorSheet {
       recover: CharacterSheet.#onRecover,
       setCount: CharacterSheet.#onSetCount,
       unlinkHouse: CharacterSheet.#onUnlinkHouse,
-      addFromCatalog: CharacterSheet.#onAddFromCatalog
+      addFromCatalog: CharacterSheet.#onAddFromCatalog,
+      administer: CharacterSheet.#onPoison(Poisons.administer, false),
+      poisonNext: CharacterSheet.#onPoison(Poisons.nextAttack),
+      poisonResolve: CharacterSheet.#onPoison(Poisons.resolveAll),
+      poisonDiagnose: CharacterSheet.#onPoison(Poisons.diagnose),
+      poisonTreat: CharacterSheet.#onPoison(Poisons.treat),
+      poisonRecover: CharacterSheet.#onPoison(Poisons.recover),
+      poisonDestiny: CharacterSheet.#onPoison(Poisons.burnDestiny),
+      removeCoating: CharacterSheet.#onRemoveCoating
     }
   };
 
@@ -65,10 +76,22 @@ export class CharacterSheet extends AsoiafActorSheet {
       id: w.id,
       damage: w.system.baseDamage(this.actor),
       specialtyLabel: loc(`ASOIAF.Specialty.${w.system.specialty}`),
+      grade: w.system.grade !== "common" ? loc(`ASOIAF.Grade.${w.system.grade}`) : null,
+      coating: w.getFlag("asoiaf", "coating")?.name ?? null,
       trainingWarning: w.system.training > (s.abilities[w.system.ability]?.specialties[w.system.specialty] ?? 0)
     }));
     context.armors = this._items("armor");
     context.equipment = this._items("equipment");
+    context.inventory = ASOIAF.equipmentCategories.map(key => ({
+      key, label: loc(`ASOIAF.EquipmentCategory.${key}`), items: context.equipment.filter(i => i.system.category === key)
+    })).filter(g => g.items.length);
+    context.arms = [...this._items("weapon"), ...context.armors];
+    const poisons = this._items("poison");
+    context.poisons = poisons.filter(p => !p.system.active).map(p => ({
+      item: p, id: p.id, delivery: String(p.system.delivery).split(",").map(d => loc(`ASOIAF.Poison.delivery_${d.trim()}`)).join(", ")
+    }));
+    context.afflictions = poisons.filter(p => p.system.active).map(p => Poisons.afflictionContext(p));
+    context.purse = formatCoins(purseValue(s.coin));
     const quality = q => ({
       id: q.id, img: q.img, name: q.name, system: q.system,
       pending: needsChoice(q),
@@ -107,7 +130,26 @@ export class CharacterSheet extends AsoiafActorSheet {
       if (actor?.type === "house") return this.actor.update({ "system.house": actor.uuid });
       return;
     }
+    // Objets physiques : achat proposé, objets identiques empilés.
+    if (data.type === "Item") {
+      const item = await Item.implementation.fromDropData(data);
+      if (item && item.parent !== this.actor && PHYSICAL_TYPES.includes(item.type)) return acquireItem(this.actor, item);
+    }
     return super._onDropData(event, data);
+  }
+
+  /** Actions sur un poison de la fiche (dose de l'inventaire ou empoisonnement en cours). */
+  static #onPoison(fn, owned = true) {
+    return function (event, target) {
+      const item = this.actor.items.get(target.closest("[data-item-id]").dataset.itemId);
+      if (!item || (owned && !item.system.active)) return;
+      return fn(this.actor, item);
+    };
+  }
+
+  static #onRemoveCoating(event, target) {
+    const item = this.actor.items.get(target.closest("[data-item-id]").dataset.itemId);
+    return item?.unsetFlag("asoiaf", "coating");
   }
 
   static #onRollAbility(event, target) {

@@ -1,8 +1,8 @@
 {
   "id": "asoiaf",
   "title": "Le Trône de Fer JdR (A Song of Ice and Fire RPG)",
-  "description": "Système non officiel pour le jeu de rôle A Song of Ice and Fire (SIFRP, édition Game of Thrones) : fiches de personnage interactives, tests avec dés bonus et dés de pénalité, combat, intrigue, et fiche de Maison complète (ressources, possessions, domaines, unités, fortunes, historique, blason).",
-  "version": "0.3.6",
+  "description": "Système non officiel pour le jeu de rôle A Song of Ice and Fire (SIFRP, édition Game of Thrones) : fiches de personnage interactives, tests avec dés bonus et dés de pénalité, combat, intrigue, inventaire et compendium d'équipement, poisons et drogues automatisés, et fiche de Maison complète (ressources, possessions, domaines, unités, fortunes, historique, blason).",
+  "version": "0.4.0",
   "authors": [
     {
       "name": "Chronos8001"
@@ -47,7 +47,8 @@
       "holding": {},
       "domain": {},
       "unit": {},
-      "artisan": {}
+      "artisan": {},
+      "poison": {}
     }
   },
   "grid": {
@@ -82,6 +83,28 @@
         "PLAYER": "OBSERVER",
         "ASSISTANT": "OWNER"
       }
+    },
+    {
+      "name": "equipment",
+      "label": "Équipement",
+      "path": "packs/equipment",
+      "type": "Item",
+      "system": "asoiaf",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "poisons",
+      "label": "Poisons et drogues",
+      "path": "packs/poisons",
+      "type": "Item",
+      "system": "asoiaf",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
     }
   ],
   "packFolders": [
@@ -91,7 +114,9 @@
       "color": "#7a1c1c",
       "packs": [
         "benefits",
-        "drawbacks"
+        "drawbacks",
+        "equipment",
+        "poisons"
       ]
     }
   ]

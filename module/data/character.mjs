@@ -100,6 +100,15 @@ export class CharacterData extends foundry.abstract.TypeDataModel {
       }
     }
 
+    // Poisons et drogues : le lait de pavot réduit de moitié les pénalités de blessures.
+    this.halvePain = items.some(i => i.type === "poison" && i.system.active
+      && i.system.state?.penalties?.some(p => p.kind === "halveInjuries"));
+    // Poids transporté (kg) : objets physiques, sans les poisons qui affectent le personnage.
+    this.carriedWeight = Math.round(10 * items.reduce((t, i) => {
+      if (i.system.weight === undefined || (i.type === "poison" && i.system.active)) return t;
+      return t + (i.system.weight || 0) * (i.system.quantity ?? 1);
+    }, 0)) / 10;
+
     this.destiny.invested = items.filter(i => i.type === "benefit").reduce((t, b) => t + b.system.destinyCost, 0);
     this.xp.available = this.xp.total - this.xp.spent;
   }
@@ -121,9 +130,11 @@ export class CharacterData extends foundry.abstract.TypeDataModel {
     const context = { ability, specialty, ...ctx };
     const { permanent, situational } = testEffects(this.modifiers ?? [], this.abilities, context);
 
-    let penaltyDice = this.wounds + (this.flaws[ability] ?? 0) + permanent.penaltyDice
+    const wounds = this.halvePain ? Math.floor(this.wounds / 2) : this.wounds;
+    const injuries = this.halvePain ? Math.floor(this.injuries / 2) : this.injuries;
+    let penaltyDice = wounds + (this.flaws[ability] ?? 0) + permanent.penaltyDice
       + (["deception", "persuasion"].includes(ability) ? this.frustration : 0);
-    let modifier = -this.injuries + permanent.modifier;
+    let modifier = -injuries + permanent.modifier;
     if (ability === "agility") modifier += this.armor.penalty;
     return {
       testDice: a.value + permanent.testDice,

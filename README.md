@@ -36,9 +36,42 @@ Copier le contenu du dépôt dans `Data/systems/asoiaf/`. Le nom du dossier doit
   - bouton « Appliquer aux cibles » : retire la VA et met à jour la Santé ;
   - boutons pour encaisser une blessure légère ou grave ;
   - initiative calculée sur l'Agilité (Rapidité).
-- **Arsenal du livre** : 58 armes et 15 armures à ajouter en un clic.
+- **Arsenal du livre** : 58 armes et 15 armures à ajouter en un clic (ou depuis le compendium « Équipement », avec prix et poids).
 - Destinée (avantages et handicaps), monnaie, biographie (but, motivation, vertu, vice…).
 - Lien vers la Maison : glisser une Maison sur la fiche. Le Statut maximal est alors vérifié.
+
+### Inventaire (compendium « Équipement »)
+- **Contenu** (chapitre 7) : 60 armes (dont dague en verredragon et arc en os de dragon), 15 armures, et l'équipement rangé par dossier : équipement personnel, munitions, outils, vêtements, instruments, nourriture et gîte, montures, bardes, véhicules, marchandises. Chaque objet porte son prix et son poids (en kg).
+- **Acheter** : glissez un objet du compendium sur la fiche. Une fenêtre propose de l'acheter ou de l'ajouter gratuitement.
+  - Le prix est retiré de la bourse : les sous d'abord, puis les cerfs, puis les dragons. La monnaie est rendue.
+  - Pour un prix variable (« 50–500 cerfs »), on saisit le prix convenu avec le Narrateur.
+  - Les objets identiques s'empilent (quantité).
+- **Onglet Inventaire** : armes et armures, équipement par catégorie, doses de poisons, valeur de la bourse et poids transporté.
+- **Qualité des armes** (Table 7-3), appliquée au jet : médiocre −1D ; supérieure +1 au résultat ; extraordinaire (acier valyrien) +1 au résultat et +1 aux dégâts.
+
+### Poisons et drogues (compendium « Poisons et drogues »)
+- **Contenu** : les 21 poisons et remèdes du livre (sang et venin de basilic, lait de pavot, larmes de Lys, l'Étrangleur, doux-sommeil, sang de veuve, aconit…) et l'alcool (bière, vin, spiritueux).
+- **Administrer** : dans l'inventaire, l'icône de seringue utilise une dose.
+  - Sur soi.
+  - Sur une cible : ciblez son jeton d'abord. Si vous ne possédez pas la victime, une carte secrète demande au MJ d'appliquer le poison.
+  - Pour enduire une arme (poison de contact) : la prochaine attaque réussie propose « Empoisonner la cible ».
+- **Attaques automatiques** : Virulence d6 contre l'Endurance passive (rang × 4), ou la Volonté pour les poisons de l'esprit.
+  - Les degrés de réussite fixent les effets, qui se cumulent : dés de pénalité, malus, Santé, blessures graves, inconscience…
+  - La Fréquence et la Toxicité sont suivies seules : les phases « à chaque round » avancent avec le suivi de combat, les autres avec le temps du monde (quand le MJ avance l'heure).
+  - Boutons « Attaque suivante » et « Tout résoudre » pour jouer sans gérer le temps.
+- **Sur la fiche** : les poisons en cours apparaissent dans l'onglet Combat. Leurs pénalités s'appliquent à tous les tests concernés. Le jeton reçoit les statuts empoisonné, inconscient ou mort.
+- **Mort** : elle est signalée quand les dés de pénalité atteignent le rang de la capacité visée.
+- **Soins** :
+  - « Diagnostiquer » : Soins (Diagnostic) contre la Difficulté du poison ;
+  - « Traiter » : le résultat du soigneur remplace la valeur passive de la victime s'il est meilleur ;
+  - le sang de veuve se guérit avec 3 degrés.
+- **Récupération**, selon le poison :
+  - les effets disparaissent après une durée ou au réveil ;
+  - ou la victime perd un dé par heure, jour ou semaine ;
+  - ou elle fait un test d'Endurance hebdomadaire ;
+  - ou les effets sont permanents. « Brûler un point de Destinée » arrête le poison, et certains poisons guérissent alors en quelques jours.
+- **Alcool** : chaque verre compte. Au-delà du rang d'Endurance (les spiritueux comptent double), l'alcool devient un poison. La victime s'écroule quand les pénalités égalent son Endurance, et meurt au triple.
+- **Créer un poison** : la fiche d'objet résume les phases. L'édition avancée (JSON) permet d'écrire ses propres poisons et maladies.
 
 ### Fiche de Maison
 - **Les 7 ressources** (Défense, Influence, Terres, Loi, Population, Puissance, Richesse), chacune avec :
@@ -83,7 +116,7 @@ Copier le contenu du dépôt dans `Data/systems/asoiaf/`. Le nom du dossier doit
 - **Qualités à choix** (Talentueux, Expertise, Charismatique, Maîtrise d'arme, Défaut au choix…) : elles portent un badge « à configurer ». Ouvrez-les et choisissez la cible de l'effet.
 - **Éditeur d'effets** : chaque qualité peut être modifiée, et on peut en créer de nouvelles. L'aide est intégrée à la fiche d'objet.
 
-Les compendiums sont construits par le workflow de publication. En local : `npm install` puis `npm run build:packs`.
+Les compendiums (qualités, équipement, poisons) sont construits par le workflow de publication. En local : `npm install` puis `npm run build:packs`.
 
 ### Batailles (chapitre 10) : unités sur la carte
 - **Déployer** : dans l'onglet Possessions de la Maison, l'icône de pion à côté d'une unité crée un acteur **Unité**. Il reprend l'entraînement, les types et le lien vers la Maison. Glissez-le ensuite sur la carte de bataille (1 case = 10 mètres). Le jeton affiche la barre de Santé et l'état de l'unité (désorganisée, en déroute, détruite).

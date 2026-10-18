@@ -1,3 +1,4 @@
+import { ASOIAF } from "../config.mjs";
 import { promptTest } from "../dice.mjs";
 import { weaponContext } from "../data/character.mjs";
 import { convertCount, ignoresTraining, weaponEffect } from "../effects.mjs";
@@ -64,8 +65,9 @@ export class AsoiafActor extends Actor {
 
     // Entraînement requis : on perd des dés bonus, l'excédent devient des dés de pénalité.
     const training = ignoresTraining(mods, ctx) ? 0 : w.training;
+    const grade = ASOIAF.weaponGrades[w.grade] ?? ASOIAF.weaponGrades.common;
     let bonusDice = test.bonusDice - training;
-    let penaltyDice = test.penaltyDice;
+    let penaltyDice = test.penaltyDice + grade.penaltyDice;
     if (bonusDice < 0) {
       penaltyDice += -bonusDice;
       bonusDice = 0;
@@ -76,12 +78,19 @@ export class AsoiafActor extends Actor {
     const basePiercing = w.piercing || Number(w.qualities.match(/(?:perforante|piercing)\s*(\d+)/i)?.[1] ?? 0);
     const piercing = basePiercing + weaponEffect(mods, "piercing", this.system.abilities, ctx);
 
+    // Arme enduite de poison : la carte propose d'empoisonner la cible touchée.
+    const coating = item.getFlag("asoiaf", "coating");
+    const effects = w.grade !== "common" ? [`${loc("ASOIAF.Weapon.grade")} : ${loc(`ASOIAF.Grade.${w.grade}`)}`] : [];
+
     return promptTest({
       actor: this,
       label: `${item.name} — ${loc(`ASOIAF.Ability.${ability}`)}`,
       ...test,
+      modifier: test.modifier + grade.modifier,
       bonusDice,
       penaltyDice,
+      effects,
+      poison: coating ? { name: coating.name, data: coating, weaponUuid: item.uuid } : null,
       damage,
       damageAfter: test.damageAfter,
       piercing,

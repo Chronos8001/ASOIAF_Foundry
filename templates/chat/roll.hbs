@@ -33,6 +33,11 @@
       {{/if}}
     </div>
   {{/if}}
+  {{#if poison}}
+    <div class="poison-coat">
+      <button type="button" data-action="apply-poison"><i class="fa-solid fa-flask"></i> {{localize "ASOIAF.Poison.applyCoat"}} ({{poison.name}})</button>
+    </div>
+  {{/if}}
   {{#if effects.length}}<ul class="applied-effects">{{#each effects}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
   {{#if extra}}<p class="hint">{{extra}}</p>{{/if}}
 </div>

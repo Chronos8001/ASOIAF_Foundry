@@ -1,6 +1,6 @@
 import { ASOIAF } from "../config.mjs";
 
-const { ArrayField, BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
+const { ArrayField, BooleanField, NumberField, ObjectField, SchemaField, StringField } = foundry.data.fields;
 
 const num = (initial = 0, options = {}) => new NumberField({ required: true, integer: true, initial, ...options });
 const text = () => new StringField({ required: true, blank: true, initial: "" });
@@ -18,6 +18,7 @@ class PhysicalItemData extends BaseItemData {
       quantity: num(1, { min: 0 }),
       cost: text(),
       bulk: num(0, { min: 0 }),
+      weight: new NumberField({ required: true, initial: 0, min: 0 }),
       equipped: new BooleanField({ initial: false })
     };
   }
@@ -42,11 +43,11 @@ export class WeaponData extends PhysicalItemData {
     return ASOIAF.weaponSpecialties[this.specialty];
   }
 
-  /** Dégâts de base selon la capacité du porteur. */
+  /** Dégâts de base selon la capacité du porteur (+1 pour une arme extraordinaire, Table 7-3). */
   baseDamage(actor) {
     if (this.damageAbility === "none" || !actor?.system.abilities) return 0;
     const value = actor.system.abilities[this.damageAbility]?.value ?? 0;
-    return Math.max(1, value + this.damageMod);
+    return Math.max(1, value + this.damageMod + (this.grade === "extraordinary" ? 1 : 0));
   }
 }
 
@@ -56,7 +57,75 @@ export class ArmorData extends PhysicalItemData {
   }
 }
 
-export class EquipmentData extends PhysicalItemData {}
+export class EquipmentData extends PhysicalItemData {
+  static defineSchema() {
+    return {
+      ...super.defineSchema(),
+      category: new StringField({ required: true, initial: "gear", choices: ASOIAF.equipmentCategories })
+    };
+  }
+}
+
+/** Effet d'un poison (voir module/poison-rules.mjs). */
+const poisonEffectField = () => new SchemaField({
+  kind: new StringField({ required: true, initial: "penaltyDice" }),
+  target: text(),
+  formula: new StringField({ required: true, blank: true, initial: "@deg" }),
+  permanent: new BooleanField({ initial: false }),
+  once: new BooleanField({ initial: false }),
+  always: new BooleanField({ initial: false }),
+  situational: new BooleanField({ initial: false }),
+  label: text()
+});
+
+/**
+ * Poison ou drogue (chapitre 7). Dans l'inventaire, ce sont des doses ; sur une victime
+ * (active), l'objet porte aussi l'état de l'empoisonnement (attaques restantes, pénalités cumulées).
+ */
+export class PoisonData extends PhysicalItemData {
+  static defineSchema() {
+    return {
+      ...super.defineSchema(),
+      delivery: new StringField({ required: true, initial: "ingested" }),
+      virulence: num(4, { min: 0 }),
+      diagnosis: num(9, { min: 0 }),
+      resistBonus: num(0),
+      cureDegrees: num(0, { min: 0 }),
+      alcohol: new StringField({ required: true, blank: true, initial: "", choices: ["", "beer", "wine", "spirits"] }),
+      stages: new ArrayField(new SchemaField({
+        label: text(),
+        interval: num(3600, { min: 0 }),
+        firstDelay: num(0, { min: 0 }),
+        toxicity: num(1, { min: 0 }),
+        defense: new StringField({ required: true, initial: "endurance" }),
+        auto: new BooleanField({ initial: false }),
+        requires: num(-1, { min: -1 }),
+        effects: new ArrayField(poisonEffectField()),
+        followAbility: text(),
+        followDifficulty: num(0, { min: 0 }),
+        followLabel: text(),
+        followFail: poisonEffectField()
+      })),
+      thresholds: new ArrayField(new SchemaField({
+        ability: new StringField({ required: true, initial: "endurance" }),
+        multiplier: num(1, { min: 1 }),
+        result: new StringField({ required: true, initial: "death", choices: ["death", "unconscious"] }),
+        hours: text()
+      })),
+      recovery: new SchemaField({
+        mode: new StringField({ required: true, initial: "fade", choices: ["fade", "periodic", "test", "permanent"] }),
+        interval: num(86400, { min: 0 }),
+        amount: num(1, { min: 0 }),
+        difficulty: num(0, { min: 0 }),
+        fadeAfter: num(0, { min: 0 }),
+        fadeOnWake: new BooleanField({ initial: false }),
+        destinyDelay: text()
+      }),
+      active: new BooleanField({ initial: false }),
+      state: new ObjectField({ required: true, initial: {} })
+    };
+  }
+}
 
 /** Modificateurs mécaniques d'une qualité (voir module/effects.mjs). */
 const modifiersField = () => new ArrayField(new SchemaField({
