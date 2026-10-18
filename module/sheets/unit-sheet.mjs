@@ -26,7 +26,8 @@ export class UnitSheet extends AsoiafActorSheet {
       conceal: UnitSheet.#onSiegeAction(Battle.conceal),
       triggerReady: UnitSheet.#onSiegeAction(Battle.triggerReady),
       counterCharge: UnitSheet.#onSiegeAction(Battle.counterCharge),
-      casualties: UnitSheet.#onSiegeAction(Battle.casualties)
+      casualties: UnitSheet.#onSiegeAction(Battle.casualties),
+      initiative: function () { return this.actor.rollCombatInitiative(); }
     }
   };
 

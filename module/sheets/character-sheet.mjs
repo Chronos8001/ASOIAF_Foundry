@@ -58,6 +58,7 @@ export class CharacterSheet extends AsoiafActorSheet {
       poisonDestiny: CharacterSheet.#onPoison(Poisons.burnDestiny),
       removeCoating: CharacterSheet.#onRemoveCoating,
       combatAction: CharacterSheet.#onCombatAction,
+      initiative: function () { return this.actor.rollCombatInitiative(); },
       intrigueAction: CharacterSheet.#onIntrigueAction,
       removeCondition: CharacterSheet.#onRemoveCondition,
       toggleCondition: CharacterSheet.#onToggleCondition,

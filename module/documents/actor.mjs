@@ -222,6 +222,15 @@ export class AsoiafActor extends Actor {
     });
   }
 
+  /**
+   * Initiative dans le suivi de combat : ajoute le jeton à la rencontre en cours (créée au besoin par le MJ)
+   * et relance son initiative avec la formule du système.
+   */
+  async rollCombatInitiative() {
+    if (!this.getActiveTokens().length) return ui.notifications.warn(loc("ASOIAF.Combat.noToken"));
+    return this.rollInitiative({ createCombatants: true, rerollInitiative: true });
+  }
+
   /** Formule d'initiative : test d'Agilité (Rapidité). */
   getInitiativeFormula(combat = null) {
     // Intrigue menée dans le suivi de combat : initiative au Statut (Réputation).

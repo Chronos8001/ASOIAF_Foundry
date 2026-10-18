@@ -146,7 +146,8 @@ export async function promptTest(options) {
 
   const data = await DialogV2.prompt({
     window: { title: options.label },
-    position: { width: 420 },
+    classes: ["asoiaf", "asoiaf-roll-dialog"],
+    position: { width: 500 },
     content,
     ok: {
       label: game.i18n.localize("ASOIAF.Roll.roll"),

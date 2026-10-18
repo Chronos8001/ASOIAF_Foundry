@@ -121,6 +121,7 @@
             <button type="button" data-action="combatAction" data-fn="rest" data-tooltip="ASOIAF.Fatigue.rest"><i class="fa-solid fa-moon"></i></button>
           </div>
           <div class="buttons-row">
+            <button type="button" class="primary" data-action="initiative" data-tooltip="ASOIAF.Combat.initiativeHint"><i class="fa-solid fa-bolt"></i> {{localize "ASOIAF.Combat.initiative"}}</button>
             <button type="button" data-action="recover" data-kind="combat"><i class="fa-solid fa-bed"></i> {{localize "ASOIAF.Combat.endCombat"}}</button>
             <button type="button" data-action="combatAction" data-fn="recoverWounds" data-tooltip="ASOIAF.Recovery.hint"><i class="fa-solid fa-kit-medical"></i> {{localize "ASOIAF.Recovery.title"}}</button>
           </div>
@@ -327,7 +328,7 @@
         <button type="button" data-action="intrigueAction" data-fn="start" data-tooltip="ASOIAF.Intrigue.startHint"><i class="fa-solid fa-users"></i> {{localize "ASOIAF.Intrigue.start"}}</button>
         <button type="button" data-action="intrigueAction" data-fn="newExchange" data-tooltip="ASOIAF.Intrigue.newExchangeHint"><i class="fa-solid fa-rotate"></i> {{localize "ASOIAF.Intrigue.newExchange"}}</button>
         <button type="button" data-action="recover" data-kind="intrigue"><i class="fa-solid fa-mug-hot"></i> {{localize "ASOIAF.Intrigue.end"}}</button>
-        <a class="rollable" data-action="rollAbility" data-ability="status" data-specialty="reputation"><i class="fa-solid fa-dice-six"></i> {{localize "ASOIAF.Intrigue.initiative"}}</a>
+        <button type="button" data-action="initiative" data-tooltip="ASOIAF.Intrigue.initiativeHint"><i class="fa-solid fa-bolt"></i> {{localize "ASOIAF.Intrigue.initiative"}}</button>
       </div>
     </div>
 

@@ -71,12 +71,19 @@ export async function removeFromArmy(army, uuid) {
 /*  Commandement                                */
 /* -------------------------------------------- */
 
-/** Initiative de bataille : test d'Art de la guerre du commandant (refait chaque round). */
+/**
+ * Initiative de bataille : test d'Art de la guerre du commandant (refait chaque round).
+ * Les unités de l'armée présentes sur la scène entrent dans le suivi de combat avec ce résultat.
+ */
 export async function commanderInitiative(army) {
   const commander = army.system.commanderActor;
   if (!commander) return ui.notifications.warn(loc("ASOIAF.Battle.noCommander"));
-  const t = commander.system.getTestData("warfare", "strategy");
-  return rollTest({ ...t, actor: commander, label: `${loc("ASOIAF.Battle.initiative")} — ${army.name}` });
+  const units = army.system.activeUnits.filter(u => u.getActiveTokens().length);
+  if (!units.length) {
+    const t = commander.system.getTestData("warfare", "strategy");
+    return rollTest({ ...t, actor: commander, label: `${loc("ASOIAF.Battle.initiative")} — ${army.name}` });
+  }
+  for (const unit of units) await unit.rollInitiative({ createCombatants: true, rerollInitiative: true });
 }
 
 /** Perte du commandement : toutes les unités sont désorganisées, l'armée ne donne plus qu'un ordre par round. */

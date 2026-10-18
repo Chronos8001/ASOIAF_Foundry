@@ -248,7 +248,10 @@
       "weapons": "Armes",
       "armor": "Armures",
       "slotHint": "Cliquer pour ajouter ou retirer",
-      "heal": "Retirer 1"
+      "heal": "Retirer 1",
+      "initiative": "Initiative",
+      "initiativeHint": "Ajoute votre jeton au suivi de combat (la rencontre est créée si besoin) et lance l'initiative : Agilité (Rapidité), ou Statut dans une intrigue.",
+      "noToken": "Placez d'abord le jeton de ce personnage sur la scène."
     },
     "Intrigue": {
       "title": "Intrigue",
@@ -292,7 +295,8 @@
       "effConsiderNext": "Réflexion : +2B à l'échange suivant",
       "effRead": "Adversaire jaugé : +1D pour toute l'intrigue",
       "effAssist": "Soutenu : +{n} au prochain test",
-      "effInfluenced": "Influencé cet échange : ne peut pas dégrader sa disposition"
+      "effInfluenced": "Influencé cet échange : ne peut pas dégrader sa disposition",
+      "initiativeHint": "Initiative de l'intrigue dans le suivi de combat : test de Statut (Réputation)."
     },
     "Destiny": {
       "points": "Points de Destinée",
@@ -1805,7 +1809,8 @@
       "reportHold": "Le vainqueur occupe le domaine : Loi −{law}, Population +{pop}.",
       "reportWealth": "Pillage : le vainqueur gagne {win} de Richesse, le vaincu en perd {lose}.",
       "reportRansom": "Rançons de {names} : {n} de Richesse.",
-      "reportLoserGlory": "{house} gagne 1 Gloire pour avoir combattu."
+      "reportLoserGlory": "{house} gagne 1 Gloire pour avoir combattu.",
+      "unitInitiativeHint": "Ajoute l'unité au suivi de combat avec l'initiative de son commandant (Art de la guerre)."
     }
   }
 }

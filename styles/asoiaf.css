@@ -491,3 +491,13 @@
 .asoiaf .unit-sheet .battlefield .form-grid { margin-bottom: 4px; }
 .asoiaf .status-badge.status-surrendered { background: #777; color: #fff; }
 .asoiaf-dialog.battle-report fieldset { margin: 6px 0; }
+
+/* ---------- Fenêtre de jet (style parchemin) ---------- */
+.application.asoiaf-roll-dialog .window-content { padding: 8px 12px; }
+.asoiaf-roll-dialog .asoiaf-dialog .form-group { display: grid; grid-template-columns: 11em 1fr; align-items: center; gap: 6px; margin: 3px 0; }
+.asoiaf-roll-dialog .asoiaf-dialog .form-group label { line-height: 1.2; font-weight: bold; }
+.asoiaf-roll-dialog .asoiaf-dialog .form-group input[type="checkbox"] { justify-self: start; }
+.asoiaf-roll-dialog .asoiaf-dialog fieldset { border: 1px solid var(--as-line); border-radius: 4px; padding: 4px 8px; }
+.asoiaf-roll-dialog .asoiaf-dialog legend { font-weight: bold; padding: 0 4px; }
+.asoiaf-roll-dialog .asoiaf-dialog .hint { color: var(--as-ink-soft); }
+.asoiaf-roll-dialog .form-footer button { background: var(--as-red); color: #fff; border: 1px solid var(--as-red); }
