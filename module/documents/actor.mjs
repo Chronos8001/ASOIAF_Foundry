@@ -1,5 +1,6 @@
 import { ASOIAF } from "../config.mjs";
 import { promptTest } from "../dice.mjs";
+import { attackContext, confirmAttack, defeatButtons } from "../combat-actions.mjs";
 import { weaponContext } from "../data/character.mjs";
 import { convertCount, ignoresTraining, weaponEffect } from "../effects.mjs";
 import { applyUnitDamage } from "../warfare.mjs";
@@ -91,6 +92,8 @@ export class AsoiafActor extends Actor {
       penaltyDice,
       effects,
       poison: coating ? { name: coating.name, data: coating, weaponUuid: item.uuid } : null,
+      attack: attackContext(this, item),
+      onConfirm: (data, c, base) => confirmAttack(this, item, data, c, base),
       damage,
       damageAfter: test.damageAfter,
       piercing,
@@ -107,7 +110,7 @@ export class AsoiafActor extends Actor {
    * Applique des dégâts réduits par la VA (moins la perforation), puis poste une
    * carte permettant d'encaisser des blessures pour annuler tout ou partie du coup.
    */
-  async applyDamage(amount, piercing = 0) {
+  async applyDamage(amount, piercing = 0, { vicious = false } = {}) {
     if (this.type === "unit") return applyUnitDamage(this, amount, piercing);
     if (this.type === "siege") return applySiegeDamage(this, amount, piercing);
     const ar = Math.max(0, (this.system.armor?.rating ?? 0) - piercing);
@@ -127,10 +130,12 @@ export class AsoiafActor extends Actor {
           <i class="fa-solid fa-skull"></i> ${loc("ASOIAF.Chat.absorbWound")}
         </button>
       </div>` : "";
+    // Vaincu : le vainqueur choisit la conséquence (une arme vicieuse tue).
+    const defeat = value <= 0 ? defeatButtons(vicious) : "";
     return ChatMessage.create({
       speaker: ChatMessage.getSpeaker({ actor: this }),
       content: `<div class="asoiaf-chat damage-card">
-        <p>${game.i18n.format(key, { name: this.name, taken, ar, value, max: this.system.health.max })}</p>${buttons}</div>`,
+        <p>${game.i18n.format(key, { name: this.name, taken, ar, value, max: this.system.health.max })}</p>${buttons}${defeat}</div>`,
       flags: { asoiaf: { damage: { actorUuid: this.uuid, taken, before } } }
     });
   }
@@ -195,11 +200,18 @@ export class AsoiafActor extends Actor {
   /** Fin de combat : les dégâts disparaissent. Fin d'intrigue : la frustration aussi. */
   async recover(kind) {
     if (kind === "combat") return this.update({ "system.health.value": this.system.health.max });
-    return this.update({ "system.composure.value": this.system.composure.max, "system.frustration": 0 });
+    return this.update({
+      "system.composure.value": this.system.composure.max, "system.frustration": 0,
+      "system.intrigue.withdrawLeft": 0, "system.intrigue.fastTalkedLeft": 0, "system.intrigue.consider": 0,
+      "system.intrigue.readTarget": false, "system.intrigue.assist": 0, "system.intrigue.shieldUsed": false,
+      "system.intrigue.influenced": false
+    });
   }
 
   /** Formule d'initiative : test d'Agilité (Rapidité). */
-  getInitiativeFormula() {
+  getInitiativeFormula(combat = null) {
+    // Intrigue menée dans le suivi de combat : initiative au Statut (Réputation).
+    if (combat?.getFlag?.("asoiaf", "intrigue") && this.system.getTestData) return this.getTestFormula("status", "reputation");
     // En bataille, l'initiative est un test d'Art de la guerre (Stratégie) du commandant.
     if (this.type === "unit") {
       return this.system.commanderActor?.getTestFormula?.("warfare", "strategy") ?? "2d6";
@@ -224,6 +236,6 @@ export class AsoiafActor extends Actor {
 export class AsoiafCombatant extends Combatant {
   /** @override */
   _getInitiativeFormula() {
-    return this.actor?.getInitiativeFormula?.() ?? super._getInitiativeFormula();
+    return this.actor?.getInitiativeFormula?.(this.combat) ?? super._getInitiativeFormula();
   }
 }

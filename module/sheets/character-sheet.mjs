@@ -4,6 +4,22 @@ import { describe, needsChoice } from "../effects.mjs";
 import { acquireItem, PHYSICAL_TYPES } from "../inventory.mjs";
 import * as Poisons from "../poisons.mjs";
 import { formatCoins, purseValue } from "../poison-rules.mjs";
+import * as CombatActions from "../combat-actions.mjs";
+import * as Intrigue from "../intrigue.mjs";
+import { addCondition, conditionList, hasCondition, removeCondition } from "../conditions.mjs";
+
+/** Actions de combat lancées depuis la fiche. */
+const COMBAT_ACTIONS = {
+  dodge: CombatActions.dodge, knockdown: CombatActions.knockdown, distract: CombatActions.distract, catchBreath: CombatActions.catchBreath,
+  standUp: CombatActions.standUp, joust: CombatActions.joust, recoverWounds: CombatActions.recoverWounds,
+  takeFatigue: CombatActions.takeFatigue, rest: CombatActions.rest,
+  freeEntangled: a => CombatActions.freeSelf(a, "entangled"), freeEntangledAgility: a => CombatActions.freeSelf(a, "entangledAgility"),
+  wakeUp: a => CombatActions.freeSelf(a, "stunned"), freeImpaled: a => CombatActions.freeSelf(a, "impaled")
+};
+/** Actions d'intrigue lancées depuis la fiche. */
+const INTRIGUE_ACTIONS = {
+  influence: Intrigue.influence, newExchange: Intrigue.newExchange, start: Intrigue.startIntrigue, ...Intrigue.ACTIONS
+};
 
 /** Libellé lisible d'une cible d'effet. */
 function targetLabel(target) {
@@ -40,7 +56,12 @@ export class CharacterSheet extends AsoiafActorSheet {
       poisonTreat: CharacterSheet.#onPoison(Poisons.treat),
       poisonRecover: CharacterSheet.#onPoison(Poisons.recover),
       poisonDestiny: CharacterSheet.#onPoison(Poisons.burnDestiny),
-      removeCoating: CharacterSheet.#onRemoveCoating
+      removeCoating: CharacterSheet.#onRemoveCoating,
+      combatAction: CharacterSheet.#onCombatAction,
+      intrigueAction: CharacterSheet.#onIntrigueAction,
+      removeCondition: CharacterSheet.#onRemoveCondition,
+      toggleCondition: CharacterSheet.#onToggleCondition,
+      setCover: CharacterSheet.#onSetCover
     }
   };
 
@@ -54,6 +75,7 @@ export class CharacterSheet extends AsoiafActorSheet {
     const context = await super._prepareContext(options);
     const s = this.actor.system;
     const loc = k => game.i18n.localize(k);
+    const fmt = (k, d) => game.i18n.format(k, d);
 
     context.abilities = Object.entries(ASOIAF.abilities).map(([key, specs]) => {
       const a = s.abilities[key];
@@ -92,6 +114,34 @@ export class CharacterSheet extends AsoiafActorSheet {
     }));
     context.afflictions = poisons.filter(p => p.system.active).map(p => Poisons.afflictionContext(p));
     context.purse = formatCoins(purseValue(s.coin));
+
+    // Combat : états, fatigue, taille.
+    const actor = this.actor;
+    context.conditions = conditionList(actor);
+    context.has = Object.fromEntries(["prone", "mounted", "entangled", "stunned", "unconscious", "impaled", "cover"].map(k => [k, hasCondition(actor, k)]));
+    context.fatigueSlots = Array.from({ length: s.abilities.endurance.value }, (_, i) => ({ filled: i < s.fatigue }));
+    context.sizeOptions = { small: "ASOIAF.Size.small", medium: "ASOIAF.Size.medium", large: "ASOIAF.Size.large" };
+
+    // Intrigue : disposition, technique, objectif, effets en cours.
+    const intr = s.intrigue;
+    context.dispositionOptions = Object.fromEntries(ASOIAF.dispositionOrder.map(k => {
+      const d = ASOIAF.dispositions[k];
+      const sign = n => (n > 0 ? `+${n}` : `${n}`);
+      return [k, `${loc(`ASOIAF.Disposition.${k}`)} (DR ${d.dr}, ${loc("ASOIAF.Ability.persuasion")} ${sign(d.persuasion)}, ${loc("ASOIAF.Ability.deception")} ${sign(d.deception)})`];
+    }));
+    context.techniqueOptions = Object.fromEntries(Object.entries(ASOIAF.techniques).map(([k, t]) =>
+      [k, `${loc(`ASOIAF.Technique.${k}`)} (${loc("ASOIAF.Intrigue.influence")} : ${loc(`ASOIAF.Ability.${t.influence}`)})`]));
+    context.objectiveOptions = Object.fromEntries([["", "—"], ...ASOIAF.objectives.map(k => [k, loc(`ASOIAF.Objective.${k}`)])]);
+    context.locationOptions = Object.fromEntries(Object.entries(ASOIAF.intrigueLocations).map(([v, k]) => [v, `${loc(`ASOIAF.Location.${k}`)} (+${v})`]));
+    context.techniqueHint = loc(`ASOIAF.Consequence.${intr.technique}`);
+    context.intrigueEffects = [
+      intr.withdrawLeft > 0 && intr.withdraw ? fmt("ASOIAF.Intrigue.effWithdraw", { n: intr.withdraw }) : null,
+      intr.fastTalkedLeft > 0 ? loc("ASOIAF.Intrigue.effFastTalked") : null,
+      intr.consider === 1 ? loc("ASOIAF.Intrigue.effConsider") : intr.consider === 2 ? loc("ASOIAF.Intrigue.effConsiderNext") : null,
+      intr.readTarget ? loc("ASOIAF.Intrigue.effRead") : null,
+      intr.assist ? fmt("ASOIAF.Intrigue.effAssist", { n: intr.assist }) : null,
+      intr.influenced ? loc("ASOIAF.Intrigue.effInfluenced") : null
+    ].filter(Boolean);
     const quality = q => ({
       id: q.id, img: q.img, name: q.name, system: q.system,
       pending: needsChoice(q),
@@ -145,6 +195,27 @@ export class CharacterSheet extends AsoiafActorSheet {
       if (!item || (owned && !item.system.active)) return;
       return fn(this.actor, item);
     };
+  }
+
+  static #onCombatAction(event, target) {
+    return COMBAT_ACTIONS[target.dataset.fn]?.(this.actor);
+  }
+
+  static #onIntrigueAction(event, target) {
+    return INTRIGUE_ACTIONS[target.dataset.fn]?.(this.actor);
+  }
+
+  static #onRemoveCondition(event, target) {
+    return removeCondition(this.actor, target.dataset.condition);
+  }
+
+  static #onToggleCondition(event, target) {
+    const key = target.dataset.condition;
+    return hasCondition(this.actor, key) ? removeCondition(this.actor, key) : addCondition(this.actor, key);
+  }
+
+  static #onSetCover(event, target) {
+    return CombatActions.setCover(this.actor, Number(target.dataset.value) || 0);
   }
 
   static #onRemoveCoating(event, target) {

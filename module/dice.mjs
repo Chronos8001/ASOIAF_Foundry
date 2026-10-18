@@ -2,6 +2,8 @@ import { ASOIAF } from "./config.mjs";
 import { applyRerolls, convertCount, emptyContribution, mergeContribution } from "./effects.mjs";
 import { ignite } from "./siege.mjs";
 import { applyPoisonMessage, poisonFollowUp } from "./poisons.mjs";
+import { attackButtons, bindCombatButtons, criticalDamage, criticalResult } from "./combat-actions.mjs";
+import { bindIntrigueButtons } from "./intrigue.mjs";
 
 const renderTpl = (...args) => (foundry.applications.handlebars?.renderTemplate ?? renderTemplate)(...args);
 const DialogV2 = foundry.applications.api.DialogV2;
@@ -24,7 +26,7 @@ export async function rollTest({
   actor, label, testDice, bonusDice = 0, penaltyDice = 0, modifier = 0,
   convert = 0, convertHalf = false, reroll1 = 0, reroll6 = false,
   difficulty = null, extraFormula = "", damage = null, damageAfter = 0, piercing = 0, burn = null,
-  extra = null, effects = [], speaker = null, poison = null
+  extra = null, effects = [], speaker = null, poison = null, attack = null, targetUuid = null
 }) {
   testDice = Math.max(1, testDice);
   bonusDice = Math.max(0, bonusDice);
@@ -73,26 +75,48 @@ export async function rollTest({
     }
   }
 
+  // Coups critiques et maladresses (règles optionnelles) : seulement pour les attaques.
+  const crit = criticalResult(attack, outcome, total, Number(difficulty), dice);
+  if (damage !== null) damage += criticalDamage(crit);
+
   let damageData = null;
   if (damage !== null && outcome?.success) {
     damageData = { base: damage, degrees: outcome.degrees, after: damageAfter, total: damage * outcome.degrees + damageAfter, piercing, burn };
   } else if (damage !== null && (difficulty === null || difficulty === "")) {
     damageData = { base: damage, degrees: null, after: damageAfter, total: null, piercing };
   }
+  if (damageData) Object.assign(damageData, { targetUuid, vicious: !!attack?.q?.vicious });
+
+  // Effets proposés après l'attaque (qualités d'arme, actions spéciales, critiques).
+  const buttons = attackButtons(attack, outcome, total, crit).map(b => {
+    if (b.effect === "stagger" && damageData?.total) {
+      b.damage = damage * (outcome.degrees - 1) + damageAfter;
+      b.piercing = piercing;
+    }
+    return { ...b, degrees: outcome?.degrees ?? 0 };
+  });
+  const critical = crit ? {
+    type: crit.type,
+    title: game.i18n.localize(`ASOIAF.${crit.type === "critical" ? "Critical" : "Fumble"}.title`),
+    text: game.i18n.localize(`ASOIAF.${crit.type === "critical" ? "Critical" : "Fumble"}.${crit.key}`)
+  } : null;
 
   const content = await renderTpl("systems/asoiaf/templates/chat/roll.hbs", {
     label, dice, testDice, bonusDice, penaltyDice, modifier, extraFormula, extraTotal, total, converted,
     rerolls: dice.filter(d => d.original !== null).length,
-    difficulty, outcome, damage: damageData, extra, effects,
+    difficulty, outcome, damage: damageData, extra, effects, buttons, critical,
     poison: poison && (outcome?.success || !outcome) ? poison : null
   });
 
+  const flags = {};
+  if (poison && (outcome?.success || !outcome)) flags.poison = poison;
+  if (attack) flags.attack = attack;
   await ChatMessage.create({
     speaker: speaker ?? ChatMessage.getSpeaker({ actor }),
     content,
     rolls,
     sound: CONFIG.sounds.dice,
-    flags: poison && (outcome?.success || !outcome) ? { asoiaf: { poison } } : {}
+    flags: Object.keys(flags).length ? { asoiaf: flags } : {}
   });
   return { total, outcome, dice };
 }
@@ -152,22 +176,28 @@ export async function promptTest(options) {
     applied.push(`${s.label} (${s.summary})`);
   });
 
-  return rollTest({
+  const base = {
     ...options,
-    testDice: c.testDice,
-    bonusDice: c.bonusDice,
-    penaltyDice: c.penaltyDice,
-    modifier: c.modifier,
-    convert: c.convert,
-    convertHalf: c.convertHalf,
-    reroll1: c.reroll1,
-    reroll6: c.reroll6,
     damage: options.damage === null || options.damage === undefined ? null : options.damage + c.damage,
     damageAfter: (options.damageAfter ?? 0) + c.damageAfter,
     effects: [...(options.effects ?? []), ...applied],
     difficulty: data.difficulty === "" || data.difficulty === null ? null : Number(data.difficulty),
     extraFormula: data.extraFormula ?? options.extraFormula ?? ""
+  };
+  // Choix propres à l'appelant (actions d'attaque…) : ils ajustent les dés, la Difficulté, les dégâts.
+  const prep = options.onConfirm ? await options.onConfirm(data, c, base) : null;
+  const dice = () => ({
+    testDice: c.testDice, bonusDice: c.bonusDice, penaltyDice: c.penaltyDice, modifier: c.modifier,
+    convert: c.convert, convertHalf: c.convertHalf, reroll1: c.reroll1, reroll6: c.reroll6
   });
+  if (prep?.rolls) {
+    let last = null;
+    for (const r of prep.rolls) last = await rollTest({ ...base, ...dice(), ...r, onConfirm: null });
+    return last;
+  }
+  const merged = { ...base, ...dice(), ...(prep ?? {}) };
+  if (prep?.effects) merged.effects = [...base.effects, ...prep.effects];
+  return rollTest(merged);
 }
 
 /** Active les boutons des cartes de discussion. */
@@ -177,15 +207,24 @@ export function bindChatButtons(message, html) {
       event.preventDefault();
       const amount = Number(btn.dataset.damage);
       const piercing = Number(btn.dataset.piercing) || 0;
-      const actors = getTargetActors();
+      // Cible mémorisée par l'attaque (attaque divisée, cible désignée), sinon les cibles actuelles.
+      const fixed = btn.dataset.targetUuid ? fromUuidSync(btn.dataset.targetUuid) : null;
+      const actors = fixed ? [fixed] : getTargetActors();
       if (!actors.length) return ui.notifications.warn(game.i18n.localize("ASOIAF.Chat.noTarget"));
       for (const actor of actors) {
-        await actor.applyDamage(amount, piercing);
+        if (!actor.isOwner) {
+          ui.notifications.warn(game.i18n.localize("ASOIAF.Warn.notOwner"));
+          continue;
+        }
+        await actor.applyDamage(amount, piercing, { vicious: btn.dataset.vicious === "true" });
         // Munitions incendiaires : la cible brûle pendant plusieurs rounds.
         if (btn.dataset.burnDamage) await ignite(actor, Number(btn.dataset.burnDamage), btn.dataset.burnRounds);
       }
     });
   });
+
+  bindCombatButtons(message, html);
+  bindIntrigueButtons(message, html);
 
   // Poison : empoisonner les cibles (arme enduite, dose administrée), test de suivi d'une attaque.
   html.querySelectorAll("[data-action='apply-poison']").forEach(btn => {

@@ -25,12 +25,24 @@
       {{#if damage.total}}
         <span>{{localize "ASOIAF.Weapon.damage"}} : {{damage.base}} × {{damage.degrees}}{{#if damage.after}} {{asSigned damage.after}}{{/if}} = <strong>{{damage.total}}</strong>{{#if damage.piercing}} ({{#if (asGt damage.piercing 20)}}{{localize "ASOIAF.Siege.ignoresArmor"}}{{else}}{{localize "ASOIAF.Weapon.piercing"}} {{damage.piercing}}{{/if}}){{/if}}{{#if damage.burn}} · <i class="fa-solid fa-fire"></i> {{damage.burn.damage}} / round ({{damage.burn.rounds}}){{/if}}</span>
         <button type="button" data-action="apply-damage" data-damage="{{damage.total}}" data-piercing="{{damage.piercing}}"
+          {{#if damage.targetUuid}}data-target-uuid="{{damage.targetUuid}}"{{/if}} data-vicious="{{damage.vicious}}"
           {{#if damage.burn}}data-burn-damage="{{damage.burn.damage}}" data-burn-rounds="{{damage.burn.rounds}}"{{/if}}>
           <i class="fa-solid fa-heart-crack"></i> {{localize "ASOIAF.Chat.applyDamage"}}
         </button>
       {{else}}
         <span>{{localize "ASOIAF.Weapon.damage"}} : {{damage.base}} × {{localize "ASOIAF.Roll.degrees"}}</span>
       {{/if}}
+    </div>
+  {{/if}}
+  {{#if critical}}
+    <div class="critical {{critical.type}}"><strong>{{critical.title}}</strong> — {{critical.text}}</div>
+  {{/if}}
+  {{#if buttons.length}}
+    <div class="buttons-row effect-buttons">
+      {{#each buttons}}
+        <button type="button" data-action="combat-effect" data-effect="{{effect}}" data-degrees="{{degrees}}"
+          {{#if value}}data-value="{{value}}"{{/if}} {{#if damage}}data-damage="{{damage}}" data-piercing="{{piercing}}"{{/if}}>{{label}}</button>
+      {{/each}}
     </div>
   {{/if}}
   {{#if poison}}

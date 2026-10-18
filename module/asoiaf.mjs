@@ -18,6 +18,8 @@ import { repairMottos, syncArms } from "./house.mjs";
 import { registerStatusEffects, resetRound } from "./warfare.mjs";
 import { bindChatButtons, rollTest } from "./dice.mjs";
 import { isMainGM, roundTick, tickAll } from "./poisons.mjs";
+import { expireConditions, registerConditions } from "./conditions.mjs";
+import { newExchange } from "./intrigue.mjs";
 
 const DEFAULT_ICONS = {
   weapon: "icons/svg/sword.svg",
@@ -61,6 +63,8 @@ Hooks.once("init", () => {
 
   CONFIG.Actor.dataModels = { character: CharacterData, npc: CharacterData, house: HouseData, unit: UnitActorData, siege: SiegeData };
   registerStatusEffects();
+  registerConditions();
+  registerSettings();
   CONFIG.Item.dataModels = {
     weapon: ItemModels.WeaponData,
     armor: ItemModels.ArmorData,
@@ -128,6 +132,26 @@ Hooks.once("ready", () => {
   if (game.user.isGM) syncArms().catch(err => console.error("ASOIAF | Synchronisation des blasons impossible", err));
 });
 
+/** Réglages du monde : règles optionnelles du combat avancé (p. 170-171). */
+function registerSettings() {
+  for (const key of ["criticals", "fumbles"]) {
+    game.settings.register("asoiaf", key, {
+      name: `ASOIAF.Settings.${key}`,
+      hint: `ASOIAF.Settings.${key}Hint`,
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false
+    });
+  }
+}
+
+// Fin d'une intrigue jouée dans le suivi de combat : Sang-froid et frustration reviennent.
+Hooks.on("deleteCombat", async combat => {
+  if (!isMainGM() || !combat.getFlag("asoiaf", "intrigue")) return;
+  for (const c of combat.combatants) if (c.actor?.system?.intrigue) await c.actor.recover("intrigue");
+});
+
 function registerHandlebarsHelpers() {
   Handlebars.registerHelper("asSigned", n => (Number(n) >= 0 ? `+${n}` : `${n}`));
   Handlebars.registerHelper("asEq", (a, b) => a === b);
@@ -139,7 +163,18 @@ function registerHandlebarsHelpers() {
 // Nouveau round de combat : les unités présentes repartent à zéro ordre donné (MJ uniquement).
 // Chaque nouveau round : les incendies brûlent, puis le compteur d'ordres repart à zéro.
 Hooks.on("updateCombat", async (combat, changes) => {
-  if (!game.user.isGM || !("round" in changes)) return;
+  if (!game.user.isGM || !("round" in changes || "turn" in changes)) return;
+  // Fin de durée des états (prudence, esquive, étourdissement…) au fil des tours.
+  if (isMainGM()) {
+    const prevIndex = "round" in changes && (changes.turn ?? 0) === 0 ? combat.turns.length - 1 : (combat.turn ?? 0) - 1;
+    await expireConditions(combat, changes, combat.turns[prevIndex]?.id ?? null);
+  }
+  if (!("round" in changes)) return;
+  // Intrigue jouée dans le suivi de combat : chaque round est un nouvel échange.
+  if (combat.getFlag("asoiaf", "intrigue")) {
+    if (isMainGM()) for (const c of combat.combatants) if (c.actor?.system?.intrigue) await newExchange(c.actor);
+    return;
+  }
   const actors = combat.combatants.map(c => c.actor).filter(a => ["unit", "siege"].includes(a?.type));
   await burnTick(actors);
   await resetRound(actors.filter(a => a.type === "unit"));

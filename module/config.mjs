@@ -142,6 +142,69 @@ ASOIAF.weaponGrades = {
   extraordinary: { penaltyDice: 0, modifier: 1 }
 };
 
+/* -------------------------------------------- */
+/*  Intrigue (Chapitre 8)                       */
+/* -------------------------------------------- */
+
+/** Dispositions (Table 8-1), de la meilleure à la pire : Disposition Rating et modificateurs. */
+ASOIAF.dispositions = {
+  affectionate: { dr: 1, deception: -2, persuasion: 5 },
+  friendly: { dr: 2, deception: -1, persuasion: 3 },
+  amiable: { dr: 3, deception: 0, persuasion: 1 },
+  indifferent: { dr: 4, deception: 0, persuasion: 0 },
+  dislike: { dr: 5, deception: 1, persuasion: -2 },
+  unfriendly: { dr: 6, deception: 2, persuasion: -4 },
+  malicious: { dr: 7, deception: 3, persuasion: -6 }
+};
+ASOIAF.dispositionOrder = Object.keys(ASOIAF.dispositions);
+
+/** Techniques (Table 8-3) : capacité qui fixe l'Influence, spécialités de Duperie utilisables. */
+ASOIAF.techniques = {
+  bargain: { influence: "cunning", deception: ["bluff"] },
+  charm: { influence: "persuasion", deception: ["act"] },
+  convince: { influence: "will", deception: ["act"] },
+  incite: { influence: "cunning", deception: ["bluff"] },
+  intimidate: { influence: "will", deception: ["act", "bluff"] },
+  seduce: { influence: "persuasion", deception: ["bluff"] },
+  taunt: { influence: "awareness", deception: ["bluff"] }
+};
+
+/** Objectifs d'intrigue. */
+ASOIAF.objectives = ["friendship", "information", "service", "deceit"];
+
+/** Bonus de lieu à la Défense d'intrigue : gênant, inapproprié, totalement déplacé. */
+ASOIAF.intrigueLocations = { 0: "fitting", 3: "awkward", 6: "inappropriate", 12: "wildly" };
+
+/** Rabais du Marchandage selon la disposition finale (× rang de Ruse, en %). */
+ASOIAF.bargainDiscount = { affectionate: "free", friendly: 10, amiable: 5, indifferent: 2, dislike: 1, unfriendly: 0, malicious: 0 };
+
+/* -------------------------------------------- */
+/*  Combat (Chapitre 9)                         */
+/* -------------------------------------------- */
+
+/** Récupération des blessures (p. 166) : Difficulté selon l'activité. */
+ASOIAF.recovery = {
+  injury: { light: 6, moderate: 9, strenuous: 12 },
+  wound: { light: 9, moderate: 15, strenuous: 21 }
+};
+
+/** Coups critiques (Table 9-5), selon le nombre de 6. */
+ASOIAF.criticals = ["", "solid", "powerful", "bloody", "crippling", "killing", "terrible", "impressive", "horrible"];
+/** Maladresses (Table 9-6), selon le nombre de 1. */
+ASOIAF.fumbles = ["", "injureSelf", "strikeAlly", "drop", "minorBreak", "majorBreak", "slippery", "bloodEyes", "overbalanced"];
+
+/** Joute (Table 9-4) : Difficulté du test de Dressage pour rester en selle, selon les degrés. */
+ASOIAF.joustSaddle = [0, 9, 12, 15, 18];
+/** Manœuvres de joute : [bonus au Combat, bonus au Dressage passif (être touché), bonus au Dressage (rester en selle)] par point choisi. */
+ASOIAF.joustManeuvers = {
+  none: { fight: 0, passive: 0, saddle: 0 },
+  aggressive: { fight: 1, passive: -1, saddle: 0 },
+  braced: { fight: -1, passive: 0, saddle: 1 },
+  defensive: { fight: -1, passive: 1, saddle: 0 },
+  highSaddle: { fight: 1, passive: 0, saddle: -1 },
+  eyesFixed: { fight: 1, passive: 0, saddle: 0, fixed: true }
+};
+
 /** Modes d'administration d'un poison. */
 ASOIAF.poisonDelivery = ["ingested", "contact", "inhaled"];
 

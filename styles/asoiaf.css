@@ -461,3 +461,19 @@
 .asoiaf-chat.poison-card h3 { color: #3d6b3a; }
 .asoiaf-chat .poison-coat { margin-top: 6px; }
 .asoiaf-chat .warning { color: #a33a2a; }
+
+/* ---------- Combat avancé et intrigue ---------- */
+.asoiaf .combat-actions { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0; }
+.asoiaf .combat-actions button { font-size: 0.85em; }
+.asoiaf .conditions-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 6px 0; }
+.asoiaf .tag.condition { display: inline-flex; align-items: center; gap: 3px; }
+.asoiaf .tag.condition img { width: 14px; height: 14px; border: none; }
+.asoiaf button.active { background: var(--as-gold); color: #fff; }
+.asoiaf .pair.victory { margin-top: 6px; font-weight: bold; font-size: 0.9em; }
+.asoiaf-dialog .attack-options { margin: 6px 0; }
+.asoiaf-dialog .attack-checks { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; margin: 4px 0; }
+.asoiaf-chat .critical { margin-top: 6px; padding: 3px 5px; border-radius: 4px; font-size: 0.9em; }
+.asoiaf-chat .critical.critical { background: rgba(176, 141, 60, 0.25); }
+.asoiaf-chat .critical.fumble { background: rgba(122, 28, 28, 0.15); }
+.asoiaf-chat .effect-buttons button, .asoiaf-chat .defeat-buttons button { flex: 1 1 45%; font-size: 0.85em; }
+.asoiaf-chat.intrigue-card h3 { color: #2f4f73; }

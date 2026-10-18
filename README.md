@@ -40,6 +40,51 @@ Copier le contenu du dépôt dans `Data/systems/asoiaf/`. Le nom du dossier doit
 - Destinée (avantages et handicaps), monnaie, biographie (but, motivation, vertu, vice…).
 - Lien vers la Maison : glisser une Maison sur la fiche. Le Statut maximal est alors vérifié.
 
+### Combat (chapitre 9)
+- **Fenêtre d'attaque** : quand on lance une arme, on choisit l'action.
+  - Attaque normale, charge (−1D, dégâts +2), attaque prudente (−1D, Défense +3) ou téméraire (+1D, Défense −5).
+  - Attaque à deux armes : le bonus de main gauche s'ajoute aux dégâts, et le bonus défensif est perdu jusqu'au prochain tour.
+  - Attaque divisée : il faut plusieurs cibles. Les dés sont répartis entre elles, avec +1B par cible pour une arme Rapide, et c'est impossible avec une arme Lente.
+  - Désarmer, assommer, manœuvrer, désarçonner : la Difficulté devient la valeur passive de la cible (rang × 4 + spécialité).
+- **Situations à cocher** : viser (+1B), surprise (+1D), terrain dominant (+1B), cible qui a sprinté (−1D), à cheval (+1B contre un piéton), arme tenue à deux mains, cible trop proche pour une arme d'Allonge, distance pour les armes à distance. Une cible à terre ou sans défense donne +1D automatiquement.
+- **Qualités d'armes** appliquées au jet :
+  - Adaptable, Deux mains, Montée, Malcommode, Allonge, portées, Rapide et Lente ;
+  - sur la carte, un bouton applique l'effet à la cible : Entravante, Saisie (contre l'Athlétisme passif), Empalement (3 degrés), Fracassante (2 degrés : bouclier puis armure), Étourdissante (sacrifier un degré) et Fragile (l'arme se brise) ;
+  - Vicieuse : la défaite est la mort.
+- **États** :
+  - liste : à terre, étourdi, entravé, saisi, immobilisé, sans défense, couvert (+5/+10), esquive, prudent, téméraire, distrait, manœuvré, chancelant, empalé, désarmé, à cheval ;
+  - ce sont des statuts du jeton, réglables aussi depuis le menu du jeton ;
+  - ils modifient la Défense de combat et les tests, et expirent seuls avec le suivi de combat (au prochain tour, en fin de tour ou après quelques rounds).
+- **Actions** (onglet Combat) : esquiver, renverser, distraire, reprendre son souffle, se relever, se libérer d'une entrave, reprendre ses esprits, retirer une arme plantée.
+- **Taille** : petite (Défense +2) ou grande (Défense −2).
+- **Défaite** : à 0 de Santé, la carte propose la conséquence (mort, mutilation avec −1 rang dans une capacité choisie, inconscience de 2d6 heures, rançon).
+- **Guérison** :
+  - blessures légères (test quotidien) et graves (test hebdomadaire), Difficulté selon l'activité ;
+  - un soigneur (jeton sélectionné) teste Soins à la place ;
+  - un échec critique aggrave la blessure.
+- **Fatigue** : accepter un point (−1 à tous les tests) pour ignorer la pénalité d'armure, une blessure grave ou les blessures légères jusqu'au prochain tour. Le repos de 4 heures en retire un.
+- **Joute** :
+  - une passe contre le chevalier ciblé, avec la manœuvre choisie (agressive, arc-boutée, défensive, haut en selle, les yeux fixés) ;
+  - dégâts de la lance de tournoi selon la Table 9-4 ;
+  - la cible encaisse puis tente de rester en selle ; si elle est désarçonnée, la chute ignore la VA.
+- **Règles optionnelles** (réglages du monde) : coups critiques (Table 9-5) et maladresses (Table 9-6).
+
+### Intrigue (chapitre 8)
+- **Position** (onglet Intrigue) :
+  - disposition envers l'adversaire (Table 8-1), qui donne la Disposition (DR) et le modificateur de Persuasion ou de Duperie ;
+  - technique (Table 8-3), objectif, tromperie (Duperie au lieu de Persuasion, avec la meilleure spécialité) ;
+  - lieu (+3, +6 ou +12 à la Défense d'intrigue) ;
+  - points de victoire pour les intrigues complexes.
+- **Influencer** :
+  - test contre la Défense d'intrigue de la cible ; Influence = rang de la technique × degrés ;
+  - la cible soustrait sa Disposition, puis choisit d'accepter de la frustration (chaque point absorbe son rang de Volonté) ou de perdre du Sang-froid ;
+  - à 0 de Sang-froid, ou avec plus de frustration que de Volonté, elle est vaincue ;
+  - la carte rappelle les conséquences de la technique et décale la disposition (Charmer, Séduire, Intimider, Provoquer) ; Marchander calcule le rabais.
+- **Actions** : soutenir, réfléchir (+2B), baratiner, manipuler (imposer la technique), apaiser, jauger (disposition et technique de la cible, +1D), bouclier de réputation, se retrancher, reconnaissance (option), céder, quitter.
+- **Suivi de combat** : « Engager une intrigue » crée une rencontre avec les jetons ciblés.
+  - L'initiative se fait au Statut (Réputation), et chaque round est un nouvel échange.
+  - À la fin de la rencontre, Sang-froid et frustration reviennent.
+
 ### Inventaire (compendium « Équipement »)
 - **Contenu** (chapitre 7) : 60 armes (dont dague en verredragon et arc en os de dragon), 15 armures, et l'équipement rangé par dossier : équipement personnel, munitions, outils, vêtements, instruments, nourriture et gîte, montures, bardes, véhicules, marchandises. Chaque objet porte son prix et son poids (en kg).
 - **Acheter** : glissez un objet du compendium sur la fiche. Une fenêtre propose de l'acheter ou de l'ajouter gratuitement.

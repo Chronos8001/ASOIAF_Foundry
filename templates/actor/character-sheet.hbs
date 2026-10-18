@@ -114,8 +114,15 @@
             <button type="button" data-action="step" data-field="system.wounds" data-delta="-1" data-tooltip="ASOIAF.Combat.heal"><i class="fa-solid fa-minus"></i></button>
             <button type="button" data-action="wound" data-tooltip="ASOIAF.Combat.woundHint"><i class="fa-solid fa-skull"></i></button>
           </div>
+          <div class="slots-row">
+            <span class="slots-label" data-tooltip="ASOIAF.Fatigue.hint">{{localize "ASOIAF.Fatigue.title"}} <small>(-1)</small></span>
+            <span class="slots">{{#each fatigueSlots}}<a class="slot {{#if filled}}filled{{/if}}" data-action="setCount" data-field="system.fatigue" data-index="{{@index}}" data-tooltip="ASOIAF.Combat.slotHint"></a>{{/each}}</span>
+            <button type="button" data-action="combatAction" data-fn="takeFatigue" data-tooltip="ASOIAF.Fatigue.take"><i class="fa-solid fa-person-running"></i></button>
+            <button type="button" data-action="combatAction" data-fn="rest" data-tooltip="ASOIAF.Fatigue.rest"><i class="fa-solid fa-moon"></i></button>
+          </div>
           <div class="buttons-row">
             <button type="button" data-action="recover" data-kind="combat"><i class="fa-solid fa-bed"></i> {{localize "ASOIAF.Combat.endCombat"}}</button>
+            <button type="button" data-action="combatAction" data-fn="recoverWounds" data-tooltip="ASOIAF.Recovery.hint"><i class="fa-solid fa-kit-medical"></i> {{localize "ASOIAF.Recovery.title"}}</button>
           </div>
         </fieldset>
         <fieldset>
@@ -126,8 +133,43 @@
             <li>{{localize "ASOIAF.Combat.defensiveBonus"}} : +{{system.defensiveBonus}}</li>
             <li><strong>{{localize "ASOIAF.Derived.combatDefense"}} : {{system.combatDefense}}</strong></li>
             <li>{{localize "ASOIAF.Combat.bulk"}} : {{system.bulk}}</li>
+            <li><label>{{localize "ASOIAF.Size.label"}} <select name="system.size">{{selectOptions sizeOptions selected=system.size localize=true}}</select></label></li>
           </ul>
         </fieldset>
+      </div>
+
+      <h3 class="section-title">{{localize "ASOIAF.Action.title"}}</h3>
+      <div class="combat-actions">
+        <button type="button" data-action="combatAction" data-fn="dodge" data-tooltip="ASOIAF.Action.dodgeHint"><i class="fa-solid fa-person-falling"></i> {{localize "ASOIAF.Action.dodge"}}</button>
+        <button type="button" data-action="combatAction" data-fn="knockdown" data-tooltip="ASOIAF.Action.knockdownHint"><i class="fa-solid fa-hand-back-fist"></i> {{localize "ASOIAF.Action.knockdown"}}</button>
+        <button type="button" data-action="combatAction" data-fn="distract" data-tooltip="ASOIAF.Action.distractHint"><i class="fa-solid fa-eye-slash"></i> {{localize "ASOIAF.Action.distract"}}</button>
+        <button type="button" data-action="combatAction" data-fn="catchBreath" data-tooltip="ASOIAF.Action.catchBreathHint"><i class="fa-solid fa-lungs"></i> {{localize "ASOIAF.Action.catchBreath"}}</button>
+        <button type="button" data-action="combatAction" data-fn="joust" data-tooltip="ASOIAF.Joust.tooltip"><i class="fa-solid fa-horse-head"></i> {{localize "ASOIAF.Joust.title"}}</button>
+        {{#if has.prone}}<button type="button" data-action="combatAction" data-fn="standUp"><i class="fa-solid fa-person-arrow-up-from-line"></i> {{localize "ASOIAF.Action.standUp"}}</button>{{/if}}
+        {{#if has.entangled}}
+          <button type="button" data-action="combatAction" data-fn="freeEntangled"><i class="fa-solid fa-dumbbell"></i> {{localize "ASOIAF.Action.free_entangled"}}</button>
+          <button type="button" data-action="combatAction" data-fn="freeEntangledAgility"><i class="fa-solid fa-person-walking"></i> {{localize "ASOIAF.Action.free_entangledAgility"}}</button>
+        {{/if}}
+        {{#if has.stunned}}<button type="button" data-action="combatAction" data-fn="wakeUp"><i class="fa-solid fa-bolt"></i> {{localize "ASOIAF.Action.free_stunned"}}</button>{{/if}}
+        {{#if has.impaled}}<button type="button" data-action="combatAction" data-fn="freeImpaled"><i class="fa-solid fa-hand"></i> {{localize "ASOIAF.Action.free_impaled"}}</button>{{/if}}
+      </div>
+      <p class="hint">{{localize "ASOIAF.Action.hint"}}</p>
+
+      <div class="conditions-row">
+        <strong>{{localize "ASOIAF.Condition.title"}} :</strong>
+        {{#each conditions}}
+          <span class="tag condition" data-tooltip="{{hint}}"><img src="{{img}}" alt=""> {{label}}{{#if value}} ({{value}}){{/if}}{{#if rounds}} — {{rounds}} r.{{/if}}
+            <a data-action="removeCondition" data-condition="{{key}}"><i class="fa-solid fa-xmark"></i></a></span>
+        {{else}}
+          <span class="hint">{{localize "ASOIAF.Condition.none"}}</span>
+        {{/each}}
+      </div>
+      <div class="buttons-row">
+        <button type="button" data-action="toggleCondition" data-condition="mounted" class="{{#if has.mounted}}active{{/if}}"><i class="fa-solid fa-horse"></i> {{localize "ASOIAF.Condition.mounted"}}</button>
+        <button type="button" data-action="toggleCondition" data-condition="prone" class="{{#if has.prone}}active{{/if}}"><i class="fa-solid fa-person-falling-burst"></i> {{localize "ASOIAF.Condition.prone"}}</button>
+        <button type="button" data-action="setCover" data-value="5"><i class="fa-solid fa-shield-halved"></i> {{localize "ASOIAF.Condition.cover"}} +5</button>
+        <button type="button" data-action="setCover" data-value="10"><i class="fa-solid fa-shield"></i> {{localize "ASOIAF.Condition.cover"}} +10</button>
+        {{#if has.cover}}<button type="button" data-action="setCover" data-value="0"><i class="fa-solid fa-xmark"></i> {{localize "ASOIAF.Condition.noCover"}}</button>{{/if}}
       </div>
 
       {{#if afflictions.length}}
@@ -239,28 +281,54 @@
           <ul class="breakdown">
             <li>{{localize "ASOIAF.Ability.awareness"}} + {{localize "ASOIAF.Ability.cunning"}} + {{localize "ASOIAF.Ability.status"}}</li>
             <li><strong>{{localize "ASOIAF.Derived.intrigueDefense"}} : {{system.intrigueDefense}}</strong></li>
-            <li>{{localize "ASOIAF.Derived.composure"}} : {{localize "ASOIAF.Ability.will"}} × 3 = {{system.composure.max}}</li>
+            <li>{{localize "ASOIAF.Derived.composure"}} : {{system.composure.value}} / {{system.composure.max}}
+              <input class="mini" type="number" min="0" name="system.composure.value" value="{{system.composure.value}}"></li>
+            <li><label>{{localize "ASOIAF.Intrigue.location"}} <select name="system.intrigue.locationBonus">{{selectOptions locationOptions selected=system.intrigue.locationBonus}}</select></label></li>
           </ul>
-          <div class="quick-rolls">
-            <a class="rollable" data-action="rollAbility" data-ability="persuasion"><i class="fa-solid fa-dice-six"></i> {{localize "ASOIAF.Ability.persuasion"}}</a>
-            <a class="rollable" data-action="rollAbility" data-ability="deception"><i class="fa-solid fa-dice-six"></i> {{localize "ASOIAF.Ability.deception"}}</a>
-            <a class="rollable" data-action="rollAbility" data-ability="will" data-specialty="dedication"><i class="fa-solid fa-dice-six"></i> {{localize "ASOIAF.Specialty.dedication"}}</a>
-            <a class="rollable" data-action="rollAbility" data-ability="awareness" data-specialty="empathy"><i class="fa-solid fa-dice-six"></i> {{localize "ASOIAF.Specialty.empathy"}}</a>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend>{{localize "ASOIAF.Intrigue.frustration"}}</legend>
           <div class="slots-row">
             <span class="slots-label" data-tooltip="ASOIAF.Intrigue.frustrationHint">{{localize "ASOIAF.Intrigue.frustration"}} <small>(-1D)</small></span>
             <span class="slots">{{#each frustrationSlots}}<a class="slot {{#if filled}}filled{{/if}}" data-action="setCount" data-field="system.frustration" data-index="{{@index}}" data-tooltip="ASOIAF.Combat.slotHint"></a>{{/each}}</span>
-            <input type="number" min="0" name="system.frustration" value="{{system.frustration}}">
             <button type="button" data-action="step" data-field="system.frustration" data-delta="-1" data-tooltip="ASOIAF.Combat.heal"><i class="fa-solid fa-minus"></i></button>
           </div>
-          <p class="hint">{{localize "ASOIAF.Intrigue.frustrationHint"}}</p>
-          <div class="buttons-row">
-            <button type="button" data-action="recover" data-kind="intrigue"><i class="fa-solid fa-mug-hot"></i> {{localize "ASOIAF.Intrigue.end"}}</button>
-          </div>
+          {{#each intrigueEffects}}<div class="effects-line">{{this}}</div>{{/each}}
         </fieldset>
+        <fieldset>
+          <legend>{{localize "ASOIAF.Intrigue.stance"}}</legend>
+          <label class="block">{{localize "ASOIAF.Intrigue.disposition"}}
+            <select name="system.intrigue.disposition">{{selectOptions dispositionOptions selected=system.intrigue.disposition}}</select></label>
+          <label class="block">{{localize "ASOIAF.Intrigue.technique"}}
+            <select name="system.intrigue.technique">{{selectOptions techniqueOptions selected=system.intrigue.technique}}</select></label>
+          <p class="hint">{{techniqueHint}}</p>
+          <label class="block">{{localize "ASOIAF.Intrigue.objective"}}
+            <select name="system.intrigue.objective">{{selectOptions objectiveOptions selected=system.intrigue.objective}}</select></label>
+          <label class="checkbox"><input type="checkbox" name="system.intrigue.deceit" {{checked system.intrigue.deceit}}> {{localize "ASOIAF.Intrigue.deceit"}}</label>
+          <div class="pair victory">{{localize "ASOIAF.Intrigue.victory"}}
+            <input type="number" name="system.intrigue.victory" value="{{system.intrigue.victory}}"> /
+            <input type="number" min="0" name="system.intrigue.victoryGoal" value="{{system.intrigue.victoryGoal}}" data-tooltip="ASOIAF.Intrigue.victoryHint"></div>
+        </fieldset>
+      </div>
+
+      <h3 class="section-title">{{localize "ASOIAF.IntrigueAction.title"}}</h3>
+      <div class="combat-actions">
+        <button type="button" class="primary" data-action="intrigueAction" data-fn="influence" data-tooltip="ASOIAF.IntrigueAction.influenceHint"><i class="fa-solid fa-comments"></i> {{localize "ASOIAF.IntrigueAction.influence"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="assist" data-tooltip="ASOIAF.IntrigueAction.assistHint"><i class="fa-solid fa-handshake-angle"></i> {{localize "ASOIAF.IntrigueAction.assist"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="consider" data-tooltip="ASOIAF.IntrigueAction.considerHint"><i class="fa-solid fa-hourglass-half"></i> {{localize "ASOIAF.IntrigueAction.consider"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="fastTalk" data-tooltip="ASOIAF.IntrigueAction.fastTalkHint"><i class="fa-solid fa-wind"></i> {{localize "ASOIAF.IntrigueAction.fastTalk"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="manipulate" data-tooltip="ASOIAF.IntrigueAction.manipulateHint"><i class="fa-solid fa-masks-theater"></i> {{localize "ASOIAF.IntrigueAction.manipulate"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="mollify" data-tooltip="ASOIAF.IntrigueAction.mollifyHint"><i class="fa-solid fa-dove"></i> {{localize "ASOIAF.IntrigueAction.mollify"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="readTarget" data-tooltip="ASOIAF.IntrigueAction.readTargetHint"><i class="fa-solid fa-magnifying-glass"></i> {{localize "ASOIAF.IntrigueAction.readTarget"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="reputation" data-tooltip="ASOIAF.IntrigueAction.reputationHint" {{#if system.intrigue.shieldUsed}}disabled{{/if}}><i class="fa-solid fa-crown"></i> {{localize "ASOIAF.IntrigueAction.reputation"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="withdraw" data-tooltip="ASOIAF.IntrigueAction.withdrawHint"><i class="fa-solid fa-shield-halved"></i> {{localize "ASOIAF.IntrigueAction.withdraw"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="recognition" data-tooltip="ASOIAF.IntrigueAction.recognitionHint"><i class="fa-solid fa-id-badge"></i> {{localize "ASOIAF.IntrigueAction.recognition"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="yield" data-tooltip="ASOIAF.IntrigueAction.yieldHint"><i class="fa-solid fa-flag"></i> {{localize "ASOIAF.IntrigueAction.yield"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="quit"><i class="fa-solid fa-door-open"></i> {{localize "ASOIAF.IntrigueAction.quit"}}</button>
+      </div>
+      <p class="hint">{{localize "ASOIAF.IntrigueAction.hint"}}</p>
+      <div class="buttons-row">
+        <button type="button" data-action="intrigueAction" data-fn="start" data-tooltip="ASOIAF.Intrigue.startHint"><i class="fa-solid fa-users"></i> {{localize "ASOIAF.Intrigue.start"}}</button>
+        <button type="button" data-action="intrigueAction" data-fn="newExchange" data-tooltip="ASOIAF.Intrigue.newExchangeHint"><i class="fa-solid fa-rotate"></i> {{localize "ASOIAF.Intrigue.newExchange"}}</button>
+        <button type="button" data-action="recover" data-kind="intrigue"><i class="fa-solid fa-mug-hot"></i> {{localize "ASOIAF.Intrigue.end"}}</button>
+        <a class="rollable" data-action="rollAbility" data-ability="status" data-specialty="reputation"><i class="fa-solid fa-dice-six"></i> {{localize "ASOIAF.Intrigue.initiative"}}</a>
       </div>
     </div>
 

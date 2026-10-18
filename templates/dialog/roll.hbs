@@ -34,6 +34,31 @@
     <label>{{localize "ASOIAF.Roll.reroll6"}}</label>
     <input type="checkbox" name="reroll6" {{checked reroll6}}>
   </div>
+  {{#if attack}}
+    <fieldset class="attack-options">
+      <legend>{{localize "ASOIAF.Attack.title"}}</legend>
+      <div class="form-group">
+        <label>{{localize "ASOIAF.Attack.action"}}</label>
+        <select name="action">{{#each attack.actions}}<option value="{{key}}">{{label}}</option>{{/each}}</select>
+      </div>
+      <div class="attack-checks">
+        <label class="checkbox"><input type="checkbox" name="aim"> {{localize "ASOIAF.Attack.aim"}}</label>
+        <label class="checkbox"><input type="checkbox" name="surprise"> {{localize "ASOIAF.Attack.surprise"}}</label>
+        {{#if attack.melee}}<label class="checkbox"><input type="checkbox" name="higherGround"> {{localize "ASOIAF.Attack.higherGround"}}</label>{{/if}}
+        <label class="checkbox"><input type="checkbox" name="targetSprinted"> {{localize "ASOIAF.Attack.targetSprinted"}}</label>
+        <label class="checkbox"><input type="checkbox" name="mounted" {{checked attack.mounted}}> {{localize "ASOIAF.Attack.mounted"}}</label>
+        {{#if attack.melee}}<label class="checkbox"><input type="checkbox" name="targetMounted" {{checked attack.targetMounted}}> {{localize "ASOIAF.Attack.targetMounted"}}</label>{{/if}}
+        {{#if attack.showTwoHands}}<label class="checkbox"><input type="checkbox" name="twoHands" {{checked attack.twoHands}}> {{localize "ASOIAF.Attack.twoHands"}}</label>{{/if}}
+        {{#if attack.q.reach}}<label class="checkbox"><input type="checkbox" name="tooClose"> {{localize "ASOIAF.Attack.tooClose"}}</label>{{/if}}
+      </div>
+      {{#if attack.ranged}}
+        <div class="form-group"><label>{{localize "ASOIAF.Attack.distance"}}</label><input type="number" name="distance" min="0" value="0"></div>
+      {{/if}}
+      {{#each attack.auto}}<p class="hint">{{this}}</p>{{/each}}
+      {{#if attack.vicious}}<p class="hint">{{localize "ASOIAF.Defeat.vicious"}}</p>{{/if}}
+      <p class="hint">{{localize "ASOIAF.Attack.hint"}}</p>
+    </fieldset>
+  {{/if}}
   {{#if convertHalf}}<p class="hint">{{localize "ASOIAF.Roll.convertHalf"}}</p>{{/if}}
   {{#if situational.length}}
     <fieldset class="situational">

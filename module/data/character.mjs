@@ -1,12 +1,13 @@
 import { ASOIAF } from "../config.mjs";
 import { collectModifiers, derivedEffects, testEffects, weaponEffect } from "../effects.mjs";
+import { conditionValue, hasCondition } from "../conditions.mjs";
 
 /** Contexte d'effet d'une arme : capacité, spécialité et arme. */
 export function weaponContext(weapon) {
   return { ability: weapon.system.ability, specialty: weapon.system.specialty, weapon };
 }
 
-const { NumberField, SchemaField, StringField } = foundry.data.fields;
+const { BooleanField, NumberField, SchemaField, StringField } = foundry.data.fields;
 
 const rank = (initial = 2) => new NumberField({ required: true, integer: true, min: 0, max: 10, initial });
 const counter = (initial = 0) => new NumberField({ required: true, integer: true, min: 0, initial });
@@ -37,6 +38,27 @@ export class CharacterData extends foundry.abstract.TypeDataModel {
       position: text(),
       age: new StringField({ required: true, initial: "youngAdult", choices: ASOIAF.ages }),
       languages: text(),
+      // Fatigue (combat avancé) : -1 à tous les résultats par point, au plus le rang d'Endurance.
+      fatigue: counter(),
+      size: new StringField({ required: true, initial: "medium", choices: ["small", "medium", "large"] }),
+      // Intrigue en cours (chapitre 8) : disposition envers l'adversaire, technique, effets des actions.
+      intrigue: new SchemaField({
+        disposition: new StringField({ required: true, initial: "indifferent", choices: ASOIAF.dispositionOrder }),
+        technique: new StringField({ required: true, initial: "convince", choices: Object.keys(ASOIAF.techniques) }),
+        deceit: new BooleanField({ initial: false }),
+        objective: new StringField({ required: true, blank: true, initial: "", choices: ["", ...ASOIAF.objectives] }),
+        locationBonus: counter(),
+        withdraw: counter(),
+        withdrawLeft: counter(),
+        fastTalkedLeft: counter(),
+        consider: counter(),
+        readTarget: new BooleanField({ initial: false }),
+        assist: counter(),
+        shieldUsed: new BooleanField({ initial: false }),
+        influenced: new BooleanField({ initial: false }),
+        victory: new NumberField({ required: true, integer: true, initial: 0 }),
+        victoryGoal: counter()
+      }),
       details: new SchemaField({
         concept: text(), goal: text(), motivation: text(), virtue: text(), vice: text(),
         background: text(), appearance: text(), notes: text()
@@ -77,10 +99,34 @@ export class CharacterData extends foundry.abstract.TypeDataModel {
     const armorBulk = armor ? Math.max(0, armor.system.bulk + derived.bulk) : 0;
     const bulk = items.reduce((t, i) => t + (i !== armor && i.system.equipped && i.system.bulk || 0), armorBulk);
 
-    this.combatDefense = a.agility.value + a.athletics.value + a.awareness.value + this.armor.penalty + defensive
-      + derived.combatDefense;
-    this.defensiveBonus = defensive;
-    this.intrigueDefense = a.awareness.value + a.cunning.value + a.status.value + derived.intrigueDefense;
+    // États de combat (chapitre 9).
+    const actor = this.parent;
+    const has = key => hasCondition(actor, key);
+    this.ignoreArmorPenalty = has("fatigueArmor");
+    const usedDefensive = has("offhand") ? 0 : defensive;
+    let cd = a.agility.value + a.athletics.value + a.awareness.value + (this.ignoreArmorPenalty ? 0 : this.armor.penalty)
+      + usedDefensive + derived.combatDefense;
+    cd += { small: 2, medium: 0, large: -2 }[this.size] ?? 0;
+    if (has("cover")) cd += conditionValue(actor, "cover", 5) || 5;
+    if (has("cautious")) cd += 3;
+    if (has("reckless")) cd -= 5;
+    if (has("stunned")) cd -= 5;
+    if (has("distracted")) cd -= a.awareness.value;
+    if (has("helpless") || has("pinned") || has("unconscious")) cd -= a.agility.value;
+    if (has("grabbed")) cd = Math.max(1, cd - 5);
+    // Esquive : le résultat du test remplace la Défense de combat jusqu'au prochain tour.
+    if (has("dodging")) cd = conditionValue(actor, "dodging", cd);
+    this.combatDefense = cd;
+    this.helpless = has("helpless") || has("pinned") || has("unconscious");
+    this.defensiveBonus = usedDefensive;
+
+    // Défense d'intrigue : lieu, baratin (perd la Ruse), retranchement (résultat de Volonté).
+    const intr = this.intrigue;
+    let id = a.awareness.value + a.cunning.value + a.status.value + derived.intrigueDefense + intr.locationBonus;
+    if (intr.fastTalkedLeft > 0) id -= a.cunning.value;
+    if (intr.withdrawLeft > 0 && intr.withdraw > 0) id = intr.withdraw;
+    this.intrigueDefense = id;
+    this.disposition = ASOIAF.dispositions[intr.disposition] ?? ASOIAF.dispositions.indifferent;
     this.health.max = Math.max(1, a.endurance.value * 3 + derived.health);
     this.composure.max = Math.max(1, a.will.value * 3 + derived.composure);
     this.bulk = bulk;
@@ -113,6 +159,17 @@ export class CharacterData extends foundry.abstract.TypeDataModel {
     this.xp.available = this.xp.total - this.xp.spent;
   }
 
+  /**
+   * Valeur passive (p. 30 et 69) : rang × 4, plus les dés bonus d'une spécialité ;
+   * un défaut compte comme un rang de moins.
+   */
+  passive(ability, specialty = null) {
+    const a = this.abilities[ability];
+    if (!a) return 0;
+    const rank = Math.max(0, a.value - (this.flaws?.[ability] ? 1 : 0));
+    return rank * 4 + (specialty ? a.specialties[specialty] ?? 0 : 0);
+  }
+
   /** Maison liée (résolue à la demande : elle peut ne pas être prête pendant la préparation). */
   get houseActor() {
     if (!this.house) return null;
@@ -130,12 +187,18 @@ export class CharacterData extends foundry.abstract.TypeDataModel {
     const context = { ability, specialty, ...ctx };
     const { permanent, situational } = testEffects(this.modifiers ?? [], this.abilities, context);
 
-    const wounds = this.halvePain ? Math.floor(this.wounds / 2) : this.wounds;
-    const injuries = this.halvePain ? Math.floor(this.injuries / 2) : this.injuries;
+    const actor = this.parent;
+    let wounds = this.halvePain ? Math.floor(this.wounds / 2) : this.wounds;
+    let injuries = this.halvePain ? Math.floor(this.injuries / 2) : this.injuries;
+    // Fatigue acceptée : ignorer une blessure grave, ou toutes les blessures légères, jusqu'au prochain tour.
+    if (hasCondition(actor, "fatigueWound")) wounds = Math.max(0, wounds - 1);
+    if (hasCondition(actor, "fatigueInjuries")) injuries = 0;
     let penaltyDice = wounds + (this.flaws[ability] ?? 0) + permanent.penaltyDice
       + (["deception", "persuasion"].includes(ability) ? this.frustration : 0);
-    let modifier = -injuries + permanent.modifier;
-    if (ability === "agility") modifier += this.armor.penalty;
+    let modifier = -injuries + permanent.modifier - this.fatigue;
+    if (ability === "agility" && !this.ignoreArmorPenalty) modifier += this.armor.penalty;
+    if (hasCondition(actor, "maneuvered")) penaltyDice += 1;
+    if (hasCondition(actor, "entangled")) modifier -= 5;
     return {
       testDice: a.value + permanent.testDice,
       bonusDice: (specialty ? a.specialties[specialty] : 0) + permanent.bonusDice,
