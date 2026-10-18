@@ -31,6 +31,19 @@ export class AsoiafActor extends Actor {
   async _preUpdate(changes, options, user) {
     const allowed = await super._preUpdate(changes, options, user);
     if (allowed === false) return false;
+    // Endurance ou Volonté modifiée : Santé et Sang-froid suivent le nouveau maximum (les dégâts subis restent).
+    if (["character", "npc"].includes(this.type)) {
+      for (const [ability, pool] of [["endurance", "health"], ["will", "composure"]]) {
+        const rank = foundry.utils.getProperty(changes, `system.abilities.${ability}.value`);
+        // La fiche renvoie toute sa saisie : la valeur n'est « modifiée à la main » que si elle a changé.
+        const sent = foundry.utils.getProperty(changes, `system.${pool}.value`);
+        if (rank === undefined || (sent !== undefined && Number(sent) !== this.system[pool].value)) continue;
+        const delta = (Number(rank) - this.system.abilities[ability].value) * 3;
+        if (!delta) continue;
+        const max = Math.max(1, this.system[pool].max + delta);
+        foundry.utils.setProperty(changes, `system.${pool}.value`, Math.min(max, Math.max(0, this.system[pool].value + delta)));
+      }
+    }
     const arms = foundry.utils.getProperty(changes, "system.arms");
     if (this.type !== "house" || !arms) return;
     const img = changes.img ?? this.img;
