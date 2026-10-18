@@ -349,10 +349,19 @@ ASOIAF.unitTypes = {
   raiders: { cost: 3, discipline: 3, abilities: ["agility", "endurance", "fighting"] },
   sailors: { cost: 4, discipline: 0, abilities: ["agility", "awareness", "fighting"] },
   scouts: { cost: 2, discipline: 3, abilities: ["awareness", "endurance", "stealth"] },
-  special: { cost: 4, discipline: 0, abilities: [] },
+  // Unité spéciale : trois capacités clés au choix (Table 6-8).
+  special: { cost: 4, discipline: 0, abilities: [], choose: 3 },
   support: { cost: 2, discipline: 3, abilities: ["animalHandling", "endurance", "healing"] },
   warships: { cost: 7, discipline: 0, abilities: ["awareness", "fighting", "marksmanship"] }
 };
+/** Capacités clés d'une unité : celles de ses types, plus les trois choisies pour une unité spéciale. */
+ASOIAF.unitKeyAbilities = (types, chosen = []) => {
+  const selected = Object.entries(types).filter(([, v]) => v).map(([k]) => k);
+  const keys = selected.flatMap(k => ASOIAF.unitTypes[k]?.abilities ?? []);
+  if (types.special) keys.push(...chosen.filter(Boolean));
+  return [...new Set(keys)];
+};
+
 /** Coût en Richesse des mercenaires par niveau d'entraînement. */
 ASOIAF.mercenaryWealth = { green: 1, trained: 3, veteran: 6, elite: 9, elite1: 9, elite2: 9, elite3: 9 };
 

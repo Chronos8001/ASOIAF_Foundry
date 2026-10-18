@@ -222,6 +222,9 @@ export class UnitData extends BaseItemData {
       ...super.defineSchema(),
       training: new StringField({ required: true, initial: "green", choices: Object.keys(ASOIAF.unitTraining) }),
       types: new SchemaField(types),
+      special1: new StringField({ required: true, blank: true, initial: "" }),
+      special2: new StringField({ required: true, blank: true, initial: "" }),
+      special3: new StringField({ required: true, blank: true, initial: "" }),
       abilities: text(),
       disciplineMod: num(0),
       discount: num(0, { min: 0 }),
@@ -243,7 +246,7 @@ export class UnitData extends BaseItemData {
     this.discipline = training.discipline + this.disciplineMod
       + selected.reduce((t, k) => t + ASOIAF.unitTypes[k].discipline, 0);
     this.experience = training.xp;
-    this.keyAbilities = [...new Set(selected.flatMap(k => ASOIAF.unitTypes[k].abilities))];
+    this.keyAbilities = ASOIAF.unitKeyAbilities(this.types, [this.special1, this.special2, this.special3]);
     this.wealthCost = this.types.mercenaries ? ASOIAF.mercenaryWealth[this.training] : 0;
     this.populationCost = this.types.levies ? 2 : 0;
   }

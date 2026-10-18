@@ -84,6 +84,8 @@ export class UnitSheet extends AsoiafActorSheet {
     context.standingLabel = s.standingOrder ? loc(`ASOIAF.Order.${s.standingOrder}`) : "—";
     context.standingHint = s.standingOrder ? loc(`ASOIAF.OrderHint.${s.standingOrder}`) : "";
     context.xpOver = s.xpSpent > s.xpTotal;
+    context.abilityOptions = Object.fromEntries(Object.keys(ASOIAF.abilities).map(k => [k, `ASOIAF.Ability.${k}`]));
+    context.offKey = s.offKeyAbilities.map(k => loc(`ASOIAF.Ability.${k}`)).join(", ");
     context.fightLabel = `${loc(`ASOIAF.Ability.${s.fightDamage.ability}`)} ${s.fightDamage.mod >= 0 ? "+" : ""}${s.fightDamage.mod}`;
     context.shootLabel = s.shootDamage
       ? `${loc(`ASOIAF.Ability.${s.shootDamage.ability}`)} ${s.shootDamage.mod >= 0 ? "+" : ""}${s.shootDamage.mod}` : null;

@@ -152,6 +152,14 @@
             {{label}} <small>({{cost}} / {{discipline}})</small></label>
         {{/each}}
       </div>
+      {{#if system.types.special}}
+        <div class="form-grid special-abilities">
+          <label>{{localize "ASOIAF.Unit.specialAbility"}} 1<select name="system.special1"><option value="">—</option>{{selectOptions abilityOptions selected=system.special1 localize=true}}</select></label>
+          <label>{{localize "ASOIAF.Unit.specialAbility"}} 2<select name="system.special2"><option value="">—</option>{{selectOptions abilityOptions selected=system.special2 localize=true}}</select></label>
+          <label>{{localize "ASOIAF.Unit.specialAbility"}} 3<select name="system.special3"><option value="">—</option>{{selectOptions abilityOptions selected=system.special3 localize=true}}</select></label>
+        </div>
+        <p class="hint">{{localize "ASOIAF.Unit.specialHint"}}</p>
+      {{/if}}
       <label class="block">{{localize "ASOIAF.Unit.abilities"}}<input type="text" name="system.abilities" value="{{system.abilities}}" placeholder="{{localize 'ASOIAF.Unit.abilitiesPlaceholder'}}"></label>
     {{/if}}
 

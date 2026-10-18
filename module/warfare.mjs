@@ -620,6 +620,7 @@ export async function deployUnit(house, item) {
   const system = {
     training: item.system.training,
     types: foundry.utils.deepClone(item.system.types),
+    special1: item.system.special1, special2: item.system.special2, special3: item.system.special3,
     house: house.uuid,
     source: item.uuid
   };

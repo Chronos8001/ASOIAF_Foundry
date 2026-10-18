@@ -187,6 +187,14 @@
 
       <h3 class="section-title">{{localize "ASOIAF.Tab.abilities"}}
         <small class="{{#if xpOver}}warning{{/if}}">XP {{system.xpSpent}} / {{system.xpTotal}}</small></h3>
+      {{#if system.types.special}}
+        <div class="form-grid special-abilities">
+          <label>{{localize "ASOIAF.Unit.specialAbility"}} 1<select name="system.special1"><option value="">—</option>{{selectOptions abilityOptions selected=system.special1 localize=true}}</select></label>
+          <label>{{localize "ASOIAF.Unit.specialAbility"}} 2<select name="system.special2"><option value="">—</option>{{selectOptions abilityOptions selected=system.special2 localize=true}}</select></label>
+          <label>{{localize "ASOIAF.Unit.specialAbility"}} 3<select name="system.special3"><option value="">—</option>{{selectOptions abilityOptions selected=system.special3 localize=true}}</select></label>
+        </div>
+        <p class="hint">{{localize "ASOIAF.Unit.specialHint"}}</p>
+      {{/if}}
       <div class="unit-abilities">
         {{#each abilities}}
           <div class="unit-ability {{#if key_}}key{{/if}}">
@@ -195,6 +203,7 @@
           </div>
         {{/each}}
       </div>
+      {{#if offKey}}<p class="warning">{{localize "ASOIAF.Unit.offKeyWarning"}} {{offKey}}</p>{{/if}}
       <p class="hint">{{localize "ASOIAF.Unit.abilitiesHint"}}</p>
     </div>
 

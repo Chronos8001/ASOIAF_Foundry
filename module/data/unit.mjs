@@ -20,6 +20,9 @@ export class UnitActorData extends foundry.abstract.TypeDataModel {
       abilities: new SchemaField(abilities),
       training: new StringField({ required: true, initial: "trained", choices: ASOIAF.trainingOrder }),
       types: new SchemaField(types),
+      special1: new StringField({ required: true, blank: true, initial: "" }),
+      special2: new StringField({ required: true, blank: true, initial: "" }),
+      special3: new StringField({ required: true, blank: true, initial: "" }),
       equipment: new StringField({ required: true, blank: true, initial: "" }),
       equipmentFight: new StringField({ required: true, blank: true, initial: "" }),
       equipmentShoot: new StringField({ required: true, blank: true, initial: "" }),
@@ -124,9 +127,11 @@ export class UnitActorData extends foundry.abstract.TypeDataModel {
     this.canAttack = !Object.entries(ASOIAF.unitGear).some(([k, g]) => g.noAttack && this.gear[k]) && !formation.noAttack;
 
     // Expérience : 20 XP par rang au-dessus de 2 dans les capacités clés.
-    this.keyAbilities = [...new Set(selected.flatMap(k => ASOIAF.unitTypes[k].abilities))];
+    this.keyAbilities = ASOIAF.unitKeyAbilities(this.types, [this.special1, this.special2, this.special3]);
     this.xpTotal = training.xp;
-    this.xpSpent = this.keyAbilities.reduce((t, k) => t + Math.max(0, a[k].value - 2) * 20, 0);
+    // Toute capacité au-dessus de 2 coûte 20 XP par rang ; seules les capacités clés devraient progresser.
+    this.xpSpent = Object.values(a).reduce((t, ab) => t + Math.max(0, ab.value - 2) * 20, 0);
+    this.offKeyAbilities = Object.keys(a).filter(k => a[k].value > 2 && !this.keyAbilities.includes(k));
 
     // Champ de bataille : fortification (toujours), couvert du terrain (unité en défense), formation.
     const terrain = ASOIAF.battleTerrain[this.terrain] ?? {};

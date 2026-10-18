@@ -734,7 +734,10 @@
       "upgradeMarksmanship": "Armes de tir",
       "upgradesHint": "Tables 10-1 et 10-2 : l'équipement dépend du type d'unité choisi.",
       "abilitiesHint": "Les capacités clés (en premier) s'améliorent avec l'expérience de l'entraînement : 20 XP par rang au-dessus de 2.",
-      "status_surrendered": "Rendue"
+      "status_surrendered": "Rendue",
+      "specialAbility": "Capacité clé",
+      "specialHint": "Unité spéciale : choisissez ses trois capacités clés (Table 6-8). Elles peuvent progresser avec l'expérience de l'unité.",
+      "offKeyWarning": "Capacités au-dessus de 2 qui ne sont pas des capacités clés de l'unité :"
     },
     "House": {
       "housePrefix": "Maison",
