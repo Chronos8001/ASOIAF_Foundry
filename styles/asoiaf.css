@@ -477,3 +477,17 @@
 .asoiaf-chat .critical.fumble { background: rgba(122, 28, 28, 0.15); }
 .asoiaf-chat .effect-buttons button, .asoiaf-chat .defeat-buttons button { flex: 1 1 45%; font-size: 0.85em; }
 .asoiaf-chat.intrigue-card h3 { color: #2f4f73; }
+
+/* ---------- Armée et champ de bataille ---------- */
+.asoiaf .army-sheet .linked { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+.asoiaf .army-sheet .linked img { width: 28px; height: 28px; border: 1px solid var(--as-line); border-radius: 3px; }
+.asoiaf .army-sheet .linked small { color: var(--as-ink-soft); }
+.asoiaf .army-sheet .linked.warning a { color: var(--as-red-light); }
+.asoiaf .army-sheet .hero-list { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.asoiaf .army-sheet .value-text { font-size: 1.1em; color: var(--as-ink); }
+.asoiaf .army-units .small-text { font-size: 0.8em; color: var(--as-ink-soft); }
+.asoiaf .army-units tr.status-routed td, .asoiaf .army-units tr.status-disorganized td { background: rgba(176, 141, 60, 0.12); }
+.asoiaf .army-units tr.status-destroyed td, .asoiaf .army-units tr.status-surrendered td { opacity: 0.55; }
+.asoiaf .unit-sheet .battlefield .form-grid { margin-bottom: 4px; }
+.asoiaf .status-badge.status-surrendered { background: #777; color: #fff; }
+.asoiaf-dialog.battle-report fieldset { margin: 6px 0; }

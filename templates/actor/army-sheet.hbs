@@ -1,0 +1,143 @@
+<div class="asoiaf-sheet army-sheet">
+  <header class="sheet-header">
+    <img class="portrait" src="{{actor.img}}" alt="{{actor.name}}" data-action="editImage" data-field="img">
+    <div class="header-main">
+      <input class="actor-name" type="text" name="name" value="{{actor.name}}">
+      <div class="header-grid">
+        <label data-drop="house">{{localize "TYPES.Actor.house"}}
+          {{#if house}}<a data-action="openUuid" data-uuid="{{house.uuid}}">{{house.name}}</a>{{else}}<span class="hint">{{localize "ASOIAF.Battle.dropHouse"}}</span>{{/if}}
+        </label>
+        <label>{{localize "ASOIAF.Battle.side"}}
+          <select name="system.side">{{selectOptions sideOptions selected=system.side localize=true}}</select>
+        </label>
+        <label>{{localize "ASOIAF.Battle.unitsCount"}}<span class="value-text">{{system.activeUnits.length}} / {{system.unitActors.length}}</span></label>
+        <label>{{localize "ASOIAF.Battle.orders"}}<span class="value-text">{{ordersLabel}}</span></label>
+      </div>
+      {{#if system.commandLost}}<p class="warning"><i class="fa-solid fa-triangle-exclamation"></i> {{localize "ASOIAF.Battle.commandLostBanner"}}</p>{{/if}}
+    </div>
+  </header>
+
+  <nav class="sheet-tabs">
+    {{#each tabs}}<a class="{{cssClass}}" data-action="asTab" data-tab="{{id}}">{{localize label}}</a>{{/each}}
+  </nav>
+
+  <section class="sheet-body">
+    {{!-- Commandement --}}
+    <div class="tab-panel {{#if (asEq activeTab 'command')}}active{{/if}}" data-tab="command">
+      <div class="two-cols">
+        <fieldset class="drop-target" data-drop="commander">
+          <legend>{{localize "ASOIAF.Battle.commander"}}</legend>
+          {{#if commander}}
+            <div class="linked" data-uuid="{{commander.uuid}}"><img src="{{commander.img}}" alt="">
+              <a data-action="openUuid" data-uuid="{{commander.uuid}}">{{commander.name}}</a>
+              <small>{{localize "ASOIAF.Ability.warfare"}} {{commander.warfare}} · {{localize "ASOIAF.Ability.status"}} {{commander.status}}</small>
+              <span class="tag">{{commander.left}} / {{commander.total}} {{localize "ASOIAF.Battle.ordersShort"}}</span>
+              {{#if editable}}<a class="controls" data-action="remove"><i class="fa-solid fa-link-slash"></i></a>{{/if}}</div>
+          {{else}}<p class="hint">{{localize "ASOIAF.Battle.dropCommander"}}</p>{{/if}}
+          {{#if editable}}
+            <div class="buttons-row">
+              <button type="button" data-action="initiative"><i class="fa-solid fa-dice-six"></i> {{localize "ASOIAF.Battle.initiative"}}</button>
+              <button type="button" data-action="newRound" data-tooltip="ASOIAF.Battle.newRoundHint"><i class="fa-solid fa-rotate"></i> {{localize "ASOIAF.Battle.newRound"}}</button>
+            </div>
+            <div class="buttons-row">
+              {{#if system.commandLost}}
+                <button type="button" data-action="takeCommand"><i class="fa-solid fa-crown"></i> {{localize "ASOIAF.Battle.takeCommand"}}</button>
+              {{else}}
+                <button type="button" data-action="loseCommand" data-tooltip="ASOIAF.Battle.loseCommandHint"><i class="fa-solid fa-person-falling"></i> {{localize "ASOIAF.Battle.loseCommand"}}</button>
+              {{/if}}
+            </div>
+          {{/if}}
+        </fieldset>
+        <fieldset class="drop-target" data-drop="sub">
+          <legend>{{localize "ASOIAF.Battle.subCommanders"}} <small>({{subs.length}} / {{system.maxSubCommanders}})</small></legend>
+          {{#each subs}}
+            <div class="linked {{#if over}}warning{{/if}}" data-uuid="{{uuid}}"><img src="{{img}}" alt="">
+              <a data-action="openUuid" data-uuid="{{uuid}}">{{name}}</a>
+              <small>{{localize "ASOIAF.Ability.warfare"}} {{warfare}}</small>
+              <span class="tag">{{left}} / {{total}} {{localize "ASOIAF.Battle.ordersShort"}}</span>
+              {{#if ../editable}}<a class="controls" data-action="remove"><i class="fa-solid fa-xmark"></i></a>{{/if}}</div>
+          {{else}}<p class="hint">{{localize "ASOIAF.Battle.dropSub"}}</p>{{/each}}
+        </fieldset>
+      </div>
+
+      <fieldset class="drop-target" data-drop="hero">
+        <legend>{{localize "ASOIAF.Battle.heroes"}} <small>({{heroes.length}} / {{system.maxHeroes}})</small></legend>
+        <div class="hero-list">
+          {{#each heroes}}
+            <span class="linked {{#if over}}warning{{/if}}" data-uuid="{{uuid}}"><img src="{{img}}" alt="">
+              <a data-action="openUuid" data-uuid="{{uuid}}">{{name}}</a>
+              {{#if ../editable}}<a class="controls" data-action="remove"><i class="fa-solid fa-xmark"></i></a>{{/if}}</span>
+          {{else}}<p class="hint">{{localize "ASOIAF.Battle.dropHero"}}</p>{{/each}}
+        </div>
+      </fieldset>
+
+      <h3 class="section-title">{{localize "ASOIAF.Battle.units"}}</h3>
+      <table class="items-table army-units drop-target" data-drop="units">
+        <thead><tr>
+          <th>{{localize "ASOIAF.Common.name"}}</th><th>{{localize "ASOIAF.Unit.status"}}</th><th>{{localize "ASOIAF.Derived.health"}}</th>
+          <th data-tooltip="ASOIAF.Battle.defensesHint">{{localize "ASOIAF.Unit.defense"}}</th><th>{{localize "ASOIAF.Unit.discipline"}}</th>
+          <th>{{localize "ASOIAF.Unit.standingOrder"}}</th><th>{{localize "ASOIAF.Battle.position"}}</th><th></th>
+        </tr></thead>
+        <tbody>
+          {{#each units}}
+            <tr data-uuid="{{uuid}}" class="status-{{status}}">
+              <td class="item-name"><a data-action="openUnit"><img src="{{img}}" alt=""> {{name}}</a>
+                {{#if attached}}<small class="tag">{{attached}}</small>{{/if}}</td>
+              <td><span class="status-badge status-{{status}}">{{statusLabel}}</span>{{#unless activated}} <i class="fa-solid fa-moon" data-tooltip="ASOIAF.Battle.notActivatedShort"></i>{{/unless}}</td>
+              <td class="center">{{health}}</td>
+              <td class="center">{{defense}} / {{shootDefense}}</td>
+              <td class="center">{{discipline}}{{#if orders}} <small>(+{{orders}}×3)</small>{{/if}}</td>
+              <td>{{standing}}</td>
+              <td class="small-text">{{formation}} {{terrain}} {{fortification}}{{#if concealed}} <i class="fa-solid fa-eye-slash"></i>{{/if}}</td>
+              <td class="controls">
+                {{#if ../editable}}
+                  <a data-action="issueOrder" data-tooltip="ASOIAF.Unit.issueOrder"><i class="fa-solid fa-flag"></i></a>
+                  <a data-action="standing" data-tooltip="ASOIAF.Unit.runStanding"><i class="fa-solid fa-rotate-right"></i></a>
+                  <a data-action="remove"><i class="fa-solid fa-xmark"></i></a>
+                {{/if}}
+              </td>
+            </tr>
+          {{else}}
+            <tr><td colspan="8" class="hint">{{localize "ASOIAF.Battle.dropUnits"}}</td></tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <p class="hint">{{localize "ASOIAF.Battle.commandHint"}}</p>
+
+      {{#if editable}}
+        <h3 class="section-title">{{localize "ASOIAF.Battle.events"}}</h3>
+        <div class="combat-actions">
+          <button type="button" data-action="commanderFalls"><i class="fa-solid fa-skull"></i> {{localize "ASOIAF.Battle.falls_commander"}}</button>
+          <button type="button" data-action="heroFalls"><i class="fa-solid fa-skull-crossbones"></i> {{localize "ASOIAF.Battle.falls_hero"}}</button>
+          <button type="button" data-action="surrenderAll"><i class="fa-solid fa-flag"></i> {{localize "ASOIAF.Battle.surrenderAll"}}</button>
+          <button type="button" data-action="betrayEnvoy"><i class="fa-solid fa-handshake-slash"></i> {{localize "ASOIAF.Battle.betrayEnvoy"}}</button>
+        </div>
+      {{/if}}
+    </div>
+
+    {{!-- Champ de bataille --}}
+    <div class="tab-panel {{#if (asEq activeTab 'field')}}active{{/if}}" data-tab="field">
+      <fieldset>
+        <legend>{{localize "ASOIAF.Battle.battlefield"}} — {{field.scene}}</legend>
+        <p>{{localize "ASOIAF.Battle.visibility"}} : <strong>{{field.visibility}}</strong> · {{localize "ASOIAF.Battle.weather"}} : <strong>{{field.weather}}</strong></p>
+        {{#if isGM}}<button type="button" data-action="battlefield"><i class="fa-solid fa-cloud-sun-rain"></i> {{localize "ASOIAF.Battle.editBattlefield"}}</button>{{/if}}
+        <p class="hint">{{localize "ASOIAF.Battle.fieldHint"}}</p>
+      </fieldset>
+      <h3 class="section-title">{{localize "ASOIAF.Battle.terrainTable"}}</h3>
+      <table class="items-table">
+        <tbody>{{#each terrainTable}}<tr><td>{{label}}</td><td>{{effects}}</td></tr>{{/each}}</tbody>
+      </table>
+      <h3 class="section-title">{{localize "ASOIAF.Battle.formationTable"}}</h3>
+      <table class="items-table">
+        <tbody>{{#each formationTable}}<tr><td>{{label}}</td><td>{{hint}}</td></tr>{{/each}}</tbody>
+      </table>
+    </div>
+
+    {{!-- Bilan --}}
+    <div class="tab-panel {{#if (asEq activeTab 'report')}}active{{/if}}" data-tab="report">
+      <p>{{localize "ASOIAF.Battle.reportIntro"}}</p>
+      {{#if editable}}<button type="button" class="primary" data-action="report"><i class="fa-solid fa-flag-checkered"></i> {{localize "ASOIAF.Battle.report"}}</button>{{/if}}
+      <label class="block">{{localize "ASOIAF.Bio.notes"}}<textarea name="system.notes" rows="10">{{system.notes}}</textarea></label>
+    </div>
+  </section>
+</div>

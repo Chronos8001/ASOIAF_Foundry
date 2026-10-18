@@ -180,6 +180,41 @@ Les compendiums (qualités, équipement, poisons) sont construits par le workflo
 - **Rounds** : le compteur d'ordres se remet à zéro quand le round du suivi de combat avance. L'initiative d'une unité est l'Art de la guerre (Stratégie) de son commandant.
 - **Fin de bataille** : table des survivants (10-6). L'entraînement monte ou baisse, et il est reporté sur l'unité de la Maison. Une unité perdue retire sa Puissance investie.
 
+### Armées et commandement (chapitre 10)
+- **Fiche d'Armée** (nouvel acteur) : on crée une armée par camp et on y glisse :
+  - la Maison et le camp (attaquant ou défenseur) ;
+  - le **commandant**, qui donne autant d'ordres par round que son rang d'Art de la guerre ;
+  - les **sous-commandants**, un pour deux unités, avec un ordre chacun ;
+  - les **héros**, un par rang de Statut du commandant ;
+  - les **unités**.
+- **Ordres du round** : la fiche compte les ordres donnés et restants par chef. Ils reviennent quand le round du suivi de combat avance (ou avec « Nouveau round »).
+- **Activation** : une unité n'agit qu'après son premier ordre réussi.
+- **Initiative** : test d'Art de la guerre du commandant, refait automatiquement à chaque round de bataille.
+- **Commandement perdu** : toutes les unités sont désorganisées et l'armée ne donne plus qu'un ordre par round. « Prendre le commandement » permet à un personnage de Statut 2 ou plus de le reprendre.
+- **Événements** :
+  - chute du commandant ou d'un héros : les unités voisines testent leur Volonté (12 ou 9), et un échec les fait reculer d'un état ;
+  - reddition générale : un test par unité, réussite = elle se rend, échec = déroute ;
+  - attaquer un parlementaire : la Maison perd 1d6 d'Influence.
+- **Ordres** (fenêtre groupée, Difficulté calculée seule : Discipline, +3 par ordre déjà donné, difficulté de l'ordre, tir de barrage subi) :
+  - **de base** : attaquer, charger, défendre, repli combatif, se déplacer, réorganiser, rallier, se regrouper, se tenir prêt, battre en retraite, se rendre ;
+  - **avancés** : embuscade, percée, encerclement, repousser, marteau et enclume, tenaille, attaque prudente, reformer, attaque divisée, saper, terre brûlée, tir de barrage, piétiner, escalader les murs, se préparer à la charge ;
+  - **orientation** : demi-tour, pivoter ;
+  - **formations** : ligne de bataille, damier, colonne, cohue, phalange, mur de boucliers, carré, tortue, coin, avec leurs effets sur la Défense (contre le Combat ou contre le Tir), la Discipline, le déplacement et les attaques ;
+  - **échecs critiques** : un repli raté désorganise, une retraite ratée tourne à la déroute, une reddition refusée met l'unité en déroute ; une unité en déroute devient une cohue.
+- **Attaques d'unités** : flanc (+1B), arrière (+1D), cible encerclée, riposte contre une unité de flanc ; la formation en carré annule ces bonus.
+  - Le mur de boucliers annule le bonus de charge. Le coin donne +1D en charge, le damier +1D contre une cohue.
+  - Une unité dissimulée gagne +1D à sa première attaque. La contre-charge double les dégâts de base.
+  - Le tir de barrage rend la cible plus dure à commander.
+- **Champ de bataille** :
+  - par unité : terrain de la Table 10-3 (couvert pour les unités en défense, dés bonus du défenseur en colline ou montagne, terrain lent, cavalerie interdite), route, fortification (château +12/+8/+6, fort +4, tour +3, fortification de campagne +1 ou +2) ;
+  - par scène : visibilité et météo (pénombre, obscurité, forte pluie, neige).
+- **Fiche d'unité** : armée, champ de bataille, et boutons « Se dissimuler », « Déclencher » (ordre « se tenir prêt »), « Contre-charge » et « Pertes infligées » (un personnage qui affronte l'unité par groupes de 10 hommes).
+- **Engins de siège** : par round, une armée tire au plus autant d'engins que l'Art de la guerre de son commandant.
+- **Bilan de la bataille** (onglet Bilan) :
+  - Gloire selon les unités vaincues et l'infériorité numérique (Table 10-5), 1 Gloire pour le vaincu ;
+  - Loi, place forte prise et domaine saisi (changent de Maison), Population, pillage, rançons des captifs (1 Richesse par rang de Statut) ;
+  - puis table des survivants pour toutes les unités des deux armées.
+
 ### Sièges : engins et équipement spécial
 - **Engins de siège** (nouvel acteur) : catapultes (3 tailles), mangonneau, scorpion, cracheur de feu, trébuchet, tour de siège et bélier couvert.
   - Pour en construire un : onglet Possessions de la Maison, liste « Engins de siège ». Le coût en Richesse ou en Terres est proposé à la Maison.

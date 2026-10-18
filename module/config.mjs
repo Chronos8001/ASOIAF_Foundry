@@ -410,20 +410,128 @@ ASOIAF.unitEquipment = {
 /** Portées de tir des unités, en mètres (le livre compte en yards ; 1 case = 10). */
 ASOIAF.unitRanges = { close: 20, long: 200, both: 200 };
 
-/** Ordres de bataille. persistent : devient un ordre permanent. */
+/**
+ * Ordres de bataille (p. 186-193).
+ *   persistent : devient l'ordre permanent (standing : l'ordre permanent enregistré, « attack » par défaut)
+ *   attack     : l'unité attaque ; penaltyDice/testDice/damage/damageAfter : modificateurs du test
+ *   diff       : hausse de la Difficulté pour donner l'ordre (ordres avancés)
+ *   group      : basic, advanced, facing, formation
+ *   critical   : effet d'un échec critique du commandant (désorganisée, déroute)
+ */
 ASOIAF.unitOrders = {
-  attack: { persistent: true, attack: true },
-  charge: { persistent: true, attack: true, penaltyDice: 1, damage: 2 },
-  defend: { persistent: true },
-  withdraw: { persistent: true, attack: true, penaltyDice: 1 },
-  move: { persistent: false },
-  organize: { persistent: false },
-  rally: { persistent: false },
-  regroup: { persistent: false },
-  ready: { persistent: true },
-  retreat: { persistent: true },
-  surrender: { persistent: false }
+  attack: { group: "basic", persistent: true, attack: true },
+  charge: { group: "basic", persistent: true, attack: true, penaltyDice: 1, damage: 2, charge: true, kind: "fighting" },
+  defend: { group: "basic", persistent: true },
+  withdraw: { group: "basic", persistent: true, attack: true, penaltyDice: 1, critical: "disorganized" },
+  move: { group: "basic" },
+  organize: { group: "basic" },
+  rally: { group: "basic" },
+  regroup: { group: "basic" },
+  ready: { group: "basic", persistent: true },
+  retreat: { group: "basic", persistent: true, critical: "routed" },
+  surrender: { group: "basic", failure: "routed" },
+  ambush: { group: "advanced", diff: 3, attack: true, damage: 2, persistent: true, standing: "attack", concealed: true },
+  blitz: { group: "advanced", diff: 6, attack: true, persistent: true, standing: "attack", kind: "fighting", extraTargets: true },
+  envelop: { group: "advanced", diff: 6, attack: true, persistent: true, standing: "attack", kind: "fighting" },
+  forceBack: { group: "advanced", diff: 3, persistent: true, standing: "attack" },
+  hammerAnvil: { group: "advanced", diff: 6, persistent: true, standing: "attack" },
+  pincer: { group: "advanced", diff: 3, attack: true, testDice: 1, persistent: true, standing: "attack", kind: "fighting" },
+  probing: { group: "advanced", diff: 6, attack: true, penaltyDice: 1, persistent: true, standing: "attack", kind: "fighting", probing: true },
+  reform: { group: "advanced", diff: 3 },
+  splitAttack: { group: "advanced", diff: 6, attack: true, persistent: true, standing: "attack", split: true },
+  sap: { group: "advanced", diff: 3, engineers: true },
+  slashBurn: { group: "advanced", diff: 3 },
+  suppressing: { group: "advanced", diff: 3, attack: true, persistent: true, standing: "attack", kind: "marksmanship", suppressing: true },
+  trample: { group: "advanced", diff: 3, attack: true, damageAfter: 5, persistent: true, standing: "attack", kind: "fighting", cavalry: true, extraTargets: true },
+  scaleWalls: { group: "advanced", diff: 3, persistent: true },
+  setCharge: { group: "advanced", diff: 3, persistent: true, standing: "attack" },
+  reverse: { group: "facing", diff: 0, persistent: true, standing: "attack" },
+  wheel: { group: "facing", diff: 3, persistent: true, standing: "attack" },
+  formation: { group: "formation", diff: 0 }
 };
+ASOIAF.orderGroups = ["basic", "advanced", "facing", "formation"];
+
+/** Formations (p. 192-193) : difficulté de l'ordre, Défense, Discipline, déplacement, attaques. */
+ASOIAF.formations = {
+  none: { diff: 0 },
+  battle: { diff: 0, slow: 1 },
+  checkered: { diff: 0, shootDefense: 5, discipline: 3, slow: 1, vsMob: 1 },
+  column: { diff: 0, fightPenalty: 1 },
+  mob: { diff: -3, defense: -5, discipline: 6 },
+  phalanx: { diff: 6, meleeDefense: 5, shootDefense: -5, slow: 2, infantryOnly: true },
+  shieldWall: { diff: 6, meleeDefense: 5, noCharge: true, noMove: true, coverBehind: 5 },
+  square: { diff: 6, noFacing: true, noMove: true },
+  tortoise: { diff: 9, defense: 5, noAttack: true, slow: 2 },
+  wedge: { diff: 3, chargeDice: 1, shootDefense: -5 }
+};
+
+/** Terrain (Table 10-3) : couvert (unité en défense), dés bonus (défenseur), lenteur, restrictions. */
+ASOIAF.battleTerrain = {
+  open: {},
+  grassland: {},
+  coast: { warships: true },
+  hamlet: { slow: 1 },
+  smallTown: { cover: 1, slow: 1 },
+  largeTown: { cover: 2, slow: 1 },
+  smallCity: { cover: 2, slow: 1, noCavalry: true },
+  largeCity: { cover: 5, slow: 1, noCavalry: true },
+  desert: { slow: 1 },
+  hill: { slow: 1, bonusDice: 1 },
+  island: { warships: true },
+  mountain: { bonusDice: 2, slow: 2, noCavalry: true, noSiege: true },
+  ruin: { cover: 2 },
+  wall: { cover: 5, blocks: true },
+  stream: { slow: 1 },
+  river: { slow: 1, warships: true, blocks: true },
+  pond: { slow: 1, warships: true },
+  lake: { blocks: true, warships: true },
+  wetland: { slow: 1 },
+  lightWoods: { cover: 2 },
+  denseWoods: { cover: 5 }
+};
+
+/** Fortifications (p. 183) : bonus de Défense et capacité en unités. */
+ASOIAF.battleFortifications = {
+  none: { defense: 0, capacity: 0 },
+  superiorCastle: { defense: 12, capacity: 10 },
+  castle: { defense: 8, capacity: 5 },
+  smallCastle: { defense: 6, capacity: 3 },
+  hall: { defense: 4, capacity: 2 },
+  tower: { defense: 3, capacity: 1 },
+  temporary: { defense: 1, capacity: 1 },
+  temporaryEngineers: { defense: 2, capacity: 1 }
+};
+
+/** Visibilité (p. 183) : dés de pénalité par capacité ; l'obscurité ralentit tout. */
+ASOIAF.battleVisibility = {
+  clear: {},
+  dim: { dice: { agility: 1, athletics: 1, awareness: 1, fighting: 1, thievery: 1, marksmanship: 2 } },
+  dark: { dice: { agility: 2, athletics: 2, awareness: 2, fighting: 2, thievery: 2, marksmanship: 4 }, slow: 1 }
+};
+
+/** Météo (p. 183) : malus aux résultats de Combat et de Tir ; la forte neige plonge dans l'obscurité. */
+ASOIAF.battleWeather = {
+  clear: { modifier: 0 },
+  lightRain: { modifier: 0 },
+  heavyRain: { modifier: -2 },
+  lightSnow: { modifier: -2 },
+  heavySnow: { modifier: -2, dark: true }
+};
+
+/** Orientation de l'attaque (p. 191-192) : bonus au test de Combat. */
+ASOIAF.battleFacing = {
+  front: {},
+  flank: { bonusDice: 1 },
+  rear: { testDice: 1 },
+  surroundedFront: { bonusDice: 1 },
+  surroundedFlank: { testDice: 1 },
+  surroundedRear: { testDice: 2 },
+  againstFlankers: { penaltyDice: 1 }
+};
+
+/** Gloire après une bataille (Table 10-5). */
+ASOIAF.battleGlory = [[3, 1], [6, 2], [9, 3], [Infinity, 4]];
+ASOIAF.battleOutnumbered = [[3, 3], [2, 2], [1.5, 1]];
 
 /** Dégâts subis par un personnage rattaché selon ce qui arrive à son unité. */
 ASOIAF.attachedDamage = { damaged: 1, disorganized: 2, routed: 5, destroyed: 10 };

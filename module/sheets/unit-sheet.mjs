@@ -2,6 +2,7 @@ import { AsoiafActorSheet } from "./base-sheet.mjs";
 import { ASOIAF } from "../config.mjs";
 import * as Warfare from "../warfare.mjs";
 import * as Siege from "../siege.mjs";
+import * as Battle from "../battle.mjs";
 
 export class UnitSheet extends AsoiafActorSheet {
   static DEFAULT_OPTIONS = {
@@ -21,7 +22,11 @@ export class UnitSheet extends AsoiafActorSheet {
       climb: UnitSheet.#onSiegeAction(Siege.climb),
       wildfire: UnitSheet.#onSiegeAction(Siege.throwWildfire),
       boiling: UnitSheet.#onSiegeAction(Siege.boiling),
-      leaveShelter: UnitSheet.#onLeaveShelter
+      leaveShelter: UnitSheet.#onLeaveShelter,
+      conceal: UnitSheet.#onSiegeAction(Battle.conceal),
+      triggerReady: UnitSheet.#onSiegeAction(Battle.triggerReady),
+      counterCharge: UnitSheet.#onSiegeAction(Battle.counterCharge),
+      casualties: UnitSheet.#onSiegeAction(Battle.casualties)
     }
   };
 
@@ -45,7 +50,22 @@ export class UnitSheet extends AsoiafActorSheet {
     context.attached = link(s.attached);
     context.trainingOptions = Object.fromEntries(ASOIAF.trainingOrder.map(t => [t, `ASOIAF.Training.${t}`]));
     context.statusLabel = loc(`ASOIAF.Unit.status_${s.status}`);
-    context.statuses = ["ready", "disorganized", "routed", "destroyed"].map(k => ({
+    context.army = link(s.army);
+    context.terrainOptions = Object.fromEntries(Object.keys(ASOIAF.battleTerrain).map(k => [k, `ASOIAF.Terrain.${k}`]));
+    context.fortificationOptions = Object.fromEntries(Object.entries(ASOIAF.battleFortifications).map(([k, f]) =>
+      [k, `${loc(`ASOIAF.Fortification.${k}`)}${f.defense ? ` (+${f.defense})` : ""}`]));
+    context.formationOptions = Object.fromEntries(Object.keys(ASOIAF.formations).map(k => [k, `ASOIAF.Formation.${k}`]));
+    context.formationHint = s.formation !== "none" ? loc(`ASOIAF.FormationHint.${s.formation}`) : "";
+    context.fieldBonuses = [
+      s.fortificationDefense ? `${loc("ASOIAF.Battle.fortification")} +${s.fortificationDefense}` : null,
+      s.coverDefense ? `${loc("ASOIAF.Battle.cover")} +${s.coverDefense}` : null,
+      s.terrainData?.bonusDice ? `${loc("ASOIAF.Battle.terrainDice")} +${s.terrainData.bonusDice}B` : null,
+      s.suppressed ? `${loc("ASOIAF.Battle.suppressedTag")} +${s.suppressed}` : null,
+      s.probing ? loc("ASOIAF.Battle.probingTag") : null,
+      s.sapping ? loc("ASOIAF.Battle.sappingTag") : null,
+      s.noCavalry ? loc("ASOIAF.Battle.noCavalryNote") : null
+    ].filter(Boolean).join(" · ");
+    context.statuses = ["ready", "disorganized", "routed", "destroyed", "surrendered"].map(k => ({
       key: k, label: loc(`ASOIAF.Unit.status_${k}`), active: k === s.status
     }));
     context.typesLabel = s.typeList.map(t => loc(`ASOIAF.UnitType.${t}`)).join(" / ") || "—";
@@ -79,6 +99,7 @@ export class UnitSheet extends AsoiafActorSheet {
     const actor = await fromUuid(data.uuid);
     if (!actor) return;
     if (actor.type === "house") return this.actor.update({ "system.house": actor.uuid });
+    if (actor.type === "army") return Battle.addToArmy(actor, this.actor, "units");
     if (!actor.system?.abilities?.warfare || actor.type === "unit") return;
     const zone = event.target.closest("[data-drop]")?.dataset.drop ?? "attached";
     return this.actor.update({ [`system.${zone === "commander" ? "commander" : "attached"}`]: actor.uuid });

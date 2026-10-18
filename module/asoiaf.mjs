@@ -6,6 +6,8 @@ import { CharacterData } from "./data/character.mjs";
 import { HouseData } from "./data/house.mjs";
 import { UnitActorData } from "./data/unit.mjs";
 import { SiegeData } from "./data/siege.mjs";
+import { ArmyData } from "./data/army.mjs";
+import { ArmySheet } from "./sheets/army-sheet.mjs";
 import * as ItemModels from "./data/items.mjs";
 import { AsoiafActor, AsoiafCombatant } from "./documents/actor.mjs";
 import { CharacterSheet } from "./sheets/character-sheet.mjs";
@@ -61,7 +63,7 @@ Hooks.once("init", () => {
   CONFIG.Item.documentClass = AsoiafItem;
   CONFIG.Combatant.documentClass = AsoiafCombatant;
 
-  CONFIG.Actor.dataModels = { character: CharacterData, npc: CharacterData, house: HouseData, unit: UnitActorData, siege: SiegeData };
+  CONFIG.Actor.dataModels = { character: CharacterData, npc: CharacterData, house: HouseData, unit: UnitActorData, siege: SiegeData, army: ArmyData };
   registerStatusEffects();
   registerConditions();
   registerSettings();
@@ -116,6 +118,7 @@ function registerSheets() {
   DSC.registerSheet(Actor, "asoiaf", HouseSheet, { types: ["house"], makeDefault: true, label: "ASOIAF.Sheet.house" });
   DSC.registerSheet(Actor, "asoiaf", UnitSheet, { types: ["unit"], makeDefault: true, label: "ASOIAF.Sheet.unit" });
   DSC.registerSheet(Actor, "asoiaf", SiegeSheet, { types: ["siege"], makeDefault: true, label: "ASOIAF.Sheet.siege" });
+  DSC.registerSheet(Actor, "asoiaf", ArmySheet, { types: ["army"], makeDefault: true, label: "ASOIAF.Sheet.army" });
   DSC.registerSheet(Item, "asoiaf", AsoiafItemSheet, { types: Object.keys(CONFIG.Item.dataModels), makeDefault: true, label: "ASOIAF.Sheet.item" });
   console.log("ASOIAF | Fiches enregistrées");
 }
@@ -123,7 +126,7 @@ function registerSheets() {
 /** Diagnostic : signale clairement si une fiche n'est pas active. */
 Hooks.once("ready", () => {
   console.log(`ASOIAF | Prêt (Foundry ${game.version})`);
-  const missing = ["character", "npc", "house", "unit", "siege"].filter(type =>
+  const missing = ["character", "npc", "house", "unit", "siege", "army"].filter(type =>
     !Object.keys(CONFIG.Actor.sheetClasses?.[type] ?? {}).some(id => id.startsWith("asoiaf.")));
   if (missing.length) {
     ui.notifications.error(`Trône de Fer : fiches non enregistrées pour ${missing.join(", ")}. Ouvrez la console (F12) et cherchez « ASOIAF ».`, { permanent: true });
@@ -178,6 +181,9 @@ Hooks.on("updateCombat", async (combat, changes) => {
   const actors = combat.combatants.map(c => c.actor).filter(a => ["unit", "siege"].includes(a?.type));
   await burnTick(actors);
   await resetRound(actors.filter(a => a.type === "unit"));
+  // Bataille : l'initiative des commandants se refait à chaque round (p. 183-184).
+  const unitIds = combat.combatants.filter(c => c.actor?.type === "unit").map(c => c.id);
+  if (unitIds.length && isMainGM() && (changes.round ?? 0) > 1) await combat.rollInitiative(unitIds, { updateTurn: false });
   // Poisons « à chaque round » des personnages au combat.
   if (isMainGM()) await roundTick(combat.combatants.map(c => c.actor).filter(a => ["character", "npc"].includes(a?.type)));
 });

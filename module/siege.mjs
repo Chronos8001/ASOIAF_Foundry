@@ -225,6 +225,13 @@ export async function fireSiege(siege) {
   }
 
   const crew = s.crewActor;
+  // Par round, une armée tire autant d'engins que le rang d'Art de la guerre de son commandant (p. 184).
+  const army = crew?.system?.armyActor;
+  if (army) {
+    const max = army.system.commanderActor?.system.abilities?.warfare?.value ?? 1;
+    if (army.system.siegeShots >= max) ui.notifications.warn(game.i18n.format("ASOIAF.Battle.siegeShotsMax", { n: max }));
+    if (army.isOwner) await army.update({ "system.siegeShots": army.system.siegeShots + 1 });
+  }
   const target = game.user.targets.first()?.actor ?? null;
   const t = crew?.system?.getTestData?.("warfare") ?? { testDice: 2, bonusDice: 0, penaltyDice: 0, modifier: 0 };
   let damage = s.damage;

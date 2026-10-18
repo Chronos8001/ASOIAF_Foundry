@@ -17,6 +17,7 @@ export class AsoiafActor extends Actor {
     const prototypeToken = { actorLink: true, disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY };
     if (this.type === "character") prototypeToken.sight = { enabled: true };
     if (this.type === "house" && !data.img) this.updateSource({ img: HOUSE_IMG });
+    if (this.type === "army" && !data.img) this.updateSource({ img: "icons/svg/castle.svg" });
     if (this.type === "unit" || this.type === "siege") {
       if (!data.img) this.updateSource({ img: this.type === "unit" ? "icons/svg/combat.svg" : "icons/svg/target.svg" });
       prototypeToken.displayBars = CONST.TOKEN_DISPLAY_MODES.ALWAYS;

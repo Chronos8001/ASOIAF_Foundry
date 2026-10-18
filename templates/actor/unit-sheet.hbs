@@ -85,6 +85,32 @@
         </fieldset>
       </div>
 
+      <fieldset class="battlefield">
+        <legend>{{localize "ASOIAF.Battle.battlefield"}}</legend>
+        <p>{{localize "ASOIAF.Battle.army"}} :
+          {{#if army}}<a data-action="openUuid" data-uuid="{{army.uuid}}">{{army.name}}</a>{{else}}<span class="hint">{{localize "ASOIAF.Battle.noArmy"}}</span>{{/if}}
+          {{#unless system.activated}}<span class="tag" data-tooltip="ASOIAF.Battle.notActivated"><i class="fa-solid fa-moon"></i> {{localize "ASOIAF.Battle.notActivatedShort"}}</span>{{/unless}}</p>
+        <div class="form-grid">
+          <label>{{localize "ASOIAF.Battle.terrain"}}<select name="system.terrain">{{selectOptions terrainOptions selected=system.terrain localize=true}}</select></label>
+          <label class="checkbox"><input type="checkbox" name="system.road" {{checked system.road}}> {{localize "ASOIAF.Battle.road"}}</label>
+          <label>{{localize "ASOIAF.Battle.fortification"}}<select name="system.fortification">{{selectOptions fortificationOptions selected=system.fortification}}</select></label>
+          <label>{{localize "ASOIAF.Battle.formation"}}<select name="system.formation">{{selectOptions formationOptions selected=system.formation localize=true}}</select></label>
+          <label class="checkbox"><input type="checkbox" name="system.concealed" {{checked system.concealed}}> {{localize "ASOIAF.Battle.concealedLabel"}}</label>
+          <label class="checkbox"><input type="checkbox" name="system.activated" {{checked system.activated}}> {{localize "ASOIAF.Battle.activated"}}</label>
+        </div>
+        {{#if formationHint}}<p class="hint">{{formationHint}}</p>{{/if}}
+        {{#if fieldBonuses}}<p class="effects-line">{{fieldBonuses}}</p>{{/if}}
+        {{#if system.readied}}<p><i class="fa-solid fa-hourglass-half"></i> {{localize "ASOIAF.Order.ready"}} : <em>{{system.readied}}</em></p>{{/if}}
+        {{#if editable}}
+          <div class="buttons-row">
+            <button type="button" data-action="conceal" data-tooltip="ASOIAF.Battle.concealHint"><i class="fa-solid fa-eye-slash"></i> {{localize "ASOIAF.Battle.conceal"}}</button>
+            {{#if system.readied}}<button type="button" class="primary" data-action="triggerReady"><i class="fa-solid fa-bolt"></i> {{localize "ASOIAF.Battle.trigger"}}</button>{{/if}}
+            {{#if system.setForCharge}}<button type="button" class="primary" data-action="counterCharge" data-tooltip="ASOIAF.Battle.counterHint"><i class="fa-solid fa-shield-halved"></i> {{localize "ASOIAF.Battle.counterCharge"}}</button>{{/if}}
+            <button type="button" data-action="casualties" data-tooltip="ASOIAF.Battle.casualtiesHint"><i class="fa-solid fa-user-minus"></i> {{localize "ASOIAF.Battle.casualties"}}</button>
+          </div>
+        {{/if}}
+      </fieldset>
+
       <fieldset>
         <legend>{{localize "ASOIAF.Siege.gearTitle"}}</legend>
         <div class="gear-list">
